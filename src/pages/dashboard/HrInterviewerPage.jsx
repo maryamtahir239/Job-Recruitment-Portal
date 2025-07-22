@@ -1,0 +1,241 @@
+// Frontend/src/pages/dashboard/HrInterviewerPage.jsx
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import {
+  listAdminUsers,
+  createAdminUser,
+  updateAdminUser,
+  deleteAdminUser,
+} from "@/api/adminUsers";
+import { useNavigate } from "react-router-dom";
+
+const emptyForm = { name: "", email: "", password: "", role: "HR" };
+
+const HrInterviewerPage = () => {
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  const [formData, setFormData] = useState(emptyForm);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const data = await listAdminUsers(token);
+      setUsers(data);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load users");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!token || !user || user.role !== "SuperAdmin") {
+      toast.error("Access denied");
+      navigate("/login");
+      return;
+    }
+    load();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((d) => ({ ...d, [name]: value }));
+  };
+
+  const resetForm = () => {
+    setFormData(emptyForm);
+    setEditingId(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      if (editingId) {
+        // password optional when editing
+        const payload = { ...formData };
+        if (!payload.password) delete payload.password;
+        const updated = await updateAdminUser(token, editingId, payload);
+        toast.success("User updated");
+        setUsers((u) => u.map((x) => (x.id === updated.id ? updated : x)));
+      } else {
+        const created = await createAdminUser(token, formData);
+        toast.success("User created");
+        setUsers((u) => [created, ...u]);
+      }
+      resetForm();
+    } catch (err) {
+      console.error(err);
+      toast.error("Save failed");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const startEdit = (u) => {
+    setEditingId(u.id);
+    setFormData({
+      name: u.name,
+      email: u.email,
+      password: "",
+      role: u.role,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this user?")) return;
+    try {
+      await deleteAdminUser(token, id);
+      toast.success("User deleted");
+      setUsers((u) => u.filter((x) => x.id !== id));
+      if (editingId === id) resetForm();
+    } catch (err) {
+      console.error(err);
+      toast.error("Delete failed");
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">HR / Interviewer Management</h1>
+
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 p-4 border rounded bg-white shadow-sm"
+      >
+        <div>
+          <label className="block text-sm font-medium mb-1">Name</label>
+          <input
+            name="name"
+            value={formData.name}
+            onChange={onChange}
+            required
+            className="w-full border rounded px-3 py-2"
+            placeholder="Full name"
+            type="text"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Email</label>
+          <input
+            name="email"
+            value={formData.email}
+            onChange={onChange}
+            required
+            className="w-full border rounded px-3 py-2"
+            placeholder="user@example.com"
+            type="email"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {editingId ? "Password (leave blank to keep)" : "Password"}
+          </label>
+          <input
+            name="password"
+            value={formData.password}
+            onChange={onChange}
+            className="w-full border rounded px-3 py-2"
+            placeholder={editingId ? "•••••• (optional)" : "Password"}
+            type="password"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Role</label>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={onChange}
+            className="w-full border rounded px-3 py-2"
+          >
+            <option value="HR">HR</option>
+            <option value="Interviewer">Interviewer</option>
+          </select>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn btn-primary px-4 py-2"
+          >
+            {editingId ? "Update User" : "Create User"}
+          </button>
+          {editingId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="btn btn-secondary px-4 py-2"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </form>
+
+      {/* List */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-3">
+          Added HR / Interviewers
+        </h2>
+        {loading ? (
+          <p>Loading...</p>
+        ) : users.length === 0 ? (
+          <p>No users found.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm border">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-2 border">ID</th>
+                  <th className="p-2 border text-left">Name</th>
+                  <th className="p-2 border text-left">Email</th>
+                  <th className="p-2 border">Role</th>
+                  <th className="p-2 border">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id}>
+                    <td className="p-2 border text-center">{u.id}</td>
+                    <td className="p-2 border">{u.name}</td>
+                    <td className="p-2 border">{u.email}</td>
+                    <td className="p-2 border text-center">{u.role}</td>
+                    <td className="p-2 border text-center space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(u)}
+                        className="text-blue-600 underline"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(u.id)}
+                        className="text-red-600 underline"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default HrInterviewerPage;
