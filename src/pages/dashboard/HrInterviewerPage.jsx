@@ -1,4 +1,3 @@
-// Frontend/src/pages/dashboard/HrInterviewerPage.jsx
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -8,6 +7,8 @@ import {
   deleteAdminUser,
 } from "@/api/adminUsers";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons"; // Import FontAwesome icons for edit and delete
 
 const emptyForm = { name: "", email: "", password: "", role: "HR" };
 
@@ -185,9 +186,7 @@ const HrInterviewerPage = () => {
 
       {/* List */}
       <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-3">
-          Added HR / Interviewers
-        </h2>
+        <h2 className="text-xl font-semibold mb-3">Added HR / Interviewers</h2>
         {loading ? (
           <p>Loading...</p>
         ) : users.length === 0 ? (
@@ -212,19 +211,21 @@ const HrInterviewerPage = () => {
                     <td className="p-2 border">{u.email}</td>
                     <td className="p-2 border text-center">{u.role}</td>
                     <td className="p-2 border text-center space-x-2">
+                      {/* Edit Icon */}
                       <button
                         type="button"
                         onClick={() => startEdit(u)}
-                        className="text-blue-600 underline"
+                        className="text-green-600 hover:text-green-800"
                       >
-                        Edit
+                        <FontAwesomeIcon icon={faEdit} />
                       </button>
+                      {/* Delete Icon */}
                       <button
                         type="button"
                         onClick={() => handleDelete(u.id)}
-                        className="text-red-600 underline"
+                        className="text-red-600 hover:text-red-800"
                       >
-                        Delete
+                        <FontAwesomeIcon icon={faTrash} />
                       </button>
                     </td>
                   </tr>

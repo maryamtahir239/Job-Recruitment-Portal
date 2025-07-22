@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@fullcalendar/core": "^6.1.4",
     "@fullcalendar/daygrid": "^6.1.4",
     "@fullcalendar/interaction": "^6.1.4",
@@ -40,6 +42,7 @@
     "lucide-react": "^0.290.0",
     "match-sorter": "^6.3.1",
     "moment": "^2.29.4",
+    "papaparse": "^5.5.3",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
     "react-beautiful-dnd": "^13.1.1",
@@ -72,6 +75,7 @@
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "uuidv4": "^6.2.13",
+    "xlsx": "^0.18.5",
     "yup": "^0.32.11"
   },
   "devDependencies": {
