@@ -12,13 +12,22 @@ const InterviewerDashboard = lazy(() => import("./pages/dashboard/InterviewerDas
 const HrInterviewerPage = lazy(() => import("./pages/dashboard/HrInterviewerPage"));
 const Error = lazy(() => import("./pages/404"));
 
+// **New Public Application Page**
+const PublicApplicationWrapper = lazy(() => import("./pages/hr/PublicApplicationWrapper"));
+
 function App() {
   return (
     <main className="App relative">
       <Suspense fallback={<Loading />}>
         <Routes>
+          {/* Default redirect */}
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
+
+          {/* Public route for candidate form */}
+          <Route path="/apply/:token" element={<PublicApplicationWrapper />} />
+
+          {/* Authenticated routes */}
           <Route path="/*" element={<Layout />}>
             <Route path="hr-dashboard" element={<HRDashboard />} />
             <Route path="superadmin-dashboard" element={<SuperAdminDashboard />} />
