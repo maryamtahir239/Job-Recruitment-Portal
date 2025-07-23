@@ -4,6 +4,7 @@ import { useDropzone } from "react-dropzone";
 import uploadSvgImage from "@/assets/images/svg/upload.svg";
 import * as XLSX from "xlsx";
 import Papa from "papaparse";
+<<<<<<< HEAD
 import Button from "@/components/ui/Button";
 import SendInviteModal from "@/components/SendInviteModal";
 import axios from "axios";
@@ -31,10 +32,15 @@ function normalizeRow(rawRow, idx) {
   return norm;
 }
 
+=======
+import Button from "../../components/ui/Button";
+
+>>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
 const HRDashboard = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [files, setFiles] = useState([]);
+<<<<<<< HEAD
   const [candidates, setCandidates] = useState([]); // parsed candidates (before import)
   const [importedCandidates, setImportedCandidates] = useState([]); // DB candidates with IDs
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -55,32 +61,66 @@ const HRDashboard = () => {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [],
       "text/csv": [],
       "image/*": [],
+=======
+  const [candidates, setCandidates] = useState([]);
+
+  const handleReset = () => {
+    setFiles([]);
+    setCandidates([]);
+  };
+
+  const { getRootProps, getInputProps, isDragAccept } = useDropzone({
+    accept: {
+      "image/*": [],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [],
+      "text/csv": [],
+    },
+    onDrop: (acceptedFiles) => {
+      setFiles(acceptedFiles);
+      parseFile(acceptedFiles[0]);
+>>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
     },
     onDrop,
   });
 
+<<<<<<< HEAD
   // Parse Excel or CSV
   const parseFile = (file) => {
     const fileExtension = file.name.split(".").pop().toLowerCase();
 
     if (fileExtension === "xlsx" || fileExtension === "xls") {
+=======
+  const parseFile = (file) => {
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+
+    if (fileExtension === "xlsx") {
+>>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
       const reader = new FileReader();
       reader.onload = (e) => {
         const wb = XLSX.read(e.target.result, { type: "binary" });
         const ws = wb.Sheets[wb.SheetNames[0]];
+<<<<<<< HEAD
         const raw = XLSX.utils.sheet_to_json(ws);
         const norm = raw.map((r, i) => normalizeRow(r, i));
         setCandidates(norm);
         setSelectedIds(new Set(norm.map((r) => r.tempId)));
+=======
+        const data = XLSX.utils.sheet_to_json(ws);
+        setCandidates(data);
+>>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
       };
       reader.readAsBinaryString(file);
     } else if (fileExtension === "csv") {
       Papa.parse(file, {
         header: true,
         complete: (result) => {
+<<<<<<< HEAD
           const norm = result.data.map((r, i) => normalizeRow(r, i));
           setCandidates(norm);
           setSelectedIds(new Set(norm.map((r) => r.tempId)));
+=======
+          setCandidates(result.data);
+>>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
         },
       });
     } else {
@@ -134,7 +174,12 @@ const HRDashboard = () => {
 
   return (
     <div className="flex items-start justify-center min-h-screen bg-gray-50">
+<<<<<<< HEAD
       <div className="text-center p-6 mt-10 w-full max-w-6xl">
+=======
+      <div className="text-center p-6">
+       
+>>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
         <h1 className="text-4xl font-bold text-gray-800 mb-4">
           Welcome, {user?.name || "HR"}!
         </h1>
@@ -148,21 +193,37 @@ const HRDashboard = () => {
 
         {/* Dropzone */}
         <div className="w-full text-center border-dashed border border-gray-400 rounded-lg py-[52px] flex flex-col justify-center items-center mb-4">
+<<<<<<< HEAD
           {files.length === 0 && (
             <div {...getRootProps({ className: "dropzone cursor-pointer" })}>
               <input className="hidden" {...getInputProps()} />
               <img src={uploadSvgImage} alt="Upload" className="mx-auto mb-4" />
               {isDragAccept ? (
                 <p className="text-sm text-gray-500">Drop the files here ...</p>
+=======
+          {files.length === 0 ? (
+            <div {...getRootProps({ className: "dropzone" })}>
+              <input className="hidden" {...getInputProps()} />
+              <img src={uploadSvgImage} alt="Upload" className="mx-auto mb-4" />
+              {isDragAccept ? (
+                <p className="text-sm text-gray-500 dark:text-gray-300">
+                  Drop the files here ...
+                </p>
+>>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
               ) : (
                 <p className="text-sm text-gray-500">
                   Drop files here or click to upload (Excel / CSV).
                 </p>
               )}
             </div>
+          ) : (
+            <p className="text-blue-600 font-medium text-sm">
+              File uploaded successfully!
+            </p>
           )}
         </div>
 
+<<<<<<< HEAD
         <p className="text-sm text-gray-600 mb-8">Upload Candidate List</p>
 
         {/* Candidate Table */}
@@ -170,6 +231,20 @@ const HRDashboard = () => {
           <h2 className="text-xl font-semibold mb-3 text-center">Candidate Information</h2>
           {(importedCandidates.length === 0 && candidates.length === 0) ? (
             <p className="text-center">No candidates found. Please upload a valid file.</p>
+=======
+        
+        {files.length === 0 && (
+          <p className="text-sm text-gray-600">Upload Candidate List</p>
+        )}
+
+       
+        <div className="mt-8">
+          {candidates.length > 0 && (
+            <h2 className="text-xl font-semibold mb-3">Candidate Information</h2>
+          )}
+          {candidates.length === 0 ? (
+            <p>No candidates found. Please upload a valid file.</p>
+>>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm border">
@@ -215,6 +290,27 @@ const HRDashboard = () => {
               </table>
             </div>
           )}
+<<<<<<< HEAD
+=======
+
+          {/* Buttons */}
+          {(candidates.length > 0 || files.length > 0) && (
+            <div className="mt-6 flex justify-center gap-4">
+              {candidates.length > 0 && (
+                <Button
+                  text="Send Form Link"
+                  className="btn-primary px-6 py-2"
+                />
+              )}
+              <Button
+                onClick={handleReset}
+                className="btn-primary px-6 py-2"
+                 text="Reset"
+              />
+               
+            </div>
+          )}
+>>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
         </div>
 
         {/* Send Form Link */}
