@@ -1,5 +1,3 @@
-// create_candidate_applications_table.js
-// Requires: application_invites, candidates, jobs.
 
 export function up(knex) {
     return knex.schema.createTable("candidate_applications", (table) => {
