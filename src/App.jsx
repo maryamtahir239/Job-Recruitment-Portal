@@ -25,17 +25,14 @@ function App() {
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
-<<<<<<< HEAD
 
           {/* Public route for candidate form */}
           <Route path="/apply/:token" element={<PublicApplicationWrapper />} />
 
           {/* Authenticated routes */}
-=======
           <Route path="/evaluate/:id" element={<EvaluationPage />} />
           
           {/* All pages that include sidebar/profile go here */}
->>>>>>> a8adf8bd4c26e4b0246a4ffb257a62bc74add984
           <Route path="/*" element={<Layout />}>
             <Route path="hr-dashboard" element={<HRDashboard />} />
             <Route path="superadmin-dashboard" element={<SuperAdminDashboard />} />
