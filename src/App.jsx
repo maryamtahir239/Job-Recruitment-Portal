@@ -11,6 +11,10 @@ const SuperAdminDashboard = lazy(() => import("./pages/dashboard/SuperAdminDashb
 const InterviewerDashboard = lazy(() => import("./pages/dashboard/InterviewerDashboard"));
 const HrInterviewerPage = lazy(() => import("./pages/dashboard/HrInterviewerPage"));
 const Error = lazy(() => import("./pages/404"));
+const EvaluationPage = lazy(() => import("./pages/EvaluationPage"));
+const EvaluationForm = lazy(() => import("./pages/EvaluationForm"));
+const CandidateForms = lazy(() => import("./pages/CandidateForms"));
+
 
 // **New Public Application Page**
 const PublicApplicationWrapper = lazy(() => import("./pages/hr/PublicApplicationWrapper"));
@@ -29,7 +33,9 @@ function App() {
 
           {/* Authenticated routes */}
           <Route path="/evaluate/:id" element={<EvaluationPage />} />
-          
+          <Route path="/evaluate/:id/form" element={<EvaluationForm />} />
+          <Route path="/candidate-forms" element={<CandidateForms />} />
+
           {/* All pages that include sidebar/profile go here */}
           <Route path="/*" element={<Layout />}>
             <Route path="hr-dashboard" element={<HRDashboard />} />

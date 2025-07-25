@@ -11,7 +11,7 @@ export async function up(knex) {
     table.text("work_experience");
     table.text("technical_skills");
     table.text("communication_skills");
-    table.text("confidence_and_clarity");
+    table.text("confidence_and_clarity"); // This column is included directly
     table.text("overall_comments");
     table.integer("rating").unsigned();
     table.timestamp("created_at").defaultTo(knex.fn.now());
