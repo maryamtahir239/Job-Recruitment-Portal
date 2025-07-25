@@ -1,11 +1,12 @@
 import React from "react";
 import Icon from "@/components/ui/Icon";
 import { Link } from "react-router-dom";
+
 function Button({
   text,
   type = "button",
   isLoading,
-  disabled,
+  disabled, // This prop needs to be passed to the <button> element
   className = "bg-indigo-700 text-white",
   children,
   icon,
@@ -29,8 +30,9 @@ function Button({
           className={`btn btn inline-flex justify-center   ${
             isLoading ? " pointer-events-none" : ""
           }
-        ${disabled ? " opacity-60 cursor-not-allowed" : ""}
-        ${className}`}
+          ${disabled || isLoading ? " opacity-60 cursor-not-allowed" : ""} {/* Combine disabled and isLoading for visual feedback */}
+          ${className}`}
+          disabled={disabled || isLoading} // <--- ADD THIS LINE! This is the fix.
         >
           {/* if has children and not loading*/}
           {children && !isLoading && children}
@@ -44,9 +46,9 @@ function Button({
                   className={`
           ${iconPosition === "right" ? "order-1 ltr:ml-2 rtl:mr-2" : " "}
           ${text && iconPosition === "left" ? "ltr:mr-2 rtl:ml-2" : ""}
-          
+
           ${iconClass}
-          
+
           `}
                 >
                   <Icon
@@ -90,30 +92,36 @@ function Button({
           )}
         </button>
       )}
+
+      {/* The `div` and `Link` elements will not inherently respect `disabled`
+          as it's an HTML <button> attribute.
+          For these, `pointer-events-none` is the correct way to disable clicks.
+          However, `onClick` will still be called if a parent event listener captures it,
+          or if it's programmatically triggered.
+          For consistency, you might want to add a check inside `onClick` for these cases too.
+          I'll update the `div` and `Link` versions for `pointer-events-none` for `disabled` too.
+      */}
       {!link && div && (
         <div
-          onClick={onClick}
+          onClick={disabled || isLoading ? null : onClick} // Explicitly nullify onClick if disabled or loading
           className={`btn btn inline-flex justify-center   ${
             isLoading ? " pointer-events-none" : ""
           }
-        ${disabled ? " opacity-60 cursor-not-allowed" : ""}
-        ${className}`}
+          ${disabled ? " opacity-60 cursor-not-allowed pointer-events-none" : ""} {/* Add pointer-events-none */}
+          ${className}`}
         >
-          {/* if has children and not loading*/}
           {children && !isLoading && children}
 
-          {/* if no children and  loading*/}
           {!children && !isLoading && (
             <span className="flex items-center">
-              {/* if has icon */}
               {icon && (
                 <span
                   className={`
           ${iconPosition === "right" ? "order-1 ltr:ml-2 rtl:mr-2" : " "}
           ${text && iconPosition === "left" ? "ltr:mr-2 rtl:ml-2" : ""}
-          
+
           ${iconClass}
-          
+
           `}
                 >
                   <Icon icon={icon} />
@@ -123,7 +131,6 @@ function Button({
             </span>
           )}
 
-          {/* if loading*/}
           {isLoading && (
             <>
               <svg
@@ -154,11 +161,15 @@ function Button({
       {link && !div && (
         <Link
           to={link}
+          // For Link components, `disabled` attribute doesn't work.
+          // You need to prevent navigation and clicks via classes or conditional rendering.
+          // `pointer-events-none` is the best approach for visual disabled state.
+          onClick={disabled || isLoading ? (e) => e.preventDefault() : onClick} // Prevent default navigation
           className={`btn btn inline-flex justify-center   ${
             isLoading ? " pointer-events-none" : ""
           }
-        ${disabled ? " opacity-60 cursor-not-allowed" : ""}
-        ${className}`}
+          ${disabled ? " opacity-60 cursor-not-allowed pointer-events-none" : ""} {/* Add pointer-events-none */}
+          ${className}`}
         >
           {/* if has children and not loading*/}
           {children && !isLoading && children}
@@ -172,9 +183,9 @@ function Button({
                   className={`
           ${iconPosition === "right" ? "order-1 ltr:ml-2 rtl:mr-2" : " "}
           ${text && iconPosition === "left" ? "ltr:mr-2 rtl:ml-2" : ""}
-          
+
           ${iconClass}
-          
+
           `}
                 >
                   <Icon icon={icon} />

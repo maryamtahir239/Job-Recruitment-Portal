@@ -2,6 +2,9 @@
 import db from "../db/knex.js";
 import { generateInviteToken, hashInviteToken } from "../utils/token.js";
 import { sendInviteEmail } from "../utils/email.js";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 function resolveExpiry({ expiryDays, expiryDate }) {
   if (expiryDate) {
@@ -82,6 +85,7 @@ export const validateInvite = async (req, res) => {
     if (!invite) return res.status(404).json({ error: "Invalid link" });
     if (new Date() > invite.expires_at) return res.status(410).json({ error: "Link expired" });
 
+    // Mark as opened if not already
     if (!invite.opened_at) {
       await db("application_invites")
         .where({ id: invite.id })
@@ -89,11 +93,24 @@ export const validateInvite = async (req, res) => {
     }
 
     const cand = await db("candidates").where({ id: invite.candidate_id }).first();
+    if (!cand) return res.status(404).json({ error: "Candidate not found" });
+
+    // ⭐⭐⭐ ADD THIS LINE ⭐⭐⭐
+    console.log("BACKEND DEBUG CHECK: Sending invite status:", invite.status, "at", new Date().toISOString());
+
+
     return res.json({
-      inviteId: invite.id,
-      candidate: { id: cand.id, name: cand.name, email: cand.email },
-      expiresAt: invite.expires_at,
-      formVersion: "ST-HR-F-001 v6.0",
+      invite: {
+        id: invite.id,
+        token: token,
+        expiresAt: invite.expires_at,
+        status: invite.status, // THIS IS THE CRUCIAL LINE!
+        candidate: {
+          id: cand.id,
+          name: cand.name,
+          email: cand.email,
+        },
+      },
     });
   } catch (err) {
     console.error("validateInvite error:", err);
@@ -101,37 +118,85 @@ export const validateInvite = async (req, res) => {
   }
 };
 
-export const submitApplication = async (req, res) => {
-  const { token } = req.params;
-  const payload = req.body;
-  const tokenHash = hashInviteToken(token);
+// Set up multer storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = "uploads/applications";
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const name = file.fieldname + "-" + Date.now() + ext;
+    cb(null, name);
+  },
+});
 
-  try {
-    const invite = await db("application_invites").where({ token_hash: tokenHash }).first();
-    if (!invite) return res.status(404).json({ error: "Invalid link" });
-    if (new Date() > invite.expires_at) return res.status(410).json({ error: "Link expired" });
+const upload = multer({ storage });
 
-    await db("candidate_applications").insert({
-      invite_id: invite.id,
-      candidate_id: invite.candidate_id,
-      form_version: "ST-HR-F-001 v6.0",
-      payload: JSON.stringify(payload),
-      is_complete: true,
-      created_at: db.fn.now(),
-      updated_at: db.fn.now(),
-    });
+export const submitApplication = [
+  upload.fields([
+    { name: "photo", maxCount: 1 },
+    { name: "resume", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    const { token } = req.params;
+    let payload;
 
-    await db("application_invites")
-      .where({ id: invite.id })
-      .update({
-        submitted_at: db.fn.now(),
-        status: "submitted",
+    try {
+      console.log("BACKEND DEBUG: Raw req.body.payload (before JSON.parse):", req.body.payload);
+
+      payload = JSON.parse(req.body.payload);
+      console.log("BACKEND DEBUG: Parsed payload object:", payload);
+
+      if (!payload || !payload.personal || !payload.personal.full_name) {
+          console.error("BACKEND ERROR: Incomplete payload received:", payload);
+          return res.status(400).json({ error: "Incomplete application data." });
+      }
+
+      const tokenHash = hashInviteToken(token);
+
+      const invite = await db("application_invites").where({ token_hash: tokenHash }).first();
+      if (!invite) return res.status(404).json({ error: "Invalid link" });
+      if (new Date() > invite.expires_at) return res.status(410).json({ error: "Link expired" });
+      if (invite.status === "submitted") return res.status(409).json({ error: "Application already submitted" });
+
+      const photoPath = req.files?.photo?.[0]?.path || null;
+      const resumePath = req.files?.resume?.[0]?.path || null;
+
+      const applicationData = {
+        invite_id: invite.id,
+        candidate_id: invite.candidate_id,
+        payload: JSON.stringify({ ...payload, files: { photo: photoPath, resume: resumePath } }),
+        is_complete: true,
+        photo_filename: photoPath,
+        resume_filename: resumePath,
+        created_at: db.fn.now(),
         updated_at: db.fn.now(),
-      });
+      };
 
-    res.json({ success: true, message: "Application submitted" });
-  } catch (err) {
-    console.error("submitApplication error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
+      console.log("BACKEND DEBUG: Data for DB insertion:", applicationData);
+
+      await db("candidate_applications").insert(applicationData);
+
+      await db("application_invites")
+        .where({ id: invite.id })
+        .update({
+          submitted_at: db.fn.now(),
+          status: "submitted",
+          updated_at: db.fn.now(),
+        });
+
+      res.json({ success: true, message: "Application submitted successfully" });
+    } catch (err) {
+      console.error("BACKEND ERROR: submitApplication failed:", err);
+      if (err instanceof SyntaxError && err.message.includes("JSON")) {
+          console.error("BACKEND ERROR: JSON parsing failed. Received payload:", req.body.payload);
+          return res.status(400).json({ error: "Invalid form data format." });
+      }
+      res.status(500).json({ error: "Server error" });
+    }
+  },
+];
