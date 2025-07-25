@@ -61,7 +61,6 @@ const HRDashboard = () => {
       setFiles(acceptedFiles);
       parseFile(acceptedFiles[0]);
     },
-    onDrop,
   });
 
   const parseFile = (file) => {
@@ -88,7 +87,7 @@ const HRDashboard = () => {
     }
   };
 
-  // Toggle row selection
+  
   const toggleRow = (id) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -98,7 +97,7 @@ const HRDashboard = () => {
     });
   };
 
-  // Select/unselect all
+  
   const toggleAll = (checked) => {
     const ids = importedCandidates.length
       ? importedCandidates.map((c) => c.id)
@@ -247,7 +246,6 @@ const HRDashboard = () => {
         )}
       </div>
 
-      {/* Modal */}
       <SendInviteModal
         open={modalOpen}
         onClose={handleModalClose}

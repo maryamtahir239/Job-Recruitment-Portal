@@ -57,15 +57,32 @@ const EvaluationForm = ({ candidate, onClose }) => {
     setComments({ ...comments, [name]: value });
   };
 
-  const handleSubmit = () => {
-    const evaluationData = {
-      candidate,
+ const handleSubmit = async () => {
+  try {
+    const evaluationPayload = {
+      candidate: { id: candidate.id },
       ratings,
       comments,
     };
-    console.log("Evaluation Submitted:", evaluationData);
-    onClose();
-  };
+
+    const response = await fetch("http://localhost:3001/api/evaluation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(evaluationPayload),
+    });
+
+    if (!response.ok) throw new Error("Submission failed");
+
+    alert(" Evaluation submitted successfully!");
+    onClose(); 
+  } catch (err) {
+    console.error(err);
+    alert(" Failed to submit evaluation.");
+  }
+};
+
 
   const getLabel = (value) => {
     switch (value) {

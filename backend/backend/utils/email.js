@@ -25,9 +25,9 @@ async function getTransporter() {
 
     try {
       await cachedTransport.verify();
-      console.log("✅ SMTP connected successfully.");
+      console.log(" SMTP connected successfully.");
     } catch (err) {
-      console.error("❌ SMTP verify failed:", err);
+      console.error(" SMTP verify failed:", err);
     }
 
     return cachedTransport;
