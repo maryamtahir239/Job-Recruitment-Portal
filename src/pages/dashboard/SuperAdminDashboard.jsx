@@ -38,7 +38,7 @@ const SuperAdminDashboard = () => {
             <p className="text-gray-600">Add, edit, and delete HR & Interviewer accounts.</p>
           </div>
           <div className="flex justify-center mt-4">
-            <Button text="Go to Management" onClick={handleGoToManagement} />
+            <Button text="Assign Credentials" onClick={handleGoToManagement} />
           </div>
         </Card>
       </div>

@@ -28,6 +28,9 @@ function App() {
           <Route path="/apply/:token" element={<PublicApplicationWrapper />} />
 
           {/* Authenticated routes */}
+          <Route path="/evaluate/:id" element={<EvaluationPage />} />
+          
+          {/* All pages that include sidebar/profile go here */}
           <Route path="/*" element={<Layout />}>
             <Route path="hr-dashboard" element={<HRDashboard />} />
             <Route path="superadmin-dashboard" element={<SuperAdminDashboard />} />
