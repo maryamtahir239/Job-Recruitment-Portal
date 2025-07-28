@@ -8,7 +8,7 @@ import SendInviteModal from "@/components/SendInviteModal";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-// Normalize header names from uploaded file to internal keys
+
 const headerMap = {
   name: ["name", "full name", "candidate name", "applicant name"],
   email: ["email", "e-mail", "mail", "candidate email"],
@@ -17,7 +17,7 @@ const headerMap = {
   location: ["location", "city", "place", "area"],
 };
 
-// Function to normalize a row from the uploaded file
+
 function normalizeRow(rawRow, idx) {
   const tempId = `${Date.now()}_${idx}_${Math.random().toString(36).substr(2, 9)}`;
   const norm = { tempId: tempId };

@@ -3,6 +3,7 @@ import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./layout/Layout";
 import Loading from "@/components/Loading";
+import EvaluatedCandidates from "./pages/EvaluatedCandidates";
 
 // Lazy imports
 const Login = lazy(() => import("./pages/auth/Login"));
@@ -14,6 +15,7 @@ const Error = lazy(() => import("./pages/404"));
 const EvaluationPage = lazy(() => import("./pages/EvaluationPage"));
 const EvaluationForm = lazy(() => import("./pages/EvaluationForm"));
 const CandidateForms = lazy(() => import("./pages/CandidateForms"));
+
 
 
 // **New Public Application Page**
@@ -35,6 +37,7 @@ function App() {
           <Route path="/evaluate/:id" element={<EvaluationPage />} />
           <Route path="/evaluate/:id/form" element={<EvaluationForm />} />
           <Route path="/candidate-forms" element={<CandidateForms />} />
+          <Route path="/evaluation/evaluated" element={<EvaluatedCandidates />} />
 
           {/* All pages that include sidebar/profile go here */}
           <Route path="/*" element={<Layout />}>
