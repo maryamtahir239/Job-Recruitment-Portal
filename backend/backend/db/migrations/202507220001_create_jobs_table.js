@@ -1,0 +1,15 @@
+export async function up(knex) {
+  return knex.schema.createTable('jobs', (table) => {
+    table.increments('id').primary();
+    table.string('title').notNullable();
+    table.string('department');
+    table.integer('openings').defaultTo(1);
+    table.enum('status', ['Active', 'Closed', 'Draft']).defaultTo('Active');
+    table.date('deadline');
+    table.timestamp('created_at').defaultTo(knex.fn.now());
+  });
+}
+
+export async function down(knex) {
+  return knex.schema.dropTable('jobs');
+}

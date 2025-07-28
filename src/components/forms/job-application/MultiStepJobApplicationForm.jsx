@@ -172,7 +172,7 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
   if (success) {
     return (
       <div className="text-center py-10">
-        <h2 className="text-2xl font-bold text-green-600 mb-4">Your form was successfully submitted!</h2>
+        <h2 className="text-2xl font-bold text-green-600 mb-4">Your form is successfully submitted!</h2>
         <p className="text-gray-700">We’ve received your application. Thank you!</p>
       </div>
     );

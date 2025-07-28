@@ -108,10 +108,11 @@ const EvaluationForm = ({ candidate, onClose }) => {
       <h2 className="text-2xl font-semibold mb-6 pt-8 text-center">Interview Evaluation Form</h2>
 
       <div className="text-sm text-gray-700 mb-6">
-        <p><strong>Name:</strong> {candidate.name}</p>
+        <p><strong>Name:</strong> {candidate.full_name}</p>
         <p><strong>Position:</strong> {candidate.position}</p>
         <p><strong>Department:</strong> {candidate.department}</p>
-        <p><strong>Date:</strong> {candidate.date}</p>
+        <p><strong>Date:</strong> {candidate.date?.slice(0, 10)}</p>
+
       </div>
 
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Evaluation</h3>

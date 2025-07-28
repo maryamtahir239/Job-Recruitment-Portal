@@ -32,7 +32,7 @@ const handleViewInterview = () => {
 
         <div className="mb-10">
           <Button
-           text="View Candidates"
+           text="View Applications"
            className="btn-primary px-6 py-2"
            onClick={handleViewInterview}
           />

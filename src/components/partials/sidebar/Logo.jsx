@@ -35,7 +35,7 @@ const SidebarLogo = ({ menuHover }) => {
 
           {(!collapsed || menuHover) && (
             <div>
-              <h1 className="text-[22px] font-medium  ">Interview Portal</h1>
+              <h1 className="text-[22px] font-medium  ">JR Portal</h1>
             </div>
           )}
         </div>
