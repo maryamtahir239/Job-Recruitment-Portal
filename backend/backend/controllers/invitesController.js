@@ -16,11 +16,14 @@ function resolveExpiry({ expiryDays, expiryDate }) {
 }
 
 export const bulkSendInvites = async (req, res) => {
-  const { candidateIds, expiryDays, expiryDate, message } = req.body;
-  console.log("▶ bulkSendInvites called with candidateIds:", candidateIds);
+  const { candidateIds, jobId, expiryDays, expiryDate, message } = req.body;
 
   if (!Array.isArray(candidateIds) || candidateIds.length === 0) {
     return res.status(400).json({ error: "candidateIds required" });
+  }
+
+  if (!jobId) {
+    return res.status(400).json({ error: "jobId required" });
   }
 
   try {
@@ -32,7 +35,6 @@ export const bulkSendInvites = async (req, res) => {
     const now = db.fn.now();
 
     for (const cand of candidates) {
-      console.log(`→ Processing candidate: ${cand.email}`);
       if (!cand.email) {
         results.push({ candidateId: cand.id, error: "missing_email" });
         continue;
@@ -41,6 +43,7 @@ export const bulkSendInvites = async (req, res) => {
       const { token, tokenHash } = generateInviteToken();
       const [inviteId] = await db("application_invites").insert({
         candidate_id: cand.id,
+        job_id: jobId,
         token_hash: tokenHash,
         expires_at: expiresAt,
         status: "sent",
@@ -71,7 +74,6 @@ export const bulkSendInvites = async (req, res) => {
 
     res.json({ success: failed === 0, sent, failed, results });
   } catch (err) {
-    console.error("bulkSendInvites error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -95,10 +97,6 @@ export const validateInvite = async (req, res) => {
     const cand = await db("candidates").where({ id: invite.candidate_id }).first();
     if (!cand) return res.status(404).json({ error: "Candidate not found" });
 
-    // ⭐⭐⭐ ADD THIS LINE ⭐⭐⭐
-    console.log("BACKEND DEBUG CHECK: Sending invite status:", invite.status, "at", new Date().toISOString());
-
-
     return res.json({
       invite: {
         id: invite.id,
@@ -113,7 +111,6 @@ export const validateInvite = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("validateInvite error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -146,13 +143,9 @@ export const submitApplication = [
     let payload;
 
     try {
-      console.log("BACKEND DEBUG: Raw req.body.payload (before JSON.parse):", req.body.payload);
-
       payload = JSON.parse(req.body.payload);
-      console.log("BACKEND DEBUG: Parsed payload object:", payload);
 
       if (!payload || !payload.personal || !payload.personal.full_name) {
-          console.error("BACKEND ERROR: Incomplete payload received:", payload);
           return res.status(400).json({ error: "Incomplete application data." });
       }
 
@@ -177,8 +170,6 @@ export const submitApplication = [
         updated_at: db.fn.now(),
       };
 
-      console.log("BACKEND DEBUG: Data for DB insertion:", applicationData);
-
       await db("candidate_applications").insert(applicationData);
 
       await db("application_invites")
@@ -191,9 +182,7 @@ export const submitApplication = [
 
       res.json({ success: true, message: "Application submitted successfully" });
     } catch (err) {
-      console.error("BACKEND ERROR: submitApplication failed:", err);
       if (err instanceof SyntaxError && err.message.includes("JSON")) {
-          console.error("BACKEND ERROR: JSON parsing failed. Received payload:", req.body.payload);
           return res.status(400).json({ error: "Invalid form data format." });
       }
       res.status(500).json({ error: "Server error" });

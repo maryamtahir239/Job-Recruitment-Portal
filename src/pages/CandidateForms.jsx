@@ -16,7 +16,7 @@ const CandidateForms = () => {
         const data = await res.json();
         setApplications(data);
       } catch (error) {
-        console.error("Error fetching applications:", error);
+        // console.error("Error fetching applications:", error);
       }
     };
 

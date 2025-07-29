@@ -9,11 +9,9 @@ const router = express.Router();
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("📩 Login attempt:", email);
 
     // 1. Check if user exists
     const user = await knex("users").where({ email }).first();
-    console.log("🔍 User found:", user);
 
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
@@ -21,7 +19,6 @@ router.post("/login", async (req, res) => {
 
     // 2. Check password
     const validPassword = await bcrypt.compare(password, user.password);
-    console.log("✅ Password valid:", validPassword);
 
     if (!validPassword) {
       return res.status(401).json({ error: "Invalid credentials" });
@@ -29,7 +26,6 @@ router.post("/login", async (req, res) => {
 
     // 3. Generate JWT
     if (!process.env.JWT_SECRET) {
-      console.error("❌ Missing JWT_SECRET in .env");
       return res.status(500).json({ error: "Server config error" });
     }
 
@@ -38,8 +34,6 @@ router.post("/login", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-
-    console.log("🎫 JWT generated successfully");
 
     res.json({
       message: "Login successful",
@@ -52,7 +46,6 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("❌ Login error:", err.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

@@ -13,4 +13,11 @@ const db = knex({
   },
 });
 
+// Test the connection
+db.raw('SELECT 1')
+  .then(() => {
+  })
+  .catch((err) => {
+  });
+
 export default db;

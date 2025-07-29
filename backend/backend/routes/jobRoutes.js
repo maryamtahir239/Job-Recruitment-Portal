@@ -1,14 +1,22 @@
-// import {
-//   getAllJobs,
-//   createJob,
-//   updateJob,
-//   deleteJob,
-//   assignCandidatesToJob,
-//   getCandidatesByJobId,
-// } from "../controllers/jobController.js";
+import express from "express";
+import {
+  getAllJobs,
+  getJobById,
+  createJob,
+  updateJob,
+  deleteJob,
+  getCandidatesByJobId,
+  uploadCandidatesForJob,
+} from "../controllers/jobController.js";
 
-// router.get("/", getAllJobs);
-// router.post("/", createJob);
-// router.put("/:id", updateJob);
-// router.delete("/:id", deleteJob);
-// router.get("/:jobId/candidates", getCandidatesByJobId);
+const router = express.Router();
+
+router.get("/", getAllJobs);
+router.get("/:id", getJobById);
+router.post("/", createJob);
+router.put("/:id", updateJob);
+router.delete("/:id", deleteJob);
+router.get("/:jobId/candidates", getCandidatesByJobId);
+router.post("/:jobId/upload-candidates", uploadCandidatesForJob);
+
+export default router;

@@ -3,7 +3,6 @@ import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./layout/Layout";
 import Loading from "@/components/Loading";
-import EvaluatedCandidates from "./pages/EvaluatedCandidates";
 
 // Lazy imports
 const Login = lazy(() => import("./pages/auth/Login"));
@@ -12,11 +11,14 @@ const SuperAdminDashboard = lazy(() => import("./pages/dashboard/SuperAdminDashb
 const InterviewerDashboard = lazy(() => import("./pages/dashboard/InterviewerDashboard"));
 const HrInterviewerPage = lazy(() => import("./pages/dashboard/HrInterviewerPage"));
 const Error = lazy(() => import("./pages/404"));
+const CandidateForms = lazy(() => import("./pages/CandidateForms"));
+const JobPostings = lazy(() => import("./pages/JobPostings"));
+const JobDetail = lazy(() => import("./pages/JobDetail"));
+const Candidates = lazy(() => import("./pages/Candidates"));
+const Applications = lazy(() => import("./pages/Applications"));
 const EvaluationPage = lazy(() => import("./pages/EvaluationPage"));
 const EvaluationForm = lazy(() => import("./pages/EvaluationForm"));
-const CandidateForms = lazy(() => import("./pages/CandidateForms"));
-
-
+const EvaluatedCandidates = lazy(() => import("./pages/EvaluatedCandidates"));
 
 // **New Public Application Page**
 const PublicApplicationWrapper = lazy(() => import("./pages/hr/PublicApplicationWrapper"));
@@ -41,7 +43,12 @@ function App() {
 
           {/* All pages that include sidebar/profile go here */}
           <Route path="/*" element={<Layout />}>
+            <Route path="dashboard" element={<HRDashboard />} />
             <Route path="hr-dashboard" element={<HRDashboard />} />
+            <Route path="job-postings" element={<JobPostings />} />
+            <Route path="job-postings/:jobId" element={<JobDetail />} />
+            <Route path="candidates" element={<Candidates />} />
+            <Route path="applications" element={<Applications />} />
             <Route path="superadmin-dashboard" element={<SuperAdminDashboard />} />
             <Route
               path="superadmin-dashboard/hr-interview"

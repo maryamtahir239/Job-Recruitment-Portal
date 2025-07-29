@@ -2,6 +2,40 @@
 import db from "../db/knex.js";
 
 /**
+ * GET /api/candidates
+ * Returns all candidates from the database
+ */
+export const getAllCandidates = async (req, res) => {
+  try {
+    const candidates = await db("candidates")
+      .select("id", "name", "email", "phone", "designation", "location", "job_id", "created_at", "updated_at")
+      .orderBy("created_at", "desc"); // Newest candidates first
+
+    // Get invite status for each candidate
+    const candidatesWithInviteStatus = await Promise.all(
+      candidates.map(async (candidate) => {
+        const invite = await db("application_invites")
+          .where({ candidate_id: candidate.id })
+          .whereIn("status", ["sent", "opened", "submitted"])
+          .first();
+        
+        return {
+          ...candidate,
+          invite_sent: !!invite,
+          invite_status: invite ? invite.status : null,
+          status: invite ? (invite.status === 'submitted' ? 'Applied' : 'Under Review') : 'Not Invited'
+        };
+      })
+    );
+
+    res.json(candidatesWithInviteStatus);
+  } catch (error) {
+    console.error("Error fetching candidates:", error);
+    res.status(500).json({ error: "Failed to fetch candidates" });
+  }
+};
+
+/**
  * POST /api/candidates/import
  * body: { candidates: [{ name, email, phone, designation, location, tempId }] }
  *

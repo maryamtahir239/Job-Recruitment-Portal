@@ -24,9 +24,9 @@ import adminUserRoutes from "./routes/adminUsers.js";
 import inviteRoutes from "./routes/invites.js";
 import candidateRoutes from "./routes/candidates.js";
 import testEmailRoutes from "./routes/testEmail.js";
-import evaluationRoutes from "./routes/evaluation.js"; 
+import evaluationRoutes from "./routes/evaluation.js";
 import applicationRoutes from "./routes/applications.js";
-// import jobRoutes from "./routes/jobRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
 
 // Use routes with base paths
 app.use("/api/auth", authRoutes);
@@ -35,14 +35,23 @@ app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/invites", inviteRoutes);
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/test-email", testEmailRoutes);
-app.use("/api/evaluation", evaluationRoutes); 
+app.use("/api/evaluation", evaluationRoutes);
 app.use("/api/applications", applicationRoutes);
-// app.use("/api/jobs", jobRoutes);
+app.use("/api/jobs", jobRoutes);
 
 // Global error handler (optional)
 app.use((err, req, res, next) => {
-  console.error("Global Error Handler:", err.stack);
   res.status(500).send("Something broke!");
+});
+
+// Add uncaught exception handler
+process.on('uncaughtException', (err) => {
+  process.exit(1);
+});
+
+// Add unhandled rejection handler
+process.on('unhandledRejection', (reason, promise) => {
+  process.exit(1);
 });
 
 // Start the server

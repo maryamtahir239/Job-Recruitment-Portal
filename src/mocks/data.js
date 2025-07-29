@@ -5,10 +5,24 @@ export const menuItems = [
   },
 
   {
-    title: "Blank Page",
+    title: "Dashboard",
     icon: "ph:house",
-    isHide: true,
     link: "dashboard",
+  },
+  {
+    title: "Job Postings",
+    icon: "ph:briefcase",
+    link: "job-postings",
+  },
+  {
+    title: "Candidates",
+    icon: "ph:users",
+    link: "candidates",
+  },
+  {
+    title: "Applications",
+    icon: "ph:file-text",
+    link: "applications",
   },
 ];
 

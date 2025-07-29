@@ -11,8 +11,6 @@ async function getTransporter() {
   const hasSMTP = SMTP_HOST && SMTP_USER && SMTP_PASS;
 
   if (hasSMTP) {
-    console.log("ℹ️ Using real SMTP provider:", SMTP_HOST, "as user:", SMTP_USER);
-
     cachedTransport = nodemailer.createTransport({
       host: SMTP_HOST,
       port: Number(SMTP_PORT) || 587,
@@ -25,16 +23,14 @@ async function getTransporter() {
 
     try {
       await cachedTransport.verify();
-      console.log(" SMTP connected successfully.");
     } catch (err) {
-      console.error(" SMTP verify failed:", err);
+      // Removed all console.log and console.error statements
     }
 
     return cachedTransport;
   }
 
   // Fallback: Ethereal
-  console.log("⚠️ No SMTP credentials found, using Ethereal test account...");
   cachedTestAccount = await nodemailer.createTestAccount();
   cachedTransport = nodemailer.createTransport({
     host: cachedTestAccount.smtp.host,
@@ -45,13 +41,11 @@ async function getTransporter() {
       pass: cachedTestAccount.pass,
     },
   });
-  console.log("ℹ️ Ethereal test account ready.");
   return cachedTransport;
 }
 
 export async function sendInviteEmail({ to, name, message, link, expiresAt }) {
   try {
-    console.log(`📨 Attempting to send email to: ${to}`);
     const transporter = await getTransporter();
 
     const expiryStr = new Date(expiresAt).toLocaleString();
@@ -69,14 +63,13 @@ export async function sendInviteEmail({ to, name, message, link, expiresAt }) {
       html,
     });
 
-    console.log(`✅ Email sent successfully to ${to} | MessageID: ${info.messageId}`);
     if (cachedTestAccount) {
-      console.log(`🔗 Ethereal preview: ${nodemailer.getTestMessageUrl(info)}`);
+      // Removed all console.log and console.error statements
     }
 
     return { success: true, messageId: info.messageId };
   } catch (err) {
-    console.error(`❌ Email send error to ${to}:`, err);
+    // Removed all console.log and console.error statements
     return { success: false, error: err.message };
   }
 }

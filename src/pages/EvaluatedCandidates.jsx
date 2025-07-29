@@ -13,7 +13,7 @@ const EvaluatedCandidates = () => {
         const data = await res.json();
         setEvaluations(data);
       } catch (error) {
-        console.error("Error fetching evaluations:", error);
+        // console.error("Error fetching evaluations:", error);
       } finally {
         setLoading(false);
       }

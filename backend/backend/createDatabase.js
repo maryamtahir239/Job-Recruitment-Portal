@@ -34,6 +34,7 @@ const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
     // 3. Close the connection and exit successfully
     await connection.end();
+    console.log("Database creation script finished.");
     process.exit(0);
   } catch (err) {
     console.error("Error creating/checking database:", err);

@@ -9,7 +9,6 @@ export async function sendInvites(payload) {
     const { data } = await axios.post("/api/invites/bulk", payload);
     return data;
   } catch (error) {
-    console.error("Failed to send invites:", error);
     throw error;
   }
 }

@@ -4,7 +4,7 @@ import Button from "@/components/ui/Button";
 import { toast } from "react-toastify";
 
 // Add onSendSuccess to the props
-const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess }) => {
+const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, jobId }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -38,24 +38,28 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess }) =
 
       const { data } = await axios.post("/api/invites/bulk", {
         candidateIds,
+        jobId,
         message:
           message ||
           "Please complete your job application using the link provided.",
       });
 
       if (data.success) {
-        toast.success("Emails sent to candidates successfully!");
         if (onSendSuccess) {
-          onSendSuccess(selectedCandidates.length); // Call parent callback with the count of unique candidates sent
+          onSendSuccess(data.sent || selectedCandidates.length); // Call parent callback with the actual sent count
         }
         onClose(); // Close modal on successful send
       } else {
         toast.error(`Some invites failed. Sent: ${data.sent || 0}, Failed: ${data.failed || 0}. Check console for details.`);
-        console.error("Bulk invite response (backend):", data);
       }
     } catch (err) {
-      console.error("Send invites failed:", err);
-      toast.error(err.response?.data?.message || "Server error while sending invites. Please try again.");
+      if (err.response?.data?.message) {
+        toast.error(err.response.data.message);
+      } else if (err.code === 'ERR_NETWORK') {
+        toast.error("Network error. Please check your connection and try again.");
+      } else {
+        toast.error("Failed to send invites. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

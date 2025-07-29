@@ -78,7 +78,6 @@ const EvaluationForm = ({ candidate, onClose }) => {
     alert(" Evaluation submitted successfully!");
     onClose(); 
   } catch (err) {
-    console.error(err);
     alert(" Failed to submit evaluation.");
   }
 };

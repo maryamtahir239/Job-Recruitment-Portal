@@ -1,5 +1,18 @@
 import db from "../db/knex.js";
 
+export const getAllApplications = async (req, res) => {
+  try {
+    const applications = await db("candidate_applications")
+      .select("*")
+      .orderBy("created_at", "desc");
+    
+    res.json(applications);
+  } catch (error) {
+    console.error("Error fetching all applications:", error);
+    res.status(500).json({ error: "Failed to fetch applications" });
+  }
+};
+
 export const getSubmittedApplications = async (req, res) => {
   try {
     const rows = await db("candidate_applications")

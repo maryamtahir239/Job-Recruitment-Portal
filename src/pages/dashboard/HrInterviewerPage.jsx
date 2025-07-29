@@ -30,7 +30,6 @@ const HrInterviewerPage = () => {
       const data = await listAdminUsers(token);
       setUsers(data);
     } catch (err) {
-      console.error(err);
       toast.error("Failed to load users");
     } finally {
       setLoading(false);
@@ -74,7 +73,6 @@ const HrInterviewerPage = () => {
       }
       resetForm();
     } catch (err) {
-      console.error(err);
       toast.error("Save failed");
     } finally {
       setSubmitting(false);
@@ -100,7 +98,6 @@ const HrInterviewerPage = () => {
       setUsers((u) => u.filter((x) => x.id !== id));
       if (editingId === id) resetForm();
     } catch (err) {
-      console.error(err);
       toast.error("Delete failed");
     }
   };

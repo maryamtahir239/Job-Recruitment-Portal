@@ -40,7 +40,6 @@ const LoginForm = () => {
       else if (role === "Interviewer") navigate("/interviewer-dashboard");
       else throw new Error("Unauthorized role");
     } catch (err) {
-      console.error("🔥 Login error:", err.message);
       toast.error(err.message || "Server error");
     } finally {
       setIsLoading(false);
