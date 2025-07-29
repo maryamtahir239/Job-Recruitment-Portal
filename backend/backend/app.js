@@ -26,7 +26,7 @@ import candidateRoutes from "./routes/candidates.js";
 import testEmailRoutes from "./routes/testEmail.js";
 import evaluationRoutes from "./routes/evaluation.js"; 
 import applicationRoutes from "./routes/applications.js";
-import jobRoutes from "./routes/jobRoutes.js";
+// import jobRoutes from "./routes/jobRoutes.js";
 
 // Use routes with base paths
 app.use("/api/auth", authRoutes);
@@ -37,7 +37,7 @@ app.use("/api/candidates", candidateRoutes);
 app.use("/api/test-email", testEmailRoutes);
 app.use("/api/evaluation", evaluationRoutes); 
 app.use("/api/applications", applicationRoutes);
-app.use("/api/jobs", jobRoutes);
+// app.use("/api/jobs", jobRoutes);
 
 // Global error handler (optional)
 app.use((err, req, res, next) => {
