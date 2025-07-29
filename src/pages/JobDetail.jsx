@@ -25,6 +25,7 @@ const JobDetail = () => {
   const [uploading, setUploading] = useState(false);
   const [sendInviteModalOpen, setSendInviteModalOpen] = useState(false);
   const [selectedCandidates, setSelectedCandidates] = useState([]);
+  const [checkedCandidates, setCheckedCandidates] = useState([]);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({
     title: "",
@@ -43,6 +44,29 @@ const JobDetail = () => {
     fetchJobDetails();
     // Remove automatic candidate fetching - only fetch when needed
   }, [jobId]);
+
+  // Handle individual candidate selection
+  const handleCandidateSelect = (candidateId) => {
+    setCheckedCandidates(prev => {
+      if (prev.includes(candidateId)) {
+        return prev.filter(id => id !== candidateId);
+      } else {
+        return [...prev, candidateId];
+      }
+    });
+  };
+
+  // Handle select all candidates
+  const handleSelectAll = () => {
+    if (checkedCandidates.length === candidates.length) {
+      setCheckedCandidates([]);
+    } else {
+      setCheckedCandidates(candidates.map(candidate => candidate.id));
+    }
+  };
+
+  // Check if all candidates are selected
+  const isAllSelected = candidates.length > 0 && checkedCandidates.length === candidates.length;
 
   const fetchJobDetails = async () => {
     try {
@@ -203,12 +227,21 @@ const JobDetail = () => {
 
   // Handle candidate selection for invites
   const handleSendInvites = () => {
-    const candidatesWithoutInvites = getCandidatesWithoutInvites();
-    if (candidatesWithoutInvites.length === 0) {
-      toast.warning("All candidates have already been sent invites!");
+    if (checkedCandidates.length === 0) {
+      toast.error("Please select at least one candidate to send invites");
       return;
     }
-    setSelectedCandidates(candidatesWithoutInvites);
+    
+    const candidatesToInvite = candidates.filter(candidate => 
+      checkedCandidates.includes(candidate.id) && !candidate.invite_sent
+    );
+    
+    if (candidatesToInvite.length === 0) {
+      toast.error("Selected candidates already have invites sent");
+      return;
+    }
+    
+    setSelectedCandidates(candidatesToInvite);
     setSendInviteModalOpen(true);
   };
 
@@ -217,6 +250,8 @@ const JobDetail = () => {
     toast.success(`Successfully sent invites to ${sentCount} candidates!`);
     // Refresh candidates to update invite status
     fetchJobCandidates(true);
+    // Clear selected candidates after sending invites
+    setCheckedCandidates([]);
   };
 
   // Open edit modal and prefill form
@@ -330,10 +365,26 @@ const JobDetail = () => {
               <h3 className="text-xl font-semibold">Candidates ({candidates.length})</h3>
               <Button
                 text="Load More Files"
-                className="btn-outline-primary btn-sm"
+                className="btn-outline-primary btn-sm w-32"
                 onClick={() => setUploadModalOpen(true)}
               />
             </div>
+            
+            {/* Selection indicator */}
+            {checkedCandidates.length > 0 && (
+              <div className="mb-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between px-3">
+                  <span className="text-sm text-blue-800">
+                    {checkedCandidates.length} candidate{checkedCandidates.length !== 1 ? 's' : ''} selected
+                  </span>
+                  <Button
+                    text="Clear Selection"
+                    className="btn-outline-secondary btn-sm w-32"
+                    onClick={() => setCheckedCandidates([])}
+                  />
+                </div>
+              </div>
+            )}
             
             {candidates.length === 0 ? (
               <div className="text-center py-8">
@@ -365,22 +416,30 @@ const JobDetail = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <input
+                          type="checkbox"
+                          checked={isAllSelected}
+                          onChange={handleSelectAll}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Name
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Email
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Phone
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Designation
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Location
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Invite Status
                       </th>
                     </tr>
@@ -388,8 +447,16 @@ const JobDetail = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {candidates.map((candidate, index) => (
                       <tr key={candidate.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center space-x-2">
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <input
+                            type="checkbox"
+                            checked={checkedCandidates.includes(candidate.id)}
+                            onChange={() => handleCandidateSelect(candidate.id)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <div className="flex items-center justify-center space-x-2">
                             <div className="text-sm font-medium text-gray-900">
                               {candidate.name}
                             </div>
@@ -398,19 +465,19 @@ const JobDetail = () => {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                           {candidate.email}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {candidate.phone ? candidate.phone : "Not specified"}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                          {candidate.phone || "Not provided"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                           {candidate.designation || "Not specified"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                           {candidate.location ? candidate.location : "Not specified"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
                           {candidate.invite_sent ? (
                             <Badge className={`badge-${candidate.invite_status === 'submitted' ? 'success' : candidate.invite_status === 'opened' ? 'warning' : 'info'}`}>
                               {candidate.invite_status === 'submitted' ? 'Submitted' : 
@@ -465,10 +532,10 @@ const JobDetail = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
             <div className="space-y-3">
               <Button
-                text={`Send Invites (${getCandidatesWithoutInvites().length})`}
+                text={`Send Invites (${checkedCandidates.length})`}
                 className="btn-primary w-full"
                 onClick={handleSendInvites}
-                disabled={candidates.length === 0 || getCandidatesWithoutInvites().length === 0}
+                disabled={candidates.length === 0 || checkedCandidates.length === 0}
               />
               <Button
                 text="View Applications"

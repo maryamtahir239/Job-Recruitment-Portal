@@ -7,7 +7,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const HRDashboard = () => {
+  console.log("HRDashboard: Component function called");
+  
   const user = JSON.parse(localStorage.getItem("user"));
+  console.log("HRDashboard: User data:", user);
+  
   const [stats, setStats] = useState({
     totalJobs: 0,
     activeJobs: 0,
@@ -16,27 +20,36 @@ const HRDashboard = () => {
     recentApplications: 0
   });
   const [recentJobs, setRecentJobs] = useState([]);
+  const [candidates, setCandidates] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log("HRDashboard: Component mounted, fetching data...");
     fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async () => {
     try {
+      console.log("HRDashboard: Starting to fetch dashboard data...");
       setLoading(true);
+      setError(null);
       
       // Fetch jobs
       const jobsResponse = await axios.get("/api/jobs");
       const jobs = jobsResponse.data;
+      console.log("HRDashboard: Jobs fetched:", jobs.length);
       
       // Fetch candidates
       const candidatesResponse = await axios.get("/api/candidates");
       const candidates = candidatesResponse.data;
+      console.log("HRDashboard: Candidates fetched:", candidates.length);
       
       // Fetch applications
       const applicationsResponse = await axios.get("/api/applications");
       const applications = applicationsResponse.data;
+      console.log("HRDashboard: Applications fetched:", applications.length);
       
       // Calculate stats
       const activeJobs = jobs.filter(job => job.status === "Active").length;
@@ -55,10 +68,17 @@ const HRDashboard = () => {
         recentApplications
       });
       
+      // Store candidates and applications in state
+      setCandidates(candidates);
+      setApplications(applications);
+      
       // Get recent jobs (last 5)
       setRecentJobs(jobs.slice(0, 5));
       
+      console.log("HRDashboard: Data fetching completed successfully");
     } catch (error) {
+      console.error("HRDashboard: Error fetching data:", error);
+      setError(error.message);
       toast.error(`Failed to load dashboard data: ${error.response?.data?.error || error.message}`);
     } finally {
       setLoading(false);
@@ -80,13 +100,36 @@ const HRDashboard = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  if (error) {
+    console.log("HRDashboard: Rendering error state");
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Dashboard</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button
+            text="Retry"
+            className="btn-primary"
+            onClick={() => {
+              setError(null);
+              fetchDashboardData();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
+    console.log("HRDashboard: Rendering loading state");
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
+
+  console.log("HRDashboard: Rendering main component");
 
   return (
     <div className="space-y-6">
@@ -212,22 +255,22 @@ const HRDashboard = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Job Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Department
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Openings
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Candidates
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Applications
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -235,27 +278,22 @@ const HRDashboard = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {recentJobs.map((job) => (
                   <tr key={job.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{job.title}</div>
-                        {job.location && (
-                          <div className="text-sm text-gray-500">{job.location}</div>
-                        )}
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="text-sm font-medium text-gray-900">{job.title}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {job.department || "-"}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                      {job.department}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {job.openings}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                      {candidates.filter(c => c.job_id === job.id).length}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                      {applications.filter(a => a.job_id === job.id).length}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
                       {getStatusBadge(job.status)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(job.created_at)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <Button
                         text="View Details"
                         className="btn-outline-primary btn-sm"

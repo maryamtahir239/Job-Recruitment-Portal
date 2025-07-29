@@ -193,19 +193,19 @@ const HrInterviewerPage = () => {
             <table className="min-w-full text-sm border">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="p-2 border">ID</th>
-                  <th className="p-2 border text-left">Name</th>
-                  <th className="p-2 border text-left">Email</th>
-                  <th className="p-2 border">Role</th>
-                  <th className="p-2 border">Actions</th>
+                  <th className="p-2 border text-center">ID</th>
+                  <th className="p-2 border text-center">Name</th>
+                  <th className="p-2 border text-center">Email</th>
+                  <th className="p-2 border text-center">Role</th>
+                  <th className="p-2 border text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id}>
                     <td className="p-2 border text-center">{u.id}</td>
-                    <td className="p-2 border">{u.name}</td>
-                    <td className="p-2 border">{u.email}</td>
+                    <td className="p-2 border text-center">{u.name}</td>
+                    <td className="p-2 border text-center">{u.email}</td>
                     <td className="p-2 border text-center">{u.role}</td>
                     <td className="p-2 border text-center space-x-2">
                       {/* Edit Icon */}
