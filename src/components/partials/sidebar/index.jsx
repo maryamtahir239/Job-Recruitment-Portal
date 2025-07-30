@@ -1,15 +1,17 @@
 import React, { useRef, useEffect, useState } from "react";
 import SidebarLogo from "./Logo";
 import Navmenu from "./Navmenu";
-import { menuItems } from "@/mocks/data";
 import SimpleBar from "simplebar-react";
 import useSidebar from "@/hooks/useSidebar";
 import useSemiDark from "@/hooks/useSemiDark";
+import useRoleBasedMenu from "@/hooks/useRoleBasedMenu";
 import svgRabitImage from "@/assets/images/svg/rabit.svg";
 import clsx from "clsx";
+
 const Sidebar = () => {
   const scrollableNodeRef = useRef();
   const [scroll, setScroll] = useState(false);
+  const { menuItems } = useRoleBasedMenu();
 
   useEffect(() => {
     const handleScroll = () => {

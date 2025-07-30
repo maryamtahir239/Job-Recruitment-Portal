@@ -13,6 +13,7 @@ const Applications = () => {
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -30,9 +31,11 @@ const Applications = () => {
   const fetchApplications = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await axios.get("/api/applications");
-      setApplications(response.data);
+      setApplications(response.data || []);
     } catch (error) {
+      setError(error.message);
       toast.error("Failed to fetch applications");
     } finally {
       setLoading(false);
@@ -42,8 +45,9 @@ const Applications = () => {
   const fetchJobs = async () => {
     try {
       const response = await axios.get("/api/jobs");
-      setJobs(response.data);
+      setJobs(response.data || []);
     } catch (error) {
+      setJobs([]);
     }
   };
 
@@ -100,6 +104,26 @@ const Applications = () => {
       toast.error("Failed to update application status");
     }
   };
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Applications</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button
+            text="Retry"
+            className="btn-primary"
+            onClick={() => {
+              setError(null);
+              fetchApplications();
+              fetchJobs();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -333,8 +357,8 @@ const Applications = () => {
       <Modal
         title="Application Details"
         label="Application Details"
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
       >
         {selectedApplication && (
           <div className="space-y-6">

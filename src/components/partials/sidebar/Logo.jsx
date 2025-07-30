@@ -20,6 +20,7 @@ const SidebarLogo = ({ menuHover }) => {
       className={` logo-segment flex justify-between items-center bg-white dark:bg-gray-800 z-[9] py-6  px-4  
       ${menuHover ? "logo-hovered" : ""}
        
+        
       
       `}
     >
@@ -35,7 +36,9 @@ const SidebarLogo = ({ menuHover }) => {
 
           {(!collapsed || menuHover) && (
             <div>
-              <h1 className="text-[22px] font-medium  ">JR Portal</h1>
+              <h1 className="text-[18px] font-medium leading-tight">
+                Job Recruitment Portal
+              </h1>
             </div>
           )}
         </div>

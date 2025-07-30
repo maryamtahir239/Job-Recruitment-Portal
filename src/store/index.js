@@ -9,7 +9,9 @@ const store = configureStore({
   devTools: false,
   // reducer: rootReducer,
   middleware: (getDefaultMiddleware) => {
-    const middleware = [...getDefaultMiddleware(), apiSlice.middleware];
+    // Temporarily disable API slice middleware to fix the issue
+    // const middleware = [...getDefaultMiddleware(), apiSlice.middleware];
+    const middleware = [...getDefaultMiddleware()];
     return middleware;
   },
 });

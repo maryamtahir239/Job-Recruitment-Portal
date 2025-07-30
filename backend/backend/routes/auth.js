@@ -10,18 +10,32 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({ 
+        error: "Email and password are required",
+        field: !email ? "email" : "password"
+      });
+    }
+
     // 1. Check if user exists
     const user = await knex("users").where({ email }).first();
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ 
+        error: "Email not found. Please check your email address.",
+        field: "email"
+      });
     }
 
     // 2. Check password
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ 
+        error: "Incorrect password. Please try again.",
+        field: "password"
+      });
     }
 
     // 3. Generate JWT
@@ -46,6 +60,7 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (err) {
+    console.error("Login error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

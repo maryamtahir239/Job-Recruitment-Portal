@@ -10,6 +10,7 @@ const HRDashboard = () => {
   console.log("HRDashboard: Component function called");
   
   const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
   console.log("HRDashboard: User data:", user);
   
   const [stats, setStats] = useState({
@@ -35,6 +36,14 @@ const HRDashboard = () => {
       console.log("HRDashboard: Starting to fetch dashboard data...");
       setLoading(true);
       setError(null);
+      
+      // Temporarily remove authentication headers to test
+      // const config = {
+      //   headers: {
+      //     'Authorization': `Bearer ${token}`,
+      //     'Content-Type': 'application/json'
+      //   }
+      // };
       
       // Fetch jobs
       const jobsResponse = await axios.get("/api/jobs");
@@ -79,7 +88,10 @@ const HRDashboard = () => {
     } catch (error) {
       console.error("HRDashboard: Error fetching data:", error);
       setError(error.message);
-      toast.error(`Failed to load dashboard data: ${error.response?.data?.error || error.message}`);
+      // Only show toast for non-authentication errors
+      if (error.response?.status !== 401 && error.response?.status !== 403) {
+        toast.error(`Failed to load dashboard data: ${error.response?.data?.error || error.message}`);
+      }
     } finally {
       setLoading(false);
     }

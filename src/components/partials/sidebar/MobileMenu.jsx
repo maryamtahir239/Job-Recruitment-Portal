@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 
 import Navmenu from "./Navmenu";
-import { menuItems } from "@/mocks/data";
+import useRoleBasedMenu from "@/hooks/useRoleBasedMenu";
 import SimpleBar from "simplebar-react";
 import useSemiDark from "@/hooks/useSemiDark";
 import useDarkMode from "@/hooks/useDarkMode";
@@ -13,9 +13,12 @@ import Icon from "@/components/ui/Icon";
 import MobileLogo from "@/assets/images/logo/logo-c.svg";
 import MobileLogoWhite from "@/assets/images/logo/logo-c-white.svg";
 import svgRabitImage from "@/assets/images/svg/rabit.svg";
+
 const MobileMenu = ({ className = "custom-class" }) => {
   const scrollableNodeRef = useRef();
   const [scroll, setScroll] = useState(false);
+  const { menuItems } = useRoleBasedMenu();
+
   useEffect(() => {
     const handleScroll = () => {
       if (scrollableNodeRef.current.scrollTop > 0) {
@@ -30,6 +33,7 @@ const MobileMenu = ({ className = "custom-class" }) => {
   const [isSemiDark] = useSemiDark();
   const [isDark] = useDarkMode();
   const [mobileMenu, setMobileMenu] = useMobileMenu();
+  
   return (
     <div className={isSemiDark ? "dark" : ""}>
       <div
@@ -46,8 +50,8 @@ const MobileMenu = ({ className = "custom-class" }) => {
                 )}
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                  DashSpace
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 leading-tight">
+                  Job Recruitment Portal
                 </h1>
               </div>
             </div>

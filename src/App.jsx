@@ -55,6 +55,8 @@ function App() {
               element={<HrInterviewerPage />}
             />
             <Route path="interviewer-dashboard" element={<InterviewerDashboard />} />
+            <Route path="evaluation-form" element={<EvaluationForm />} />
+            <Route path="evaluated-candidates" element={<EvaluatedCandidates />} />
             <Route path="*" element={<Error />} />
           </Route>
         </Routes>

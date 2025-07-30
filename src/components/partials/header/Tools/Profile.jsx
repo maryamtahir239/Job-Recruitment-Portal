@@ -1,27 +1,70 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Dropdown from "@/components/ui/Dropdown";
 import Icon from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
 import { Menu, Transition } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logOut } from "@/store/api/auth/authSlice";
 import clsx from "clsx";
-import UserAvatar from "@/assets/images/avatar/avatar.jpg";
+import { toast } from "react-toastify";
+import { getUserProfile, updateProfileImage, removeProfileImage } from "@/api/userProfile";
+import ResetPasswordModal from "@/components/ResetPasswordModal";
 
-const ProfileLabel = ({ sticky }) => {
+// Default avatar placeholder
+const DefaultAvatar = ({ size = "w-12 h-12" }) => (
+  <div className={`${size} bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center`}>
+    <Icon icon="ph:user-circle" className="text-2xl text-gray-500 dark:text-gray-400" />
+  </div>
+);
+
+const ProfileLabel = ({ sticky, profileImage, onImageClick, showHoverActions }) => {
+  const size = sticky ? "h-9 w-9" : "lg:h-12 lg:w-12 h-7 w-7";
+  
   return (
-    <div
-      className={clsx(" rounded-full transition-all duration-300", {
-        "h-9 w-9": sticky,
-        "lg:h-12 lg:w-12 h-7 w-7": !sticky,
-      })}
-    >
-      <img
-        src={UserAvatar}
-        alt=""
-        className="block w-full h-full object-cover rounded-full ring-1 ring-indigo-700 ring-offset-4 dark:ring-offset-gray-700"
-      />
+    <div className="relative group">
+      <div
+        className={clsx("rounded-full transition-all duration-300 cursor-pointer", size)}
+        onClick={onImageClick}
+      >
+        {profileImage ? (
+          <img
+            src={`http://localhost:3001/uploads/profiles/${profileImage}`}
+            alt="Profile"
+            className="block w-full h-full object-cover rounded-full ring-1 ring-indigo-700 ring-offset-4 dark:ring-offset-gray-700"
+          />
+        ) : (
+          <DefaultAvatar size={size} />
+        )}
+      </div>
+      
+      {/* Hover actions for profile image - only show when dropdown is open */}
+      {showHoverActions && profileImage && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="flex space-x-1">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onImageClick();
+              }}
+              className="p-1 bg-white rounded-full text-gray-700 hover:bg-gray-100"
+              title="Change Photo"
+            >
+              <Icon icon="ph:camera" className="text-sm" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRemovePhoto();
+              }}
+              className="p-1 bg-white rounded-full text-red-600 hover:bg-red-50"
+              title="Remove Photo"
+            >
+              <Icon icon="ph:trash" className="text-sm" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -29,116 +72,239 @@ const ProfileLabel = ({ sticky }) => {
 const Profile = ({ sticky }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const fileInputRef = useRef(null);
+  
+  const [userProfile, setUserProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const ProfileMenu = [
-    {
-      label: "Profile",
-      icon: "ph:user-circle-light",
-      status: "green",
-      action: () => {
-        navigate("/profile");
-      },
-    },
-    {
-      label: "Reports",
-      icon: "ph:chart-bar-light",
-      status: "blue",
-      action: () => {
-        navigate("/chats");
-      },
-    },
-    {
-      label: "Settings",
-      icon: "ph:gear-light",
-      status: "yellow",
-      action: () => {
-        navigate("/todos");
-      },
-    },
-    {
-      label: "Get Help",
-      icon: "ph:question-light",
-      status: "cyan",
-      action: () => {
-        navigate("/settings");
-      },
-    },
-  ];
+  // Get user from localStorage
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  useEffect(() => {
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user]);
+
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const profile = await getUserProfile(token);
+      setUserProfile(profile);
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+  };
+
+  const handleImageClick = () => {
+    // Toggle dropdown instead of opening file upload
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Invalid file type. Only JPEG, PNG, and GIF are allowed.");
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size too large. Maximum size is 5MB.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const result = await updateProfileImage(token, file);
+      
+      // Update local state
+      setUserProfile(prev => ({
+        ...prev,
+        profile_image: result.profile_image
+      }));
+      
+      // Update localStorage user data
+      const updatedUser = { ...user, profile_image: result.profile_image };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      
+      toast.success("Profile image updated successfully");
+    } catch (error) {
+      toast.error(error.message || "Failed to update profile image");
+    } finally {
+      setLoading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (!userProfile?.profile_image) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await removeProfileImage(token);
+      
+      // Update local state
+      setUserProfile(prev => ({
+        ...prev,
+        profile_image: null
+      }));
+      
+      // Update localStorage user data
+      const updatedUser = { ...user, profile_image: null };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      
+      toast.success("Profile image removed successfully");
+    } catch (error) {
+      toast.error(error.message || "Failed to remove profile image");
+    }
+  };
 
   const handleLogout = () => {
-    // Clear user data from local storage
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     dispatch(logOut());
+    navigate("/login");
   };
+
+  const handleResetPassword = () => {
+    setShowResetPasswordModal(true);
+    setIsDropdownOpen(false); // Close dropdown when opening modal
+  };
+
   return (
-    <Dropdown
-      label={<ProfileLabel sticky={sticky} />}
-      classMenuItems="w-[220px] top-[58px]  "
-    >
-      <div className="flex items-center px-4 py-3 border-b border-gray-10 mb-3">
-        <div className="flex-none ltr:mr-[10px] rtl:ml-[10px]">
-          <div className="h-[46px] w-[46px] rounded-full">
-            <img
-              src={UserAvatar}
-              alt=""
-              className="block w-full h-full object-cover rounded-full"
-            />
-          </div>
+    <>
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
+      <div className="relative">
+        {/* Profile Picture Button */}
+        <div
+          className="cursor-pointer"
+          onClick={handleImageClick}
+        >
+          <ProfileLabel 
+            sticky={sticky} 
+            profileImage={userProfile?.profile_image}
+            onImageClick={handleImageClick}
+            showHoverActions={false} // Disable hover actions for now
+          />
         </div>
-        <div className="flex-1 text-gray-700 dark:text-white text-sm font-semibold  ">
-          <span className=" truncate w-full block">Faruk Ahamed</span>
-          <span className="block font-light text-xs   capitalize">
-            supper admin
-          </span>
-        </div>
-      </div>
-      <div className=" space-y-3">
-        {ProfileMenu.map((item, index) => (
-          <Menu.Item key={index}>
-            {({ active }) => (
-              <div
-                onClick={() => item.action()}
-                className={`${
-                  active
-                    ? " text-indigo-500 "
-                    : "text-gray-600 dark:text-gray-300"
-                } block transition-all duration-150 group     `}
-              >
-                <div className={`block cursor-pointer px-4 `}>
-                  <div className="flex items-center space-x-3 rtl:space-x-reverse ">
-                    <span
-                      className={`flex-none h-9 w-9  inline-flex items-center justify-center group-hover:scale-110 transition-all duration-200  rounded-full text-2xl  text-white
-                       ${item.status === "cyan" ? "bg-cyan-500 " : ""} 
-                       ${item.status === "blue" ? "bg-indigo-500 " : ""} 
-                      ${item.status === "red" ? "bg-red-500 " : ""} 
-                      ${item.status === "green" ? "bg-green-500 " : ""}${
-                        item.status === "yellow" ? "bg-yellow-500 " : ""
-                      }
-                      `}
-                    >
-                      <Icon icon={item.icon} />
-                    </span>
-                    <span className="block text-sm">{item.label}</span>
-                  </div>
+
+        {/* Dropdown Menu - Sticky to navbar */}
+        {isDropdownOpen && (
+          <div className="absolute right-0 top-full mt-2 w-[280px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+            {/* User Info Section */}
+            <div className="flex items-center px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex-none ltr:mr-[10px] rtl:ml-[10px]">
+                <div className="h-[46px] w-[46px] rounded-full">
+                  {userProfile?.profile_image ? (
+                    <img
+                      src={`http://localhost:3001/uploads/profiles/${userProfile.profile_image}`}
+                      alt="Profile"
+                      className="block w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <DefaultAvatar size="w-[46px] h-[46px]" />
+                  )}
                 </div>
               </div>
-            )}
-          </Menu.Item>
-        ))}
-        <Menu.Item onClick={handleLogout}>
-          <div
-            className={`block cursor-pointer px-4 border-t border-gray-10 py-3 mt-1 text-indigo-500 `}
-          >
-            <Button
-              icon="ph:upload-simple-light"
-              rotate={1}
-              text="Logout"
-              className="btn-primary block w-full btn-sm "
-            />
+              <div className="flex-1 text-gray-700 dark:text-white text-sm font-semibold">
+                <span className="truncate w-full block">
+                  {userProfile?.name || user?.name || "User"}
+                </span>
+                <span className="block font-light text-xs capitalize">
+                  {userProfile?.role || user?.role || "User"}
+                </span>
+              </div>
+            </div>
+
+            {/* Menu Items */}
+            <div className="py-2">
+              {/* Upload Photo Option */}
+              <div
+                onClick={handleFileUpload}
+                className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+              >
+                <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-blue-500 mr-3">
+                  <Icon icon="ph:camera" />
+                </span>
+                <span className="text-sm">Upload Photo</span>
+              </div>
+
+              {/* Remove Photo Option - only show if user has a profile image */}
+              {userProfile?.profile_image && (
+                <div
+                  onClick={handleRemovePhoto}
+                  className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                >
+                  <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-red-500 mr-3">
+                    <Icon icon="ph:trash" />
+                  </span>
+                  <span className="text-sm">Remove Photo</span>
+                </div>
+              )}
+
+              {/* Reset Password Option */}
+              <div
+                onClick={handleResetPassword}
+                className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+              >
+                <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-indigo-500 mr-3">
+                  <Icon icon="ph:lock-key" />
+                </span>
+                <span className="text-sm">Reset Password</span>
+              </div>
+
+                             {/* Logout Option */}
+               <div
+                 onClick={handleLogout}
+                 className="flex items-center px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white cursor-pointer transition-colors border-t border-gray-100 dark:border-gray-700 mt-2"
+               >
+                 <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-red-500 mr-3">
+                   <Icon icon="ph:sign-out" />
+                 </span>
+                 <span className="text-sm">Logout</span>
+               </div>
+            </div>
           </div>
-        </Menu.Item>
+        )}
+
+        {/* Backdrop to close dropdown when clicking outside */}
+        {isDropdownOpen && (
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsDropdownOpen(false)}
+          />
+        )}
       </div>
-    </Dropdown>
+
+      {/* Reset Password Modal */}
+      <ResetPasswordModal
+        isOpen={showResetPasswordModal}
+        onClose={() => setShowResetPasswordModal(false)}
+      />
+    </>
   );
 };
 

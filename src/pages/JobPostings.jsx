@@ -181,13 +181,20 @@ const JobPostings = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Job Postings</h1>
-          <p className="text-gray-600 mt-2">Manage and create job postings for your organization</p>
+          <p className="text-gray-600 mt-2">
+            {user?.role === 'superadmin' 
+              ? 'Monitor and view job postings across the organization' 
+              : 'Manage and create job postings for your organization'
+            }
+          </p>
         </div>
-        <Button
-          text="Create New Job"
-          className="btn-primary"
-          onClick={() => openModal()}
-        />
+        {user?.role !== 'superadmin' && (
+          <Button
+            text="Create New Job"
+            className="btn-primary"
+            onClick={() => openModal()}
+          />
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -311,16 +318,20 @@ const JobPostings = () => {
                           className="btn-outline-primary btn-sm"
                           onClick={() => navigate(`/job-postings/${job.id}`)}
                         />
-                        <Button
-                          text="Edit"
-                          className="btn-outline-primary btn-sm"
-                          onClick={() => openModal(job)}
-                        />
-                        <Button
-                          text="Delete"
-                          className="btn-outline-danger btn-sm"
-                          onClick={() => handleDelete(job.id)}
-                        />
+                        {user?.role !== 'superadmin' && (
+                          <>
+                            <Button
+                              text="Edit"
+                              className="btn-outline-primary btn-sm"
+                              onClick={() => openModal(job)}
+                            />
+                            <Button
+                              text="Delete"
+                              className="btn-outline-danger btn-sm"
+                              onClick={() => handleDelete(job.id)}
+                            />
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

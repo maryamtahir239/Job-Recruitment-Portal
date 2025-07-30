@@ -39,6 +39,32 @@ const JobDetail = () => {
     location: "",
     job_type: "Full-time"
   });
+  const [shouldAutoSelect, setShouldAutoSelect] = useState(false);
+  const [tooltipText, setTooltipText] = useState("");
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  // Auto-select all candidates when they are loaded after upload
+  useEffect(() => {
+    if (shouldAutoSelect && candidates.length > 0) {
+      // Only select candidates who haven't received invites yet
+      const candidatesWithoutInvites = candidates.filter(candidate => !candidate.invite_sent);
+      
+      const candidateIdsToSelect = candidatesWithoutInvites.map(c => c.id).filter(id => id != null);
+      
+      // If no IDs found, try alternative field names
+      if (candidateIdsToSelect.length === 0) {
+        const alternativeIds = candidatesWithoutInvites.map(c => c.candidate_id || c.user_id || c._id).filter(id => id != null);
+        if (alternativeIds.length > 0) {
+          setCheckedCandidates(alternativeIds);
+        }
+      } else {
+        setCheckedCandidates(candidateIdsToSelect);
+      }
+      
+      setShouldAutoSelect(false); // Reset the flag
+    }
+  }, [candidates, shouldAutoSelect]);
 
   useEffect(() => {
     fetchJobDetails();
@@ -47,26 +73,59 @@ const JobDetail = () => {
 
   // Handle individual candidate selection
   const handleCandidateSelect = (candidateId) => {
+    
     setCheckedCandidates(prev => {
-      if (prev.includes(candidateId)) {
-        return prev.filter(id => id !== candidateId);
-      } else {
-        return [...prev, candidateId];
-      }
+      const newSelection = prev.includes(candidateId)
+        ? prev.filter(id => id !== candidateId)
+        : [...prev, candidateId];
+      return newSelection;
     });
   };
 
   // Handle select all candidates
   const handleSelectAll = () => {
-    if (checkedCandidates.length === candidates.length) {
+    const candidatesWithoutInvites = candidates.filter(candidate => !candidate.invite_sent);
+    const allCandidateIds = candidatesWithoutInvites.map(c => c.id).filter(id => id != null);
+    
+    if (checkedCandidates.length === allCandidateIds.length && allCandidateIds.length > 0) {
+      // If all candidates without invites are selected, deselect all
       setCheckedCandidates([]);
     } else {
-      setCheckedCandidates(candidates.map(candidate => candidate.id));
+      // Select all candidates without invites
+      setCheckedCandidates(allCandidateIds);
     }
   };
 
-  // Check if all candidates are selected
-  const isAllSelected = candidates.length > 0 && checkedCandidates.length === candidates.length;
+  // Check if all candidates without invites are selected
+  const candidatesWithoutInvites = candidates.filter(candidate => !candidate.invite_sent);
+  const isAllSelected = candidatesWithoutInvites.length > 0 && 
+    checkedCandidates.length === candidatesWithoutInvites.length;
+
+  // Tooltip functions
+  const showTooltipMessage = (text, event) => {
+    console.log("Showing tooltip:", text); // Debug log
+    setTooltipText(text);
+    
+    // Calculate if there's enough space on the right side
+    const tooltipWidth = 250; // Approximate tooltip width
+    const windowWidth = window.innerWidth;
+    const cursorX = event.clientX;
+    
+    // If there's not enough space on the right, show tooltip on the left
+    const showOnLeft = cursorX + tooltipWidth + 20 > windowWidth;
+    
+    setTooltipPosition({ 
+      x: event.clientX, 
+      y: event.clientY,
+      showOnLeft: showOnLeft
+    });
+    setShowTooltip(true);
+  };
+
+  const hideTooltip = () => {
+    console.log("Hiding tooltip"); // Debug log
+    setShowTooltip(false);
+  };
 
   const fetchJobDetails = async () => {
     try {
@@ -79,13 +138,18 @@ const JobDetail = () => {
     }
   };
 
-  const fetchJobCandidates = async (showErrorOnFail = true) => {
+  const fetchJobCandidates = async (showErrorOnFail = true, autoSelectAll = false) => {
     setCandidatesLoading(true);
     setHasCheckedCandidates(true);
     try {
       const response = await axios.get(`/api/jobs/${jobId}/candidates`);
       if (Array.isArray(response.data)) {
         setCandidates(response.data);
+        
+        // Set flag to auto-select if requested
+        if (autoSelectAll) {
+          setShouldAutoSelect(true);
+        }
       } else {
         setCandidates([]);
       }
@@ -197,7 +261,11 @@ const JobDetail = () => {
       setUploadModalOpen(false);
       setSelectedFile(null);
       setHasCheckedCandidates(true); // Mark that we've checked for candidates
-      fetchJobCandidates(true); // Show error if fetch fails after upload
+      setShouldAutoSelect(true); // Set flag to auto-select after upload
+      
+      // Fetch updated candidates
+      await fetchJobCandidates(true);
+      
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to upload candidates");
     } finally {
@@ -338,22 +406,20 @@ const JobDetail = () => {
 
       {/* Job Details */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Job Info */}
         <div className="lg:col-span-2 space-y-6">
           <Card>
-            <h3 className="text-xl font-semibold mb-4">Job Details</h3>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <h4 className="font-medium text-gray-900">Description</h4>
-                <p className="text-gray-600 mt-1">
-                  {job.description || "No description provided"}
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">Description</h4>
+                <p className="text-gray-700 text-base leading-relaxed">
+                  {job.description}
                 </p>
               </div>
               
               <div>
-                <h4 className="font-medium text-gray-900">Requirements</h4>
-                <p className="text-gray-600 mt-1">
-                  {job.requirements || "No requirements specified"}
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">Requirements</h4>
+                <p className="text-gray-700 text-base leading-relaxed">
+                  {job.requirements}
                 </p>
               </div>
             </div>
@@ -401,7 +467,10 @@ const JobDetail = () => {
                   <Button
                     text={candidatesLoading ? "Loading..." : "Load Candidates"}
                     className="btn-outline-primary"
-                    onClick={fetchJobCandidates}
+                    onClick={() => {
+                      setShouldAutoSelect(true);
+                      fetchJobCandidates(true);
+                    }}
                     disabled={candidatesLoading}
                   />
                   <Button
@@ -417,12 +486,25 @@ const JobDetail = () => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <input
-                          type="checkbox"
-                          checked={isAllSelected}
-                          onChange={handleSelectAll}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
+                        <div
+                          onMouseEnter={(e) => {
+                            if (candidatesWithoutInvites.length === 0) {
+                              showTooltipMessage("All candidates already have invites sent", e);
+                            }
+                          }}
+                          onMouseLeave={hideTooltip}
+                          className="inline-block"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isAllSelected}
+                            onChange={handleSelectAll}
+                            disabled={candidatesWithoutInvites.length === 0}
+                            className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
+                              candidatesWithoutInvites.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                          />
+                        </div>
                       </th>
                       <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Name
@@ -448,12 +530,28 @@ const JobDetail = () => {
                     {candidates.map((candidate, index) => (
                       <tr key={candidate.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <input
-                            type="checkbox"
-                            checked={checkedCandidates.includes(candidate.id)}
-                            onChange={() => handleCandidateSelect(candidate.id)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                          />
+                          <div
+                            onMouseEnter={(e) => {
+                              if (candidate.invite_sent) {
+                                const statusText = candidate.invite_status === 'submitted' ? 'has already submitted an application' : 
+                                                 candidate.invite_status === 'opened' ? 'has opened the invite' : 
+                                                 'has already been sent an invite';
+                                showTooltipMessage(`This candidate ${statusText}`, e);
+                              }
+                            }}
+                            onMouseLeave={hideTooltip}
+                            className="inline-block"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checkedCandidates.includes(candidate.id)}
+                              onChange={() => handleCandidateSelect(candidate.id)}
+                              disabled={candidate.invite_sent}
+                              className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
+                                candidate.invite_sent ? 'opacity-50 cursor-not-allowed' : ''
+                              }`}
+                            />
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
                           <div className="flex items-center justify-center space-x-2">
@@ -531,12 +629,32 @@ const JobDetail = () => {
           <Card>
             <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
             <div className="space-y-3">
-              <Button
-                text={`Send Invites (${checkedCandidates.length})`}
-                className="btn-primary w-full"
-                onClick={handleSendInvites}
-                disabled={candidates.length === 0 || checkedCandidates.length === 0}
-              />
+              <div
+                onMouseEnter={(e) => {
+                  if (candidates.length === 0) {
+                    showTooltipMessage("No candidates available for this job", e);
+                  } else if (candidates.every(c => c.invite_sent)) {
+                    showTooltipMessage("All candidates have already received invites", e);
+                  } else if (checkedCandidates.length === 0) {
+                    showTooltipMessage("Please select at least one candidate to send invites", e);
+                  }
+                }}
+                onMouseLeave={hideTooltip}
+                className="inline-block w-full"
+              >
+                <Button
+                  text={
+                    candidates.length === 0 
+                      ? "No Candidates" 
+                      : candidates.every(c => c.invite_sent)
+                      ? "All Invites Sent"
+                      : `Send Invites (${checkedCandidates.length})`
+                  }
+                  className="btn-primary w-full"
+                  onClick={handleSendInvites}
+                  disabled={candidates.length === 0 || checkedCandidates.length === 0 || candidates.every(c => c.invite_sent)}
+                />
+              </div>
               <Button
                 text="View Applications"
                 className="btn-outline-primary w-full"
@@ -735,8 +853,37 @@ const JobDetail = () => {
           </div>
         </form>
       </Modal>
+
+      {/* Tooltip */}
+      {showTooltip && (
+        <div
+          className="fixed z-[9999] px-3 py-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg pointer-events-none border border-gray-700"
+          style={{
+            left: tooltipPosition.showOnLeft ? 'auto' : tooltipPosition.x + 10,
+            right: tooltipPosition.showOnLeft ? window.innerWidth - tooltipPosition.x + 10 : 'auto',
+            top: tooltipPosition.y - 50,
+            maxWidth: '300px',
+            minWidth: '200px'
+          }}
+        >
+          {tooltipText}
+          <div
+            className={`absolute w-3 h-3 bg-gray-900 transform rotate-45 ${
+              tooltipPosition.showOnLeft 
+                ? 'border-r border-t border-gray-700' 
+                : 'border-l border-b border-gray-700'
+            }`}
+            style={{
+              left: tooltipPosition.showOnLeft ? 'auto' : '-6px',
+              right: tooltipPosition.showOnLeft ? '-6px' : 'auto',
+              top: '50%',
+              marginTop: '-6px'
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
-export default JobDetail; 
+export default JobDetail;

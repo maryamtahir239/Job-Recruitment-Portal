@@ -15,6 +15,7 @@ import { ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 import Loading from "@/components/Loading";
 import { motion, AnimatePresence } from "framer-motion";
+
 const Layout = () => {
   const { width, breakpoints } = useWidth();
   const [collapsed] = useSidebar();
@@ -39,7 +40,18 @@ const Layout = () => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Header className={width > breakpoints.xl ? switchHeaderClass() : ""} />
       {menuType === "vertical" && width > breakpoints.xl && !menuHidden && (
         <Sidebar />

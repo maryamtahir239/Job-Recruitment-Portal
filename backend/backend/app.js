@@ -21,6 +21,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import adminUserRoutes from "./routes/adminUsers.js";
+import userProfileRoutes from "./routes/userProfile.js";
 import inviteRoutes from "./routes/invites.js";
 import candidateRoutes from "./routes/candidates.js";
 import testEmailRoutes from "./routes/testEmail.js";
@@ -31,6 +32,7 @@ import jobRoutes from "./routes/jobRoutes.js";
 // Use routes with base paths
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/user", userProfileRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/invites", inviteRoutes);
 app.use("/api/candidates", candidateRoutes);

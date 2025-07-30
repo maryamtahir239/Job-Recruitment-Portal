@@ -1,13 +1,18 @@
-export const menuItems = [
+// Role-based menu configurations
+export const superAdminMenuItems = [
   {
     isHeadr: true,
-    title: "menu",
+    title: "Super Admin Menu",
   },
-
   {
     title: "Dashboard",
     icon: "ph:house",
-    link: "dashboard",
+    link: "superadmin-dashboard",
+  },
+  {
+    title: "HR & Interviewer Management",
+    icon: "ph:users-three",
+    link: "superadmin-dashboard/hr-interview",
   },
   {
     title: "Job Postings",
@@ -25,6 +30,63 @@ export const menuItems = [
     link: "applications",
   },
 ];
+
+export const hrMenuItems = [
+  {
+    isHeadr: true,
+    title: "HR Menu",
+  },
+  {
+    title: "Dashboard",
+    icon: "ph:house",
+    link: "hr-dashboard",
+  },
+  {
+    title: "Job Postings",
+    icon: "ph:briefcase",
+    link: "job-postings",
+  },
+  {
+    title: "Candidates",
+    icon: "ph:users",
+    link: "candidates",
+  },
+  {
+    title: "Applications",
+    icon: "ph:file-text",
+    link: "applications",
+  },
+  {
+    title: "Evaluated Candidates",
+    icon: "ph:chart-bar",
+    link: "evaluated-candidates",
+  },
+];
+
+export const interviewerMenuItems = [
+  {
+    isHeadr: true,
+    title: "Interviewer Menu",
+  },
+  {
+    title: "Dashboard",
+    icon: "ph:house",
+    link: "interviewer-dashboard",
+  },
+  {
+    title: "Evaluation Form",
+    icon: "ph:clipboard-text",
+    link: "evaluation-form",
+  },
+  {
+    title: "Evaluated Candidates",
+    icon: "ph:chart-bar",
+    link: "evaluated-candidates",
+  },
+];
+
+// Legacy menuItems for backward compatibility (default to HR menu)
+export const menuItems = hrMenuItems;
 
 export const topMenu = [
   {
