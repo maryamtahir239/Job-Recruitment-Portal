@@ -3,7 +3,6 @@ import {
   createJob,
   updateJob,
   deleteJob,
-  assignCandidatesToJob,
   getCandidatesByJobId,
 } from "../controllers/jobController.js";
 
@@ -12,3 +11,4 @@ router.post("/", createJob);
 router.put("/:id", updateJob);
 router.delete("/:id", deleteJob);
 router.get("/:jobId/candidates", getCandidatesByJobId);
+export default router;
