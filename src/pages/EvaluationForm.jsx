@@ -78,7 +78,6 @@ const EvaluationForm = ({ candidate, onClose }) => {
     alert(" Evaluation submitted successfully!");
     onClose(); 
   } catch (err) {
-    console.error(err);
     alert(" Failed to submit evaluation.");
   }
 };
@@ -118,47 +117,34 @@ const EvaluationForm = ({ candidate, onClose }) => {
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Evaluation</h3>
       <div className="overflow-x-auto mb-6">
         <table className="min-w-full text-sm border text-center">
-          <thead className="bg-gray-100">
-  <tr>
-    <th className="p-2 border text-left">Criteria</th>
-    {[5, 4, 3, 2, 1].map((num) => (
-      <th key={num} className="p-2 border text-xs text-gray-600">
-        {getLabel(String(num))}
-      </th>
-    ))}
-    <th className="p-2 border">Actions</th>
-  </tr>
-</thead>
-
+          <thead>
+            <tr className="bg-gray-50">
+              <th className="border px-4 py-2 text-center">Criteria</th>
+              <th className="border px-4 py-2 text-center">Poor (1)</th>
+              <th className="border px-4 py-2 text-center">Fair (2)</th>
+              <th className="border px-4 py-2 text-center">Good (3)</th>
+              <th className="border px-4 py-2 text-center">Very Good (4)</th>
+              <th className="border px-4 py-2 text-center">Excellent (5)</th>
+            </tr>
+          </thead>
           <tbody>
-            {questions.map((q, index) => (
+            {questions.map((criteria, index) => (
               <tr key={index}>
-                <td className="p-2 border text-left">{q}</td>
-                {[5, 4, 3, 2, 1].map((val) => (
-                  <td
-                    key={val}
-                    className={`p-2 border cursor-pointer ${ratings[q] == val ? 'bg-green-200 font-bold' : ''}`}
-                    onClick={() => handleRatingChange(q, String(val))}
-                  >
-                    {val}
+                <td className="border px-4 py-2 text-center font-medium">{criteria}</td>
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <td key={rating} className="border px-4 py-2 text-center">
+                    <input
+                      type="radio"
+                      name={`criteria_${index}`}
+                      value={rating}
+                      onChange={(e) => handleRatingChange(criteria, parseInt(e.target.value))}
+                      className="mr-2"
+                    />
                   </td>
                 ))}
-                <td className="p-2 border">
-                  <button onClick={() => handleEditQuestion(index)} className="text-green-500 mr-2"><FontAwesomeIcon icon={faEdit} /></button>
-                  <button onClick={() => handleDeleteQuestion(index)} className="text-red-500"><FontAwesomeIcon icon={faTrash} /></button>
-                </td>
               </tr>
             ))}
           </tbody>
-          <tfoot>
-    <tr className="bg-gray-100 font-semibold">
-      <td className="p-2 border text-left">Grand Total</td>
-      {[5, 4, 3, 2, 1].map((val) => (
-        <td key={val} className="p-2 border"></td>
-      ))}
-      <td className="p-2 border text-green-600 text-lg mr-3">{totalScore}</td>
-    </tr>
-  </tfoot>
         </table>
 
         <div className="flex items-center gap-4 mt-6">

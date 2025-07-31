@@ -6,17 +6,13 @@ import useWidth from "@/hooks/useWidth";
 import useSidebar from "@/hooks/useSidebar";
 import useMenulayout from "@/hooks/useMenulayout";
 import Logo from "./Tools/Logo";
-import SearchBox from "./Tools/SearchBox";
 import Profile from "./Tools/Profile";
-import Notification from "./Tools/Notification";
-import Message from "./Tools/Message";
-import Language from "./Tools/Language";
 import useRtl from "@/hooks/useRtl";
 import useMobileMenu from "@/hooks/useMobileMenu";
-import Settings from "./Tools/Settings";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion, useAnimation } from "framer-motion";
 import clsx from "clsx";
+
 const Header = ({ className = "custom-class", title }) => {
   const [sticky, setSticky] = useState(true);
   const [collapsed, setMenuCollapsed] = useSidebar();
@@ -55,12 +51,13 @@ const Header = ({ className = "custom-class", title }) => {
       >
         <div className="flex justify-between items-center h-full relative">
           {/* For Vertical  */}
-
           {menuType === "vertical" && (
             <div className="flex items-center md:space-x-4 space-x-2 rtl:space-x-reverse">
               {width < breakpoints.xl && <Logo />}
-              <div>
-                <SearchBox />
+              <div className="flex items-center space-x-3">
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Job Recruitment Portal
+                </h1>
               </div>
             </div>
           )}
@@ -69,6 +66,9 @@ const Header = ({ className = "custom-class", title }) => {
           {menuType === "horizontal" && (
             <div className="flex items-center space-x-4 rtl:space-x-reverse">
               <Logo />
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Job Recruitment Portal
+              </h1>
               {/* open mobile menu handlaer*/}
               {width <= breakpoints.xl && (
                 <div
@@ -80,17 +80,15 @@ const Header = ({ className = "custom-class", title }) => {
               )}
             </div>
           )}
+          
           {/*  Horizontal  Main Menu */}
           {menuType === "horizontal" && width >= breakpoints.xl ? (
             <HorizentalMenu />
           ) : null}
+          
           {/* Nav Tools  */}
           <div className="nav-tools flex items-center lg:space-x-6 space-x-3 rtl:space-x-reverse">
-            <Language />
             <SwitchDark />
-            <Settings />
-            <Message />
-            <Notification />
             <Profile sticky={sticky} />
 
             <div

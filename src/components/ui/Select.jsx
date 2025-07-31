@@ -26,6 +26,11 @@ const Select = ({
   ...rest
 }) => {
   options = options || Array(3).fill("option");
+  
+  // Get all props provided by react-hook-form's register function
+  // Only call register(name) if 'name' is provided AND register function exists
+  const registeredProps = name && register ? register(name) : {};
+
   return (
     <div
       className={`textfiled-wrapper  ${error ? "is-error" : ""}  ${
@@ -43,10 +48,10 @@ const Select = ({
         </label>
       )}
       <div className={`relative ${horizontal ? "flex-1" : ""}`}>
-        {name && (
+        {name && register ? (
           <select
             onChange={onChange}
-            {...register(name)}
+            {...registeredProps}
             {...rest}
             multiple={multiple}
             className={`${
@@ -69,7 +74,7 @@ const Select = ({
                 </option>
                 {options.map((option, i) => (
                   <Fragment key={i}>
-                    {option.value && option.label ? (
+                    {typeof option === 'object' && option !== null && 'value' in option && 'label' in option ? (
                       <option key={i} value={option.value}>
                         {option.label}
                       </option>
@@ -83,8 +88,7 @@ const Select = ({
               </Fragment>
             )}
           </select>
-        )}
-        {!name && (
+        ) : (
           <select
             onChange={onChange}
             multiple={multiple}
@@ -95,9 +99,11 @@ const Select = ({
             readOnly={readonly}
             disabled={disabled}
             id={id}
+            name={name}
             value={value}
             size={size}
             defaultValue={defaultValue}
+            {...rest}
           >
             {children ? (
               children
@@ -108,7 +114,7 @@ const Select = ({
                 </option>
                 {options.map((option, i) => (
                   <Fragment key={i}>
-                    {option.value && option.label ? (
+                    {typeof option === 'object' && option !== null && 'value' in option && 'label' in option ? (
                       <option key={i} value={option.value}>
                         {option.label}
                       </option>

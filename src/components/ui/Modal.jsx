@@ -3,7 +3,7 @@ import React, { Fragment, useState } from "react";
 import Icon from "@/components/ui/Icon";
 
 const Modal = ({
-  activeModal,
+  open, // <-- controlled open prop
   onClose,
   enterFrom,
   leaveFrom,
@@ -48,6 +48,7 @@ const Modal = ({
             <Dialog
               as="div"
               className="relative z-[99999]"
+              open={showModal}
               onClose={!disableBackdrop ? closeModal : returnNull}
             >
               {!disableBackdrop && (
@@ -119,8 +120,8 @@ const Modal = ({
           </Transition>
         </>
       ) : (
-        <Transition appear show={activeModal} as={Fragment}>
-          <Dialog as="div" className="relative z-[99999]" onClose={onClose}>
+        <Transition appear show={open} as={Fragment}>
+          <Dialog as="div" className="relative z-[99999]" open={open} onClose={onClose}>
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"

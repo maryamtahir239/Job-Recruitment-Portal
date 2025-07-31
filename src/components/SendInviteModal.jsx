@@ -4,14 +4,31 @@ import Button from "@/components/ui/Button";
 import { toast } from "react-toastify";
 
 // Add onSendSuccess to the props
-const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess }) => {
+const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, jobId }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  
+  // Calculate default expiry date (4 days from now)
+  const getDefaultExpiryDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 4);
+    return date.toISOString().split('T')[0];
+  };
+
+  // Default expiry time (11:59 PM)
+  const getDefaultExpiryTime = () => {
+    return "23:59";
+  };
+
+  const [expiryDate, setExpiryDate] = useState(getDefaultExpiryDate());
+  const [expiryTime, setExpiryTime] = useState(getDefaultExpiryTime());
 
   useEffect(() => {
     if (open) {
       setMessage("");
       setLoading(false);
+      setExpiryDate(getDefaultExpiryDate());
+      setExpiryTime(getDefaultExpiryTime());
     }
   }, [open]);
 
@@ -34,28 +51,43 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess }) =
         return;
       }
 
+      // Validate expiry date and time
+      if (!expiryDate) {
+        toast.error("Please set an expiry date for the application links.");
+        setLoading(false);
+        return;
+      }
+
+      // Create expiry datetime string
+      const expiryDateTime = `${expiryDate}T${expiryTime}:00`;
+
       toast.info("Sending application links...");
 
       const { data } = await axios.post("/api/invites/bulk", {
         candidateIds,
+        jobId,
         message:
           message ||
           "Please complete your job application using the link provided.",
+        expiryDate: expiryDateTime
       });
 
       if (data.success) {
-        toast.success("Emails sent to candidates successfully!");
         if (onSendSuccess) {
-          onSendSuccess(selectedCandidates.length); // Call parent callback with the count of unique candidates sent
+          onSendSuccess(data.sent || selectedCandidates.length); // Call parent callback with the actual sent count
         }
         onClose(); // Close modal on successful send
       } else {
         toast.error(`Some invites failed. Sent: ${data.sent || 0}, Failed: ${data.failed || 0}. Check console for details.`);
-        console.error("Bulk invite response (backend):", data);
       }
     } catch (err) {
-      console.error("Send invites failed:", err);
-      toast.error(err.response?.data?.message || "Server error while sending invites. Please try again.");
+      if (err.response?.data?.message) {
+        toast.error(err.response.data.message);
+      } else if (err.code === 'ERR_NETWORK') {
+        toast.error("Network error. Please check your connection and try again.");
+      } else {
+        toast.error("Failed to send invites. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -100,6 +132,37 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess }) =
           onChange={(e) => setMessage(e.target.value)}
           disabled={loading}
         ></textarea>
+
+        {/* Expiry Date and Time */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Application Link Expiry:</label>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Date</label>
+              <input
+                type="date"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                min={new Date().toISOString().split('T')[0]}
+                disabled={loading}
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Time</label>
+              <input
+                type="time"
+                value={expiryTime}
+                onChange={(e) => setExpiryTime(e.target.value)}
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                disabled={loading}
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Application links will expire on {expiryDate} at {expiryTime}
+          </p>
+        </div>
 
         <div className="flex justify-end space-x-3 mt-auto">
           <Button text="Cancel" onClick={onClose} className="btn-secondary px-5 py-2" disabled={loading} />

@@ -6,6 +6,11 @@ export async function up(knex) {
     table.integer('openings').defaultTo(1);
     table.enum('status', ['Active', 'Closed', 'Draft']).defaultTo('Active');
     table.date('deadline');
+    table.text('description');
+    table.text('requirements');
+    table.string('salary_range');
+    table.string('location');
+    table.enum('job_type', ['Full-time', 'Part-time', 'Contract', 'Internship']).defaultTo('Full-time');
     table.timestamp('created_at').defaultTo(knex.fn.now());
   });
 }

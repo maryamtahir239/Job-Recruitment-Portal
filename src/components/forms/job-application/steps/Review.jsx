@@ -4,8 +4,6 @@ const Review = ({ data, errors, isValid, selectedPhoto, selectedResume }) => {
   return (
     <div className="bg-gray-50 p-6 rounded shadow-sm space-y-4">
       <h3 className="text-xl font-semibold mb-4 text-gray-700">Review Your Information</h3>
-      {/* ⭐ ADDED: Console log to debug autofill values ⭐ */}
-      {console.log("DEBUG: Values on Review Page:", data)}
       {!isValid && Object.keys(errors).length > 0 && (
         <div className="text-danger-500 mb-4">
           Please correct the errors in the form before submitting.

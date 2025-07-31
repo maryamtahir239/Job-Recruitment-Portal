@@ -1,14 +1,20 @@
 import React from "react";
-import { topMenu } from "@/mocks/data";
+import useRoleBasedMenu from "@/hooks/useRoleBasedMenu";
 import Icon from "@/components/ui/Icon";
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import clsx from "clsx";
+
 const HorizentalMenu = () => {
+  const { menuItems } = useRoleBasedMenu();
+  
+  // Filter out header items and get only menu items
+  const filteredMenuItems = menuItems.filter(item => !item.isHeadr);
+
   return (
     <div className="main-menu">
       <ul>
-        {topMenu?.map((item, i) => (
+        {filteredMenuItems?.map((item, i) => (
           <li
             key={i}
             className={

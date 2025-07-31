@@ -20,8 +20,14 @@ const Textarea = ({
   cols,
   row = 3,
   onChange,
+  value,
+  defaultValue,
   ...rest
 }) => {
+  // Get all props provided by react-hook-form's register function
+  // Only call register(name) if 'name' is provided AND register function exists
+  const registeredProps = name && register ? register(name) : {};
+
   return (
     <div
       className={`textfiled-wrapper  ${error ? "is-error" : ""}  ${
@@ -39,9 +45,9 @@ const Textarea = ({
         </label>
       )}
       <div className={`relative ${horizontal ? "flex-1" : ""}`}>
-        {name && (
+        {name && register ? (
           <textarea
-            {...register(name)}
+            {...registeredProps}
             {...rest}
             className={`${
               error ? " is-error" : " "
@@ -54,8 +60,7 @@ const Textarea = ({
             rows={row}
             onChange={onChange}
           ></textarea>
-        )}
-        {!name && (
+        ) : (
           <textarea
             className={`${
               error ? " is-error" : " "
@@ -64,9 +69,13 @@ const Textarea = ({
             readOnly={readonly}
             disabled={disabled}
             id={id}
+            name={name}
+            value={value}
+            defaultValue={defaultValue}
             cols={cols}
             rows={row}
             onChange={onChange}
+            {...rest}
           ></textarea>
         )}
 

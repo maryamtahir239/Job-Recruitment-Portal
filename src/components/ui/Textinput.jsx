@@ -10,7 +10,7 @@ const Textinput = ({
   classLabel = "form-label",
   className = "",
   classGroup = "",
-  register, // This is the register function from useForm
+  register, // This is the register function from useForm (optional)
   name,
   readonly,
   error,
@@ -22,10 +22,11 @@ const Textinput = ({
   isMask,
   description,
   hasicon,
-  onChange: propOnChange, // Renamed to avoid direct conflict with register's onChange
+  onChange: propOnChange,
   options,
   onFocus,
   defaultValue,
+  value,
   ...rest
 }) => {
   const [open, setOpen] = useState(false);
@@ -34,8 +35,8 @@ const Textinput = ({
   };
 
   // Get all props provided by react-hook-form's register function
-  // Only call register(name) if 'name' is provided, otherwise it's an uncontrolled input
-  const registeredProps = name ? register(name) : {};
+  // Only call register(name) if 'name' is provided AND register function exists, otherwise it's an uncontrolled input
+  const registeredProps = name && register ? register(name) : {};
 
   // Create a combined change handler for all inputs
   const handleChange = (e) => {
@@ -59,7 +60,7 @@ const Textinput = ({
         <label
           htmlFor={id}
           className={`block capitalize ${classLabel} ${
-            horizontal ? "flex-0 mr-6 md:w-[100px] w-[60px] break-words" : "" // ⭐ CORRECTED THIS LINE ⭐
+            horizontal ? "flex-0 mr-6 md:w-[100px] w-[60px] break-words" : ""
           }`}
         >
           {label}
@@ -67,13 +68,13 @@ const Textinput = ({
       )}
       <div className={`relative ${horizontal ? "flex-1" : ""}`}>
         {/* Branch for inputs managed by react-hook-form and NOT masked */}
-        {name && !isMask && (
+        {name && register && !isMask && (
           <input
             type={type === "password" && open === true ? "text" : type}
-            {...registeredProps} // Spread name, ref, onBlur, and react-hook-form's original onChange
+            {...registeredProps}
             {...rest}
-            onChange={handleChange} // Use our combined handler for standard change events
-            onInput={handleChange} // Crucial for capturing autofill values immediately
+            onChange={handleChange}
+            onInput={handleChange}
             className={`${
               error ? " is-error" : " "
             } text-control py-[10px] ${className} `}
@@ -81,33 +82,33 @@ const Textinput = ({
             readOnly={readonly}
             disabled={disabled}
             id={id}
-            // defaultValue is usually handled by react-hook-form via register if defaultValues are set in useForm
-            // No need to explicitly pass it here if using RHF's defaultValues
           />
         )}
 
         {/* Branch for inputs NOT managed by react-hook-form and NOT masked */}
-        {!name && !isMask && (
+        {(!name || !register) && !isMask && (
           <input
             type={type === "password" && open === true ? "text" : type}
             className={`text-control py-[10px] ${className}`}
             placeholder={placeholder}
             readOnly={readonly}
             disabled={disabled}
-            onChange={propOnChange} // Use only the prop's onChange here
+            onChange={propOnChange}
+            onInput={propOnChange}
             id={id}
+            name={name}
+            value={value}
             defaultValue={defaultValue}
             {...rest}
           />
         )}
 
         {/* Branch for inputs managed by react-hook-form AND masked (using Cleave.js) */}
-        {name && isMask && (
+        {name && register && isMask && (
           <Cleave
-            // Cleave.js requires us to pass react-hook-form's ref and name explicitly
-            htmlRef={registeredProps.ref} // Pass the ref from react-hook-form to Cleave
-            name={registeredProps.name} // Pass the name from react-hook-form to Cleave
-            {...rest} // Spread any other rest props
+            htmlRef={registeredProps.ref}
+            name={registeredProps.name}
+            {...rest}
             placeholder={placeholder}
             options={options}
             className={`${
@@ -117,25 +118,23 @@ const Textinput = ({
             id={id}
             readOnly={readonly}
             disabled={disabled}
-            // Cleave's onChange callback: we need to manually create a synthetic event
-            // and pass it to our combined handleChange to update react-hook-form's state.
             onChange={(e) => {
               const syntheticEvent = {
                 target: {
                   name: registeredProps.name,
-                  value: e.target.value, // Cleave's event usually has the value at e.target.value
+                  value: e.target.value,
                 },
-                type: 'change', // Indicate it's a change event
+                type: 'change',
               };
-              handleChange(syntheticEvent); // Call our combined handler
+              handleChange(syntheticEvent);
             }}
-            onBlur={registeredProps.onBlur} // Ensure onBlur from react-hook-form is also passed
-            defaultValue={defaultValue} // Cleave also accepts defaultValue
+            onBlur={registeredProps.onBlur}
+            defaultValue={defaultValue}
           />
         )}
 
         {/* Branch for inputs NOT managed by react-hook-form AND masked */}
-        {!name && isMask && (
+        {(!name || !register) && isMask && (
           <Cleave
             placeholder={placeholder}
             options={options}
@@ -146,8 +145,10 @@ const Textinput = ({
             id={id}
             readOnly={readonly}
             disabled={disabled}
-            onChange={propOnChange} // Use only the prop's onChange here
+            onChange={propOnChange}
             defaultValue={defaultValue}
+            name={name}
+            value={value}
           />
         )}
 

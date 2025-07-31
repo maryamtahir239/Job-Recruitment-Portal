@@ -2,8 +2,6 @@ import db from "../db/knex.js";
 
 export const createEvaluation = async (req, res) => {
   try {
-    console.log("Request Body:", req.body);
-
     const { candidate, ratings, comments } = req.body;
 
     // ✅ Validate input
@@ -43,7 +41,6 @@ export const createEvaluation = async (req, res) => {
       evaluationId,
     });
   } catch (error) {
-    console.error("Error saving evaluation:", error);
     res.status(500).json({ message: "Failed to save evaluation", error });
   }
 };
@@ -88,7 +85,6 @@ export const getEvaluations = async (req, res) => {
 
     res.json(result);
   } catch (err) {
-    console.error("Error fetching evaluations:", err);
     res.status(500).json({ error: "Failed to fetch evaluations" });
   }
 };

@@ -55,19 +55,14 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
 
   // Check invite status on component mount or when invite prop changes
   useEffect(() => {
-    console.log("DEBUG: MultiStepJobApplicationForm component received invite prop:", invite);
     if (invite && invite.invite) {
       setIsLoadingInvite(false);
-      console.log("DEBUG: invite.invite.status inside useEffect:", invite.invite.status);
       if (invite.invite.status === "submitted") {
         setFormAlreadySubmitted(true);
-        console.log("DEBUG: Application status is 'submitted'. Setting formAlreadySubmitted to true.");
       } else {
         setFormAlreadySubmitted(false);
-        console.log("DEBUG: Application status is NOT 'submitted'. Status:", invite.invite.status);
       }
     } else {
-      console.log("DEBUG: invite prop or invite.invite is null or undefined, waiting for it...");
     }
   }, [invite]); // Removed errors, isValid, isDirty, dirtyFields from dependency array as they cause unnecessary re-renders for invite check
 
@@ -190,12 +185,6 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
   const values = watch(); // Watch all form values for review step
 
   const onSubmit = async (data) => {
-    console.log("FRONTEND DEBUG: onSubmit triggered with values (from React Hook Form):", data);
-    console.log("FRONTEND DEBUG: Selected Photo State (local):", selectedPhoto);
-    console.log("FRONTEND DEBUG: Selected Resume State (local):", selectedResume);
-
-    console.log("FRONTEND DEBUG: JSON.stringify(data) content:", JSON.stringify(data, null, 2));
-
     try {
       const formData = new FormData();
       formData.append("payload", JSON.stringify(data));
@@ -207,15 +196,6 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
         formData.append("resume", selectedResume);
       }
 
-      console.log("FRONTEND DEBUG: FormData entries being sent:");
-      for (let pair of formData.entries()) {
-        if (pair[0] === 'payload' && typeof pair[1] === 'string') {
-          console.log(`  ${pair[0]}: ${pair[1].substring(0, 500)}... (truncated for brevity)`);
-        } else {
-          console.log(`  ${pair[0]}:`, pair[1]);
-        }
-      }
-
       const response = await axios.post(`/api/invites/${token}/submit`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -224,14 +204,11 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
 
       if (response.status === 200) {
         setSuccess(true);
-        console.log("✅ Form submitted successfully:", response.data);
         alert("Your application form is successfully submitted!");
       } else {
-        console.error("⚠️ Unexpected response status:", response.status, response.data);
         alert("Something went wrong. Please try again.");
       }
     } catch (error) {
-      console.error("❌ Submission error (frontend caught):", error.response?.data || error.message);
       if (error.response?.status === 409) {
           alert("This application has already been submitted.");
           setFormAlreadySubmitted(true);
