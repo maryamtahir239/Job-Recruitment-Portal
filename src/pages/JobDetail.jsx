@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { safeToastError } from "@/utility/safeToast";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -132,7 +133,7 @@ const JobDetail = () => {
       const response = await axios.get(`/api/jobs/${jobId}`);
       setJob(response.data);
     } catch (error) {
-      toast.error("Failed to fetch job details");
+      safeToastError("Failed to fetch job details");
     } finally {
       setLoading(false);
     }
@@ -156,7 +157,7 @@ const JobDetail = () => {
     } catch (error) {
       // Only show error toast if explicitly requested (manual load or after upload)
       if (showErrorOnFail) {
-        toast.error("Failed to fetch candidates");
+        safeToastError("Failed to fetch candidates");
       }
       setCandidates([]);
     } finally {
@@ -173,7 +174,7 @@ const JobDetail = () => {
 
   const handleUploadCandidates = async () => {
     if (!selectedFile) {
-      toast.error("Please select a file");
+      safeToastError("Please select a file");
       return;
     }
 
@@ -203,7 +204,7 @@ const JobDetail = () => {
             }));
             
           } catch (error) {
-            toast.error("Failed to parse Excel file");
+            safeToastError("Failed to parse Excel file");
             setUploading(false);
             return;
           }
@@ -230,16 +231,16 @@ const JobDetail = () => {
             await sendCandidatesToServer(candidates);
           },
           error: (error) => {
-            toast.error("Failed to parse CSV file");
+            safeToastError("Failed to parse CSV file");
             setUploading(false);
           }
         });
       } else {
-        toast.error("Unsupported file type. Please upload Excel (.xlsx, .xls) or CSV (.csv) file.");
+        safeToastError("Unsupported file type. Please upload Excel (.xlsx, .xls) or CSV (.csv) file.");
         setUploading(false);
       }
     } catch (error) {
-      toast.error("Failed to upload candidates");
+      safeToastError("Failed to upload candidates");
       setUploading(false);
     }
   };
@@ -267,7 +268,7 @@ const JobDetail = () => {
       await fetchJobCandidates(true);
       
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to upload candidates");
+      safeToastError(error.response?.data?.message || "Failed to upload candidates");
     } finally {
       setUploading(false);
     }
@@ -296,7 +297,7 @@ const JobDetail = () => {
   // Handle candidate selection for invites
   const handleSendInvites = () => {
     if (checkedCandidates.length === 0) {
-      toast.error("Please select at least one candidate to send invites");
+      safeToastError("Please select at least one candidate to send invites");
       return;
     }
     
@@ -305,7 +306,7 @@ const JobDetail = () => {
     );
     
     if (candidatesToInvite.length === 0) {
-      toast.error("Selected candidates already have invites sent");
+      safeToastError("Selected candidates already have invites sent");
       return;
     }
     
@@ -351,7 +352,7 @@ const JobDetail = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (!editFormData.title || !editFormData.deadline) {
-      toast.error("Title and deadline are required");
+      safeToastError("Title and deadline are required");
       return;
     }
     try {
@@ -360,7 +361,7 @@ const JobDetail = () => {
       setEditModalOpen(false);
       fetchJobDetails(); // Refresh job details
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to update job");
+      safeToastError(error.response?.data?.error || "Failed to update job");
     }
   };
 

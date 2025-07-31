@@ -4,6 +4,7 @@ import Button from "@/components/ui/Button";
 import Textinput from "@/components/ui/Textinput";
 import { resetPassword } from "@/api/userProfile";
 import { toast } from "react-toastify";
+import { safeToastError } from "@/utility/safeToast";
 
 const ResetPasswordModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -72,7 +73,7 @@ const ResetPasswordModal = ({ isOpen, onClose }) => {
       });
       onClose();
     } catch (error) {
-      toast.error(error.message || "Failed to update password");
+      safeToastError(error.message || "Failed to update password");
     } finally {
       setLoading(false);
     }

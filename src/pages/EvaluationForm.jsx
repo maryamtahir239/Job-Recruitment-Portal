@@ -65,7 +65,7 @@ const EvaluationForm = ({ candidate, onClose }) => {
       comments,
     };
 
-    const response = await fetch("http://localhost:3001/api/evaluation", {
+    const response = await fetch("/api/evaluation", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -170,7 +170,7 @@ const EvaluationForm = ({ candidate, onClose }) => {
               name={key}
               value={comments[key]}
               onChange={handleCommentChange}
-              className="w-full border p-2 rounded"
+              className="w-full border border-gray-300 rounded py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
               rows={3}
             />
           </div>

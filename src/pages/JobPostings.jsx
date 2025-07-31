@@ -10,6 +10,7 @@ import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import Badge from "@/components/ui/Badge";
 import Icon from "@/components/ui/Icon";
+import { safeToastError } from "@/utility/safeToast";
 
 const JobPostings = () => {
   const [jobs, setJobs] = useState([]);
@@ -37,10 +38,11 @@ const JobPostings = () => {
     fetchJobs();
   }, []);
 
-  // Handle edit parameter from URL
+  // Handle edit and create parameters from URL
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const editJobId = searchParams.get('edit');
+    const createNew = searchParams.get('create');
     
     if (editJobId && jobs.length > 0) {
       const jobToEdit = jobs.find(job => job.id == editJobId);
@@ -49,6 +51,10 @@ const JobPostings = () => {
         // Clear the URL parameter after opening the modal
         navigate('/job-postings', { replace: true });
       }
+    } else if (createNew === 'true') {
+      openModal();
+      // Clear the URL parameter after opening the modal
+      navigate('/job-postings', { replace: true });
     }
   }, [jobs, location.search, navigate]);
 
@@ -58,7 +64,14 @@ const JobPostings = () => {
       const response = await axios.get("/api/jobs");
       setJobs(response.data);
     } catch (error) {
-      toast.error("Failed to fetch jobs");
+      // Only show toast for non-authentication errors
+      if (
+        error.response?.status !== 401 &&
+        error.response?.status !== 403 &&
+        error.response?.data?.error !== "Invalid credentials"
+      ) {
+        safeToastError("Failed to fetch jobs");
+      }
     } finally {
       setLoading(false);
     }
@@ -118,7 +131,7 @@ const JobPostings = () => {
     e.preventDefault();
     
     if (!formData.title || !formData.deadline) {
-      toast.error("Title and deadline are required");
+      safeToastError("Title and deadline are required");
       return;
     }
 
@@ -134,7 +147,7 @@ const JobPostings = () => {
       closeModal();
       fetchJobs();
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to save job");
+      safeToastError(error.response?.data?.error || "Failed to save job");
     }
   };
 
@@ -148,7 +161,7 @@ const JobPostings = () => {
       toast.success("Job deleted successfully");
       fetchJobs();
     } catch (error) {
-      toast.error("Failed to delete job");
+      safeToastError("Failed to delete job");
     }
   };
 
@@ -182,13 +195,13 @@ const JobPostings = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Job Postings</h1>
           <p className="text-gray-600 mt-2">
-            {user?.role === 'superadmin' 
-              ? 'Monitor and view job postings across the organization' 
-              : 'Manage and create job postings for your organization'
+            {(user?.role === 'SuperAdmin' || user?.role === 'HR')
+              ? 'Manage and create job postings for your organization' 
+              : 'Monitor and view job postings across the organization'
             }
           </p>
         </div>
-        {user?.role !== 'superadmin' && (
+        {(user?.role === 'SuperAdmin' || user?.role === 'HR') && (
           <Button
             text="Create New Job"
             className="btn-primary"
@@ -318,7 +331,7 @@ const JobPostings = () => {
                           className="btn-outline-primary btn-sm"
                           onClick={() => navigate(`/job-postings/${job.id}`)}
                         />
-                        {user?.role !== 'superadmin' && (
+                        {(user?.role === 'SuperAdmin' || user?.role === 'HR') && (
                           <>
                             <Button
                               text="Edit"

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "@/components/ui/Button";
 import { toast } from "react-toastify";
+import { safeToastError } from "@/utility/safeToast";
 
 // Add onSendSuccess to the props
 const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, jobId }) => {
@@ -46,14 +47,14 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, job
     try {
       const candidateIds = getCandidateIds();
       if (!candidateIds.length) {
-        toast.error("No valid candidate IDs found to send invites.");
+        safeToastError("No valid candidate IDs found to send invites.");
         setLoading(false);
         return;
       }
 
       // Validate expiry date and time
       if (!expiryDate) {
-        toast.error("Please set an expiry date for the application links.");
+        safeToastError("Please set an expiry date for the application links.");
         setLoading(false);
         return;
       }
@@ -78,15 +79,15 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, job
         }
         onClose(); // Close modal on successful send
       } else {
-        toast.error(`Some invites failed. Sent: ${data.sent || 0}, Failed: ${data.failed || 0}. Check console for details.`);
+        safeToastError(`Some invites failed. Sent: ${data.sent || 0}, Failed: ${data.failed || 0}. Check console for details.`);
       }
     } catch (err) {
       if (err.response?.data?.message) {
-        toast.error(err.response.data.message);
+        safeToastError(err.response.data.message);
       } else if (err.code === 'ERR_NETWORK') {
-        toast.error("Network error. Please check your connection and try again.");
+        safeToastError("Network error. Please check your connection and try again.");
       } else {
-        toast.error("Failed to send invites. Please try again.");
+        safeToastError("Failed to send invites. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -125,7 +126,7 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, job
         </div>
 
         <textarea
-          className="w-full border border-gray-300 p-3 rounded-md mb-4 resize-y focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition duration-150 ease-in-out"
+          className="w-full border border-gray-300 p-3 rounded-md mb-4 resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-150 ease-in-out"
           rows="4"
           placeholder="Custom message to include in the email (optional)..."
           value={message}
@@ -143,7 +144,7 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, job
                 type="date"
                 value={expiryDate}
                 onChange={(e) => setExpiryDate(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 min={new Date().toISOString().split('T')[0]}
                 disabled={loading}
               />
@@ -154,7 +155,7 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, job
                 type="time"
                 value={expiryTime}
                 onChange={(e) => setExpiryTime(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 disabled={loading}
               />
             </div>

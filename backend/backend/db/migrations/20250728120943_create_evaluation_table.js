@@ -2,11 +2,11 @@ export async function up(knex) {
     return knex.schema.createTable("evaluation", (table) => {
       table.increments("id").primary();
       table
-        .integer("candidate_id")
+        .integer("application_id")
         .unsigned()
         .notNullable()
         .references("id")
-        .inTable("candidate_applications") // ✅ point to the correct table
+        .inTable("candidate_applications")
         .onDelete("CASCADE");
   
       table.string("evaluator_name").notNullable();

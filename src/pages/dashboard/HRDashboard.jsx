@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import Icon from "@/components/ui/Icon";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { safeToastError } from "@/utility/safeToast";
 
 const HRDashboard = () => {
-  console.log("HRDashboard: Component function called");
-  
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
-  console.log("HRDashboard: User data:", user);
   
   const [stats, setStats] = useState({
     totalJobs: 0,
@@ -27,13 +27,11 @@ const HRDashboard = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("HRDashboard: Component mounted, fetching data...");
     fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async () => {
     try {
-      console.log("HRDashboard: Starting to fetch dashboard data...");
       setLoading(true);
       setError(null);
       
@@ -48,17 +46,14 @@ const HRDashboard = () => {
       // Fetch jobs
       const jobsResponse = await axios.get("/api/jobs");
       const jobs = jobsResponse.data;
-      console.log("HRDashboard: Jobs fetched:", jobs.length);
       
       // Fetch candidates
       const candidatesResponse = await axios.get("/api/candidates");
       const candidates = candidatesResponse.data;
-      console.log("HRDashboard: Candidates fetched:", candidates.length);
       
       // Fetch applications
       const applicationsResponse = await axios.get("/api/applications");
       const applications = applicationsResponse.data;
-      console.log("HRDashboard: Applications fetched:", applications.length);
       
       // Calculate stats
       const activeJobs = jobs.filter(job => job.status === "Active").length;
@@ -83,14 +78,15 @@ const HRDashboard = () => {
       
       // Get recent jobs (last 5)
       setRecentJobs(jobs.slice(0, 5));
-      
-      console.log("HRDashboard: Data fetching completed successfully");
     } catch (error) {
-      console.error("HRDashboard: Error fetching data:", error);
       setError(error.message);
       // Only show toast for non-authentication errors
-      if (error.response?.status !== 401 && error.response?.status !== 403) {
-        toast.error(`Failed to load dashboard data: ${error.response?.data?.error || error.message}`);
+      if (
+        error.response?.status !== 401 &&
+        error.response?.status !== 403 &&
+        error.response?.data?.error !== "Invalid credentials"
+      ) {
+        safeToastError(`Failed to load dashboard data: ${error.response?.data?.error || error.message}`);
       }
     } finally {
       setLoading(false);
@@ -113,7 +109,6 @@ const HRDashboard = () => {
   };
 
   if (error) {
-    console.log("HRDashboard: Rendering error state");
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -133,15 +128,12 @@ const HRDashboard = () => {
   }
 
   if (loading) {
-    console.log("HRDashboard: Rendering loading state");
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
-
-  console.log("HRDashboard: Rendering main component");
 
   return (
     <div className="space-y-6">
@@ -155,26 +147,37 @@ const HRDashboard = () => {
           <span className="font-semibold text-blue-600">{user?.role}</span>.
         </p>
         <p className="text-gray-500 text-sm mb-8">
-          Manage job postings, review applications, and track recruitment progress.
+          Manage job postings, review applications, and track recruitment progress
         </p>
         
         {/* Quick Actions */}
-        <div className="flex justify-center space-x-4 mb-8">
-          <Button
-            text="Manage Job Postings"
-            className="btn-primary"
-            onClick={() => window.location.href = "/job-postings"}
-          />
-          <Button
-            text="View Applications"
-            className="btn-outline-primary"
-            onClick={() => window.location.href = "/applications"}
-          />
-          <Button
-            text="View Candidates"
-            className="btn-outline-secondary"
-            onClick={() => window.location.href = "/candidates"}
-          />
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+            <div className="text-center w-full sm:w-auto">
+              <Button
+                text="Manage Job Postings"
+                className="btn-primary px-6 py-3 text-base font-medium hover:shadow-lg transition-all duration-200 mb-2 w-full sm:w-auto"
+                onClick={() => navigate("/job-postings")}
+                icon="ph:briefcase"
+              />
+            </div>
+            <div className="text-center w-full sm:w-auto">
+              <Button
+                text="View Applications"
+                className="btn-primary px-6 py-3 text-base font-medium hover:shadow-lg transition-all duration-200 mb-2 w-full sm:w-auto"
+                onClick={() => navigate("/applications")}
+                icon="ph:file-text"
+              />
+            </div>
+            <div className="text-center w-full sm:w-auto">
+              <Button
+                text="View Candidates"
+                className="btn-primary px-6 py-3 text-base font-medium hover:shadow-lg transition-all duration-200 mb-2 w-full sm:w-auto"
+                onClick={() => navigate("/candidates")}
+                icon="ph:users"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -248,7 +251,7 @@ const HRDashboard = () => {
           <Button
             text="View All Jobs"
             className="btn-outline-primary"
-            onClick={() => window.location.href = "/job-postings"}
+            onClick={() => navigate("/job-postings")}
           />
         </div>
         
@@ -259,7 +262,7 @@ const HRDashboard = () => {
             <Button
               text="Create First Job"
               className="btn-primary"
-              onClick={() => window.location.href = "/job-postings"}
+              onClick={() => navigate("/job-postings")}
             />
           </div>
         ) : (
@@ -309,7 +312,7 @@ const HRDashboard = () => {
                       <Button
                         text="View Details"
                         className="btn-outline-primary btn-sm"
-                        onClick={() => window.location.href = `/job-postings/${job.id}`}
+                        onClick={() => navigate(`/job-postings/${job.id}`)}
                       />
                     </td>
                   </tr>

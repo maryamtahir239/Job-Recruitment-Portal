@@ -31,8 +31,8 @@ import jobRoutes from "./routes/jobRoutes.js";
 
 // Use routes with base paths
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
 app.use("/api/user", userProfileRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/invites", inviteRoutes);
 app.use("/api/candidates", candidateRoutes);
@@ -41,9 +41,15 @@ app.use("/api/evaluation", evaluationRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/jobs", jobRoutes);
 
+// 404 handler for undefined routes
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
+
 // Global error handler (optional)
 app.use((err, req, res, next) => {
-  res.status(500).send("Something broke!");
+  console.error('Global error handler:', err);
+  res.status(500).json({ error: "Internal server error" });
 });
 
 // Add uncaught exception handler
