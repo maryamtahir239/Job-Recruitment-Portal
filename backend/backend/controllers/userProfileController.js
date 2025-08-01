@@ -19,7 +19,6 @@ export const getUserProfile = async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    console.error("GET /api/user/profile error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -30,7 +29,7 @@ export const updateUserProfile = async (req, res) => {
     const userId = req.user.id;
     const { name } = req.body;
 
-    console.log('Update profile request:', { userId, name });
+
 
     if (!name || name.trim() === '') {
       return res.status(400).json({ error: "Name is required" });
@@ -41,7 +40,7 @@ export const updateUserProfile = async (req, res) => {
       .where({ id: userId })
       .update({ name: name.trim() });
 
-    console.log('Database update result:', { affectedRows });
+
 
     if (affectedRows === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -57,10 +56,9 @@ export const updateUserProfile = async (req, res) => {
       return res.status(404).json({ error: "User not found after update" });
     }
 
-    console.log('Updated user data:', updatedUser);
+
     res.json(updatedUser);
   } catch (err) {
-    console.error("PUT /api/user/profile error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -122,7 +120,6 @@ export const updateProfileImage = async (req, res) => {
       profile_image: filename
     });
   } catch (err) {
-    console.error("PUT /api/user/profile-image error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -153,7 +150,6 @@ export const removeProfileImage = async (req, res) => {
 
     res.json({ message: "Profile image removed successfully" });
   } catch (err) {
-    console.error("DELETE /api/user/profile-image error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -194,7 +190,6 @@ export const resetPassword = async (req, res) => {
 
     res.json({ message: "Password updated successfully" });
   } catch (err) {
-    console.error("PUT /api/user/reset-password error:", err);
     res.status(500).json({ error: "Server error" });
   }
 }; 

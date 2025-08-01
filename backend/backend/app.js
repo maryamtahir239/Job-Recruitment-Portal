@@ -29,6 +29,11 @@ import evaluationRoutes from "./routes/evaluation.js";
 import applicationRoutes from "./routes/applications.js";
 import jobRoutes from "./routes/jobRoutes.js";
 
+// Test endpoint
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Backend server is running!" });
+});
+
 // Use routes with base paths
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userProfileRoutes);
@@ -43,6 +48,10 @@ app.use("/api/jobs", jobRoutes);
 
 // 404 handler for undefined routes
 app.use((req, res) => {
+  console.log("404 - Route not found:", req.method, req.path);
+  console.log("Available routes:");
+  console.log("- GET /api/applications");
+  console.log("- PUT /api/applications/:id");
   res.status(404).json({ error: "Route not found" });
 });
 

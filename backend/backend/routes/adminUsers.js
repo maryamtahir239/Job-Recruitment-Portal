@@ -15,11 +15,13 @@ router.use(verifyToken, requireRole("SuperAdmin"));
  * List all HR + Interviewer users.
  */
 router.get("/", async (req, res) => {
+  console.log("GET /api/admin/users called");
   try {
     const users = await knex("users")
       .select("id", "name", "email", "role")
       .whereIn("role", ["HR", "Interviewer"])
       .orderBy("id", "desc");
+    console.log("Found users:", users);
     res.json(users);
   } catch (err) {
     console.error("GET /api/admin/users error:", err);

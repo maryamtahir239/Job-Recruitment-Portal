@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Button from "@/components/ui/Button";
@@ -7,16 +8,14 @@ import Badge from "@/components/ui/Badge";
 import Icon from "@/components/ui/Icon";
 import Textinput from "@/components/ui/Textinput";
 import Select from "@/components/ui/Select";
-import Modal from "@/components/ui/Modal";
 import { safeToastError } from "@/utility/safeToast";
 
 const Applications = () => {
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedApplication, setSelectedApplication] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     search: "",
     jobId: "",
@@ -33,7 +32,13 @@ const Applications = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get("/api/applications");
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/applications", {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       setApplications(response.data || []);
     } catch (error) {
       // Only show toast for non-authentication errors
@@ -98,18 +103,34 @@ const Applications = () => {
   };
 
   const viewApplicationDetails = (application) => {
-    setSelectedApplication(application);
-    setModalOpen(true);
+    navigate(`/applications/${application.id}`, { 
+      state: { from: 'applications' } 
+    });
   };
 
   const updateApplicationStatus = async (applicationId, newStatus) => {
     try {
-      await axios.put(`/api/applications/${applicationId}`, { status: newStatus });
+      console.log("Updating application status:", { applicationId, newStatus });
+      const token = localStorage.getItem("token");
+      console.log("Token available:", !!token);
+      
+      const response = await axios.put(`/api/applications/${applicationId}`, 
+        { status: newStatus },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      console.log("PUT response:", response.status, response.data);
       toast.success("Application status updated successfully");
       fetchApplications();
-          } catch (error) {
-        safeToastError("Failed to update application status");
-      }
+    } catch (error) {
+      console.error("Error updating application status:", error);
+      console.error("Error response:", error.response?.status, error.response?.data);
+      safeToastError("Failed to update application status");
+    }
   };
 
   if (error) {
@@ -297,7 +318,7 @@ const Applications = () => {
                           {application.photo_url ? (
                             <img 
                               className="h-10 w-10 rounded-full object-cover" 
-                              src={`/api/uploads/applications/${application.photo_url}`} 
+                              src={`/${application.photo_url}`} 
                               alt="Profile" 
                               onError={(e) => {
                                 e.target.style.display = 'none';
@@ -314,9 +335,6 @@ const Applications = () => {
                         <div className="ml-3">
                           <div className="text-sm font-medium text-gray-900 truncate max-w-[150px]">
                             {application.full_name}
-                          </div>
-                          <div className="text-sm text-gray-500 truncate max-w-[150px]">
-                            {application.email}
                           </div>
                         </div>
                       </div>
@@ -337,7 +355,7 @@ const Applications = () => {
                         <div className="truncate max-w-[120px] text-center" title={application.phone || "No phone"}>
                           {application.phone || "No phone"}
                         </div>
-                        <div className="text-gray-500 truncate max-w-[120px] text-center" title={application.email}>
+                        <div className="text-gray-500 break-all text-center" title={application.email}>
                           {application.email}
                         </div>
                       </div>
@@ -353,7 +371,7 @@ const Applications = () => {
                           <select
                             value={application.status}
                             onChange={(e) => updateApplicationStatus(application.id, e.target.value)}
-                            className="appearance-none bg-white border border-blue-500 text-blue-600 rounded-md px-3 h-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:bg-blue-50 transition-colors duration-200 min-w-[120px]"
+                            className="appearance-none bg-white border border-blue-500 text-blue-600 rounded-md px-1 h-8 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:bg-blue-50 transition-colors duration-200 min-w-[80px]"
                           >
                             <option value="Applied">Applied</option>
                             <option value="Under Review">Under Review</option>
@@ -374,78 +392,6 @@ const Applications = () => {
           </table>
         </div>
       </Card>
-
-      {/* Application Details Modal */}
-      <Modal
-        title="Application Details"
-        label="Application Details"
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-      >
-        {selectedApplication && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Personal Information</h4>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Name:</strong> {selectedApplication.full_name}</div>
-                  <div><strong>Email:</strong> {selectedApplication.email}</div>
-                  <div><strong>Phone:</strong> {selectedApplication.phone || "Not provided"}</div>
-                  <div><strong>Date of Birth:</strong> {selectedApplication.date_of_birth || "Not provided"}</div>
-                  <div><strong>Gender:</strong> {selectedApplication.gender || "Not provided"}</div>
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Application Details</h4>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Job Applied:</strong> {getJobTitle(selectedApplication.job_id)}</div>
-                  <div><strong>Status:</strong> {getStatusBadge(selectedApplication.status)}</div>
-                  <div><strong>Applied Date:</strong> {formatDate(selectedApplication.created_at)}</div>
-                  <div><strong>Current Status:</strong> {selectedApplication.current_status || "Not provided"}</div>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-gray-900 mb-2">Education</h4>
-              <div className="text-sm text-gray-600">
-                {selectedApplication.education || "No education details provided"}
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-gray-900 mb-2">Experience</h4>
-              <div className="text-sm text-gray-600">
-                {selectedApplication.experience || "No experience details provided"}
-              </div>
-            </div>
-            
-            <div className="flex justify-end space-x-3">
-              <Button
-                text="Close"
-                className="btn-outline-secondary"
-                onClick={() => setModalOpen(false)}
-              />
-              <Button
-                text="Download Resume"
-                className="btn-primary"
-                onClick={() => {
-                  if (selectedApplication.resume_url) {
-                    window.open(`/uploads/applications/${selectedApplication.resume_url}`, '_blank');
-                  } else {
-                    if (!application.resume_path) {
-                      safeToastError("No resume available");
-                      return;
-                    }
-                    safeToastError("No resume available");
-                  }
-                }}
-              />
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };
