@@ -6,10 +6,16 @@ export async function up(knex) {
         .unsigned()
         .notNullable()
         .references("id")
-        .inTable("candidate_applications")
+        .inTable("candidate_applications") 
         .onDelete("CASCADE");
   
-      table.string("evaluator_name").notNullable();
+        table
+        .integer("evaluator_id")
+        .unsigned()
+        .notNullable()
+        .references("id")
+        .inTable("users") // or "interviewers" if you have a separate table
+        .onDelete("CASCADE");
       table.text("educational_qualifications");
       table.text("work_experience");
       table.text("technical_skills");
