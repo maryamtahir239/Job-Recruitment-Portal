@@ -9,7 +9,7 @@ const InterviewerDashboard = () => {
   const navigate = useNavigate();
 
   const handleViewApplications = () => {
-    navigate("/candidate-forms");
+    navigate("/applications");
   };
 
   const handleEvaluatedCandidates = () => {
@@ -17,7 +17,7 @@ const InterviewerDashboard = () => {
   };
 
   const handlePendingEvaluations = () => {
-    navigate("/applications");
+    navigate("/pending-evaluations");
   };
 
   return (
