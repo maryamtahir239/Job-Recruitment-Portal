@@ -686,16 +686,37 @@ const JobDetail = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Select File (Excel/CSV)
             </label>
-            <input
-              type="file"
-              accept=".xlsx,.xls,.csv"
-              onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-            />
+            <div className="cursor-pointer">
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={handleFileChange}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer"
+                style={{ cursor: 'pointer' }}
+              />
+            </div>
             {selectedFile && (
-              <p className="text-sm text-gray-600 mt-2">
-                📎 Selected: <span className="font-medium">{selectedFile.name}</span> ({(selectedFile.size / 1024).toFixed(1)} KB)
-              </p>
+              <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg mt-2">
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-600">
+                    📎 Selected: <span className="font-medium">{selectedFile.name}</span> ({(selectedFile.size / 1024).toFixed(1)} KB)
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fileInput = document.querySelector('input[type="file"]');
+                    if (fileInput) fileInput.value = '';
+                    setSelectedFile(null);
+                  }}
+                  className="ml-2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200 cursor-pointer"
+                  title="Remove file"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
             )}
             <p className="text-xs text-gray-500 mt-1">
               Supported formats: Excel (.xlsx, .xls) or CSV (.csv)
