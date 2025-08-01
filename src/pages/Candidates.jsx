@@ -314,12 +314,18 @@ const Candidates = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex justify-center space-x-2">
                         <div className="relative group">
-                          <Button
-                            text="View"
-                            className="btn-outline-primary btn-sm"
-                            onClick={() => navigate(`/applications/${candidate.id}`)}
-                            disabled={candidate.invite_status !== 'submitted'}
-                          />
+                                                  <Button
+                          text="View"
+                          className="btn-outline-primary btn-sm"
+                          onClick={() => {
+                            console.log("Candidate data:", candidate);
+                            console.log("Navigating to application ID:", candidate.application_id || candidate.id);
+                            navigate(`/applications/${candidate.application_id || candidate.id}`, { 
+                              state: { from: 'candidates' } 
+                            });
+                          }}
+                          disabled={candidate.invite_status !== 'submitted'}
+                        />
                           {candidate.invite_status !== 'submitted' && (
                             <div className="absolute z-10 right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
                               Candidate has not submitted their application yet

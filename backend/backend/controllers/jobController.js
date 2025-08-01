@@ -2,10 +2,13 @@ import db from "../db/knex.js";
 
 // Get all jobs
 export const getAllJobs = async (req, res) => {
+  console.log("getAllJobs called");
   try {
     const jobs = await db("jobs").orderBy("created_at", "desc");
+    console.log("Returning jobs:", jobs.length);
     res.json(jobs);
   } catch (err) {
+    console.error("Error fetching jobs:", err);
     res.status(500).json({ error: "Failed to fetch jobs" });
   }
 };

@@ -6,12 +6,15 @@ import db from "../db/knex.js";
  * Returns all candidates from the database
  */
 export const getAllCandidates = async (req, res) => {
+  console.log("getAllCandidates called");
   try {
     const candidates = await db("candidates")
       .select("id", "name", "email", "phone", "designation", "location", "job_id", "created_at", "updated_at")
       .orderBy("created_at", "desc"); // Newest candidates first
 
-    // Get invite status for each candidate
+    console.log("Raw candidates from database:", candidates);
+
+    // Get invite status and application ID for each candidate
     const candidatesWithInviteStatus = await Promise.all(
       candidates.map(async (candidate) => {
         const invite = await db("application_invites")
@@ -19,15 +22,31 @@ export const getAllCandidates = async (req, res) => {
           .whereIn("status", ["sent", "opened", "submitted"])
           .first();
         
+                 // Get application ID if candidate has submitted an application
+         let application_id = null;
+         if (invite && invite.status === 'submitted') {
+           console.log(`Looking for application for candidate ${candidate.id}, job ${candidate.job_id}`);
+           const application = await db("candidate_applications")
+             .where({ 
+               candidate_id: candidate.id,
+               job_id: candidate.job_id 
+             })
+             .first();
+           application_id = application ? application.id : null;
+           console.log(`Found application ID: ${application_id} for candidate ${candidate.id}`);
+         }
+        
         return {
           ...candidate,
           invite_sent: !!invite,
           invite_status: invite ? invite.status : null,
+          application_id: application_id,
           status: invite ? (invite.status === 'submitted' ? 'Applied' : 'Under Review') : 'Not Invited'
         };
       })
     );
 
+    console.log("Returning candidates:", candidatesWithInviteStatus.length);
     res.json(candidatesWithInviteStatus);
   } catch (error) {
     console.error("Error fetching candidates:", error);

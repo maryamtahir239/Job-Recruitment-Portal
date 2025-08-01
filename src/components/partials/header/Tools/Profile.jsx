@@ -84,13 +84,13 @@ const Profile = ({ sticky }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [updatingName, setUpdatingName] = useState(false);
-
-  // Get user from localStorage
-  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (user && token) {
+    const userData = JSON.parse(localStorage.getItem("user") || "null");
+    setUser(userData);
+    if (userData && token) {
       fetchUserProfile();
     }
   }, []); // Only run once on component mount
@@ -153,6 +153,7 @@ const Profile = ({ sticky }) => {
       // Update localStorage user data
       const updatedUser = { ...user, profile_image: result.profile_image };
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
       
       toast.success("Profile image updated successfully");
     } catch (error) {
@@ -182,6 +183,7 @@ const Profile = ({ sticky }) => {
       // Update localStorage user data
       const updatedUser = { ...user, profile_image: null };
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
       
       toast.success("Profile image removed successfully");
     } catch (error) {
@@ -220,6 +222,7 @@ const Profile = ({ sticky }) => {
       // Update localStorage user data
       const updatedUser = { ...user, name: result.name };
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
       
       toast.success("Name updated successfully");
       setShowEditNameModal(false);
@@ -233,6 +236,7 @@ const Profile = ({ sticky }) => {
 
   const handleLogout = () => {
     setUserProfile(null); // clear profile state
+    setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     dispatch(logOut());

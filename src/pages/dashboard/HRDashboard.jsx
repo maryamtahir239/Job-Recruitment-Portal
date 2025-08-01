@@ -35,24 +35,23 @@ const HRDashboard = () => {
       setLoading(true);
       setError(null);
       
-      // Temporarily remove authentication headers to test
-      // const config = {
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`,
-      //     'Content-Type': 'application/json'
-      //   }
-      // };
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
       
       // Fetch jobs
-      const jobsResponse = await axios.get("/api/jobs");
+      const jobsResponse = await axios.get("/api/jobs", config);
       const jobs = jobsResponse.data;
       
       // Fetch candidates
-      const candidatesResponse = await axios.get("/api/candidates");
+      const candidatesResponse = await axios.get("/api/candidates", config);
       const candidates = candidatesResponse.data;
       
       // Fetch applications
-      const applicationsResponse = await axios.get("/api/applications");
+      const applicationsResponse = await axios.get("/api/applications", config);
       const applications = applicationsResponse.data;
       
       // Calculate stats

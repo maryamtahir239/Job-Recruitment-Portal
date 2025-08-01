@@ -31,18 +31,36 @@ const SuperAdminDashboard = () => {
     try {
       setLoading(true);
       
+      const token = localStorage.getItem("token");
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      
+      console.log("Current user:", user);
+      console.log("Token:", token ? "Present" : "Missing");
+      
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+      
       // Fetch all required data
       const [jobsRes, candidatesRes, applicationsRes, usersRes] = await Promise.all([
-        axios.get("/api/jobs"),
-        axios.get("/api/candidates"),
-        axios.get("/api/applications"),
-        axios.get("/api/admin/users")
+        axios.get("/api/jobs"), // No auth required
+        axios.get("/api/candidates"), // No auth required
+        axios.get("/api/applications", { headers }), // Auth required
+        axios.get("/api/admin/users", { headers }) // Auth required
       ]);
 
       const jobs = jobsRes.data || [];
       const candidates = candidatesRes.data || [];
       const applications = applicationsRes.data || [];
       const users = usersRes.data || [];
+      
+      console.log("Fetched data:", {
+        jobs: jobs.length,
+        candidates: candidates.length,
+        applications: applications.length,
+        users: users.length
+      });
 
       // Calculate statistics
       const activeJobs = jobs.filter(job => job.status === "Active").length;
@@ -85,6 +103,14 @@ const SuperAdminDashboard = () => {
       });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
+      // Only show error for non-authentication issues
+      if (
+        error.response?.status !== 401 &&
+        error.response?.status !== 403 &&
+        error.response?.data?.error !== "Invalid credentials"
+      ) {
+        console.error("Dashboard data fetch error:", error.response?.data || error.message);
+      }
     } finally {
       setLoading(false);
     }
