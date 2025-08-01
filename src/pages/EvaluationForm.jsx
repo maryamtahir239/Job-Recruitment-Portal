@@ -59,6 +59,12 @@ const EvaluationForm = ({ candidate, onClose }) => {
 
  const handleSubmit = async () => {
   try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in to submit evaluation.");
+      return;
+    }
+
     const evaluationPayload = {
       candidate: { id: candidate.id },
       ratings,
@@ -69,16 +75,20 @@ const EvaluationForm = ({ candidate, onClose }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
       },
       body: JSON.stringify(evaluationPayload),
     });
 
-    if (!response.ok) throw new Error("Submission failed");
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Submission failed");
+    }
 
-    alert(" Evaluation submitted successfully!");
+    alert("Evaluation submitted successfully!");
     onClose(); 
   } catch (err) {
-    alert(" Failed to submit evaluation.");
+    alert(`Failed to submit evaluation: ${err.message}`);
   }
 };
 

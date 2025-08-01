@@ -93,7 +93,7 @@ const Profile = ({ sticky }) => {
     if (userData && token) {
       fetchUserProfile();
     }
-  }, []); // Empty dependency array - only run once on mount
+  }, []); // Only run once on component mount
 
   const fetchUserProfile = async () => {
     try {

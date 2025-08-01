@@ -12,7 +12,29 @@ export async function getUserProfile(token) {
   const res = await fetch(`${API_BASE}/api/user/profile`, {
     headers: authHeaders(token),
   });
-  if (!res.ok) throw new Error(await res.text());
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type");
+    let errorMessage = "Failed to fetch user profile";
+    
+    try {
+      if (contentType && contentType.includes("application/json")) {
+        const errorData = await res.json();
+        errorMessage = errorData.error || errorMessage;
+      } else {
+        const errorText = await res.text();
+        if (errorText.includes("<html") || errorText.includes("<!DOCTYPE")) {
+          errorMessage = "Server error occurred. Please try again.";
+        } else {
+          errorMessage = errorText || errorMessage;
+        }
+      }
+    } catch (parseError) {
+      console.error("Error parsing response:", parseError);
+      errorMessage = "Failed to fetch user profile";
+    }
+    
+    throw new Error(errorMessage);
+  }
   return res.json();
 }
 
@@ -88,7 +110,29 @@ export async function updateProfileImage(token, file) {
     },
     body: formData,
   });
-  if (!res.ok) throw new Error(await res.text());
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type");
+    let errorMessage = "Failed to update profile image";
+    
+    try {
+      if (contentType && contentType.includes("application/json")) {
+        const errorData = await res.json();
+        errorMessage = errorData.error || errorMessage;
+      } else {
+        const errorText = await res.text();
+        if (errorText.includes("<html") || errorText.includes("<!DOCTYPE")) {
+          errorMessage = "Server error occurred. Please try again.";
+        } else {
+          errorMessage = errorText || errorMessage;
+        }
+      }
+    } catch (parseError) {
+      console.error("Error parsing response:", parseError);
+      errorMessage = "Failed to update profile image";
+    }
+    
+    throw new Error(errorMessage);
+  }
   return res.json();
 }
 
@@ -98,7 +142,29 @@ export async function removeProfileImage(token) {
     method: "DELETE",
     headers: authHeaders(token),
   });
-  if (!res.ok) throw new Error(await res.text());
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type");
+    let errorMessage = "Failed to remove profile image";
+    
+    try {
+      if (contentType && contentType.includes("application/json")) {
+        const errorData = await res.json();
+        errorMessage = errorData.error || errorMessage;
+      } else {
+        const errorText = await res.text();
+        if (errorText.includes("<html") || errorText.includes("<!DOCTYPE")) {
+          errorMessage = "Server error occurred. Please try again.";
+        } else {
+          errorMessage = errorText || errorMessage;
+        }
+      }
+    } catch (parseError) {
+      console.error("Error parsing response:", parseError);
+      errorMessage = "Failed to remove profile image";
+    }
+    
+    throw new Error(errorMessage);
+  }
   return res.json();
 }
 
@@ -112,6 +178,28 @@ export async function resetPassword(token, currentPassword, newPassword) {
     },
     body: JSON.stringify({ currentPassword, newPassword }),
   });
-  if (!res.ok) throw new Error(await res.text());
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type");
+    let errorMessage = "Failed to reset password";
+    
+    try {
+      if (contentType && contentType.includes("application/json")) {
+        const errorData = await res.json();
+        errorMessage = errorData.error || errorMessage;
+      } else {
+        const errorText = await res.text();
+        if (errorText.includes("<html") || errorText.includes("<!DOCTYPE")) {
+          errorMessage = "Server error occurred. Please try again.";
+        } else {
+          errorMessage = errorText || errorMessage;
+        }
+      }
+    } catch (parseError) {
+      console.error("Error parsing response:", parseError);
+      errorMessage = "Failed to reset password";
+    }
+    
+    throw new Error(errorMessage);
+  }
   return res.json();
 } 

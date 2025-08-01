@@ -3,6 +3,9 @@ import db from "../db/knex.js";
 export const createEvaluation = async (req, res) => {
   try {
     const { candidate, ratings, comments } = req.body;
+    
+    console.log("Received evaluation data:", { candidate, ratings, comments });
+    console.log("User from token:", req.user);
 
     // ✅ Validate input
     if (!candidate?.id) {
@@ -16,14 +19,38 @@ export const createEvaluation = async (req, res) => {
     const totalScore = Object.values(ratings)
       .map(Number)
       .reduce((sum, val) => sum + (isNaN(val) ? 0 : val), 0);
+    
+    console.log("Calculated total score:", totalScore);
 
     // ✅ Insert into evaluation table (foreign key to candidate_applications)
-    const [evaluationId] = await db("evaluation").insert({
-      candidate_id: candidate.id, // Ensure this references candidate_applications.id
-      evaluator_name: "interviewer",
+    const evaluatorId = req.user?.id;
+    if (!evaluatorId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Check if candidate application exists
+    const candidateApp = await db("candidate_applications")
+      .where("id", candidate.id)
+      .first();
+    
+    console.log("Found candidate application:", candidateApp);
+    
+    if (!candidateApp) {
+      return res.status(404).json({ message: "Candidate application not found." });
+    }
+
+    const evaluationData = {
+      application_id: candidate.id, // Changed from candidate_id to application_id to match migration
+      evaluator_id: evaluatorId,
       overall_comments: JSON.stringify(comments || {}),
       rating: totalScore,
-    });
+    };
+    
+    console.log("Inserting evaluation data:", evaluationData);
+
+    const [evaluationId] = await db("evaluation").insert(evaluationData);
+    
+    console.log("Created evaluation with ID:", evaluationId);
 
     // ✅ Insert detailed question ratings (optional table)
     const questionEntries = Object.entries(ratings).map(([question, value]) => ({
@@ -33,6 +60,7 @@ export const createEvaluation = async (req, res) => {
     }));
 
     if (questionEntries.length > 0) {
+      console.log("Inserting question entries:", questionEntries);
       await db("evaluation_scores").insert(questionEntries);
     }
 
@@ -41,21 +69,43 @@ export const createEvaluation = async (req, res) => {
       evaluationId,
     });
   } catch (error) {
-    res.status(500).json({ message: "Failed to save evaluation", error });
+    console.error("Evaluation creation error:", error);
+    
+    // Handle specific database errors
+    if (error.code === 'ER_NO_SUCH_TABLE') {
+      return res.status(500).json({ 
+        message: "Database table not found. Please run migrations.",
+        error: error.message 
+      });
+    }
+    
+    if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+      return res.status(400).json({ 
+        message: "Invalid candidate application ID.",
+        error: error.message 
+      });
+    }
+    
+    res.status(500).json({ 
+      message: "Failed to save evaluation", 
+      error: error.message 
+    });
   }
 };
 
 export const getEvaluations = async (req, res) => {
   try {
     const evaluations = await db("evaluation")
-      .join("candidate_applications", "evaluation.candidate_id", "=", "candidate_applications.id")
+      .join("candidate_applications", "evaluation.application_id", "=", "candidate_applications.id")
+      .join("users", "evaluation.evaluator_id", "=", "users.id")
       .select(
         "evaluation.id",
-        "evaluation.candidate_id",
+        "evaluation.application_id",
         "evaluation.rating",
         "evaluation.overall_comments",
         "evaluation.created_at",
-        "candidate_applications.payload"
+        "candidate_applications.payload",
+        "users.name as evaluator_name"
       )
       .orderBy("evaluation.created_at", "desc");
 

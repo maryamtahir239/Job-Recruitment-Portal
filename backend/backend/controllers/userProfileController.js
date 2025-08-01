@@ -8,6 +8,10 @@ export const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
     
+    if (!userId) {
+      return res.status(400).json({ error: "User ID not found in token" });
+    }
+    
     const user = await knex("users")
       .select("id", "name", "email", "role", "profile_image", "created_at")
       .where({ id: userId })
@@ -19,7 +23,8 @@ export const getUserProfile = async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.error("GET /api/user/profile error:", err);
+    res.status(500).json({ error: "Failed to fetch user profile. Please try again." });
   }
 };
 
@@ -68,6 +73,10 @@ export const updateProfileImage = async (req, res) => {
   try {
     const userId = req.user.id;
     
+    if (!userId) {
+      return res.status(400).json({ error: "User ID not found in token" });
+    }
+    
     if (!req.file) {
       return res.status(400).json({ error: "No image file provided" });
     }
@@ -103,7 +112,7 @@ export const updateProfileImage = async (req, res) => {
       .first();
 
     // Delete old profile image if exists
-    if (currentUser.profile_image) {
+    if (currentUser && currentUser.profile_image) {
       const oldImagePath = path.join(process.cwd(), 'uploads', 'profiles', currentUser.profile_image);
       if (fs.existsSync(oldImagePath)) {
         fs.unlinkSync(oldImagePath);
@@ -120,7 +129,8 @@ export const updateProfileImage = async (req, res) => {
       profile_image: filename
     });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.error("PUT /api/user/profile-image error:", err);
+    res.status(500).json({ error: "Failed to update profile image. Please try again." });
   }
 };
 
@@ -160,6 +170,10 @@ export const resetPassword = async (req, res) => {
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
 
+    if (!userId) {
+      return res.status(400).json({ error: "User ID not found in token" });
+    }
+
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ error: "Current password and new password are required" });
     }
@@ -190,6 +204,7 @@ export const resetPassword = async (req, res) => {
 
     res.json({ message: "Password updated successfully" });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.error("PUT /api/user/reset-password error:", err);
+    res.status(500).json({ error: "Failed to reset password. Please try again." });
   }
 }; 
