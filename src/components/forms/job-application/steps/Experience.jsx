@@ -18,6 +18,12 @@ const Experience = ({ register, errors, fieldErrors, expFields, addExperience, r
     }
   }, [expFields.length, showExperienceForm, setValue]);
 
+  // Sync local state with form values
+  useEffect(() => {
+    const formIsFresher = watch("isFresher");
+    setIsFresher(formIsFresher || false);
+  }, [watch("isFresher")]);
+
   const employmentTypes = [
     { value: "Full-time", label: "Full-time" },
     { value: "Part-time", label: "Part-time" },
@@ -66,7 +72,22 @@ const Experience = ({ register, errors, fieldErrors, expFields, addExperience, r
           <Icon icon="ph:briefcase" className="mr-2" />
           Work Experience
         </h3>
-        <p className="text-sm text-gray-600 mb-4">Please provide your work experience, starting with the most recent position.</p>
+        <p className="text-sm text-gray-600 mb-4">
+          Please provide your work experience, starting with the most recent position. 
+          <span className="text-red-500 font-medium"> You must either add experience or select that you are a fresher.</span>
+        </p>
+        
+        {/* Validation Error Display - Moved to top */}
+        {(fieldErrors.experience || errors.experience?.message) && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center">
+              <Icon icon="ph:warning" className="text-red-500 mr-2" />
+              <p className="text-red-700 text-sm font-medium">
+                {fieldErrors.experience || errors.experience?.message}
+              </p>
+            </div>
+          </div>
+        )}
         
         {/* Fresher Option */}
         {!showExperienceForm && expFields.length === 0 && (
@@ -77,14 +98,16 @@ const Experience = ({ register, errors, fieldErrors, expFields, addExperience, r
                   type="checkbox"
                   checked={isFresher}
                   onChange={(e) => handleFresherToggle(e.target.checked)}
-                  className="mr-3 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  className="mr-3 h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary"
                 />
-                <span className="text-sm font-medium text-gray-900 dark:text-white">I am a fresher (no work experience)</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                  I am a fresher (no work experience) <span className="text-red-500">*</span>
+                </span>
               </label>
             </div>
             {isFresher && (
-              <p className="text-sm text-gray-600 mt-2 ml-7">
-                You've selected that you are a fresher. This will be noted in your application.
+              <p className="text-sm text-green-600 mt-2 ml-8">
+                ✓ You've selected that you are a fresher. This will be noted in your application.
               </p>
             )}
           </div>
@@ -284,9 +307,7 @@ const Experience = ({ register, errors, fieldErrors, expFields, addExperience, r
         )}
       </div>
       
-      {(fieldErrors.experience || errors.experience?.message) && (
-        <p className="text-red-500 text-sm mt-1">{fieldErrors.experience || errors.experience?.message}</p>
-      )}
+      
     </div>
   );
 };

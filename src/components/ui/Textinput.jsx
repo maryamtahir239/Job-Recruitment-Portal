@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Icon from "@/components/ui/Icon";
 import Cleave from "cleave.js/react";
 import "cleave.js/dist/addons/cleave-phone.us";
+import DatePicker from "./DatePicker";
 
 const Textinput = ({
   type,
@@ -53,6 +54,25 @@ const Textinput = ({
     }
   };
 
+  // If it's a date input, use the DatePicker component
+  if (type === "date") {
+    return (
+      <DatePicker
+        label={label}
+        value={value || defaultValue}
+        onChange={propOnChange}
+        placeholder={placeholder}
+        className={className}
+        disabled={disabled}
+        required={required}
+        error={error}
+        name={name}
+        id={inputId}
+        {...rest}
+      />
+    );
+  }
+
   return (
     <div
       className={`textfiled-wrapper ${error ? "is-error" : ""} ${
@@ -70,121 +90,110 @@ const Textinput = ({
         </label>
       )}
       <div className={`relative ${horizontal ? "flex-1" : ""}`}>
-        {/* Branch for inputs managed by react-hook-form and NOT masked */}
-        {name && register && !isMask && (
-          <input
-            type={type === "password" && open === true ? "text" : type}
-            {...registeredProps}
-            {...rest}
-            onChange={handleChange}
-            onInput={handleChange}
-            className={`${
-              error ? " is-error" : " "
-            } text-control py-[10px] ${className} ${type === "date" ? "[&::-webkit-calendar-picker-indicator]:hidden" : ""}`}
-            placeholder={placeholder}
-            readOnly={readonly}
-            disabled={disabled}
-            id={inputId}
-          />
-        )}
+                 {/* Branch for inputs managed by react-hook-form and NOT masked */}
+         {name && register && !isMask && (
+           <input
+             type={type === "password" && open === true ? "text" : type}
+             {...registeredProps}
+             {...rest}
+             onChange={handleChange}
+             onInput={handleChange}
+             className={`${
+               error ? " is-error" : " "
+             } text-control py-[10px] ${className}`}
+             placeholder={placeholder}
+             readOnly={readonly}
+             disabled={disabled}
+             id={inputId}
+           />
+         )}
 
-        {/* Branch for inputs NOT managed by react-hook-form and NOT masked */}
-        {(!name || !register) && !isMask && (
-          <input
-            type={type === "password" && open === true ? "text" : type}
-            className={`text-control py-[10px] ${className} ${type === "date" ? "[&::-webkit-calendar-picker-indicator]:hidden" : ""}`}
-            placeholder={placeholder}
-            readOnly={readonly}
-            disabled={disabled}
-            onChange={propOnChange}
-            onInput={propOnChange}
-            id={inputId}
-            name={name}
-            value={value}
-            defaultValue={defaultValue}
-            {...rest}
-          />
-        )}
+                 {/* Branch for inputs NOT managed by react-hook-form and NOT masked */}
+         {(!name || !register) && !isMask && (
+           <input
+             type={type === "password" && open === true ? "text" : type}
+             className={`text-control py-[10px] ${className}`}
+             placeholder={placeholder}
+             readOnly={readonly}
+             disabled={disabled}
+             onChange={propOnChange}
+             onInput={propOnChange}
+             id={inputId}
+             name={name}
+             value={value}
+             defaultValue={defaultValue}
+             {...rest}
+           />
+         )}
 
-        {/* Branch for inputs managed by react-hook-form AND masked (using Cleave.js) */}
-        {name && register && isMask && (
-          <Cleave
-            htmlRef={registeredProps.ref}
-            name={registeredProps.name}
-            {...rest}
-            placeholder={placeholder}
-            options={options}
-            className={`${
-              error ? " is-error" : " "
-            } text-control py-[10px] ${className} ${type === "date" ? "[&::-webkit-calendar-picker-indicator]:hidden" : ""}`}
-            onFocus={onFocus}
-            id={inputId}
-            readOnly={readonly}
-            disabled={disabled}
-            onChange={(e) => {
-              const syntheticEvent = {
-                target: {
-                  name: registeredProps.name,
-                  value: e.target.value,
-                },
-                type: 'change',
-              };
-              handleChange(syntheticEvent);
-            }}
-            onBlur={registeredProps.onBlur}
-            defaultValue={defaultValue}
-          />
-        )}
+                 {/* Branch for inputs managed by react-hook-form AND masked (using Cleave.js) */}
+         {name && register && isMask && (
+           <Cleave
+             htmlRef={registeredProps.ref}
+             name={registeredProps.name}
+             {...rest}
+             placeholder={placeholder}
+             options={options}
+             className={`${
+               error ? " is-error" : " "
+             } text-control py-[10px] ${className}`}
+             onFocus={onFocus}
+             id={inputId}
+             readOnly={readonly}
+             disabled={disabled}
+             onChange={(e) => {
+               const syntheticEvent = {
+                 target: {
+                   name: registeredProps.name,
+                   value: e.target.value,
+                 },
+                 type: 'change',
+               };
+               handleChange(syntheticEvent);
+             }}
+             onBlur={registeredProps.onBlur}
+             defaultValue={defaultValue}
+           />
+         )}
 
-        {/* Branch for inputs NOT managed by react-hook-form AND masked */}
-        {(!name || !register) && isMask && (
-          <Cleave
-            placeholder={placeholder}
-            options={options}
-            className={`${
-              error ? " is-error" : " "
-            } text-control py-[10px] ${className} ${type === "date" ? "[&::-webkit-calendar-picker-indicator]:hidden" : ""}`}
-            onFocus={onFocus}
-            id={inputId}
-            readOnly={readonly}
-            disabled={disabled}
-            onChange={propOnChange}
-            defaultValue={defaultValue}
-            name={name}
-            value={value}
-          />
-        )}
+                 {/* Branch for inputs NOT managed by react-hook-form AND masked */}
+         {(!name || !register) && isMask && (
+           <Cleave
+             placeholder={placeholder}
+             options={options}
+             className={`${
+               error ? " is-error" : " "
+             } text-control py-[10px] ${className}`}
+             onFocus={onFocus}
+             id={inputId}
+             readOnly={readonly}
+             disabled={disabled}
+             onChange={propOnChange}
+             defaultValue={defaultValue}
+             name={name}
+             value={value}
+           />
+         )}
 
-        {/* Icon and validation feedback */}
-        <div className="flex text-xl absolute ltr:right-[14px] rtl:left-[14px] top-1/2 -translate-y-1/2 space-x-1 rtl:space-x-reverse">
-          {hasicon && (
-            <span className="cursor-pointer text-gray-400" onClick={handleOpen}>
-              {open && type === "password" && <Icon icon="heroicons-outline:eye" />}
-              {!open && type === "password" && <Icon icon="heroicons-outline:eye-off" />}
-            </span>
-          )}
-          {type === "date" && (
-            <span className="cursor-pointer text-gray-400" onClick={() => {
-              // Trigger click on the input to open the date picker
-              const input = document.getElementById(inputId);
-              if (input) {
-                input.showPicker ? input.showPicker() : input.click();
-              }
-            }}>
-              <Icon icon="ph:calendar" />
-            </span>
-          )}
-          {error && (
-            <span className="text-red-500">
-              <Icon icon="ph:info-fill" />
-            </span>
-          )}
-          {validate && (
-            <span className="text-green-500">
-              <Icon icon="ph:check-circle-fill" />
-            </span>
-          )}
-        </div>
+                 {/* Icon and validation feedback */}
+         <div className="flex text-xl absolute ltr:right-[14px] rtl:left-[14px] top-1/2 -translate-y-1/2 space-x-1 rtl:space-x-reverse">
+           {hasicon && (
+             <span className="cursor-pointer text-gray-400" onClick={handleOpen}>
+               {open && type === "password" && <Icon icon="heroicons-outline:eye" />}
+               {!open && type === "password" && <Icon icon="heroicons-outline:eye-off" />}
+             </span>
+           )}
+           {error && (
+             <span className="text-red-500">
+               <Icon icon="ph:info-fill" />
+             </span>
+           )}
+           {validate && (
+             <span className="text-green-500">
+               <Icon icon="ph:check-circle-fill" />
+             </span>
+           )}
+         </div>
       </div>
       {/* Error, validation, and description messages */}
       {error && (

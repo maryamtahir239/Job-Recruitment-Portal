@@ -438,10 +438,13 @@ const JobPostings = () => {
               name="status"
               value={formData.status}
               onChange={handleInputChange}
-              options={[
+              options={editingJob ? [
                 { value: "Active", label: "Active" },
                 { value: "Draft", label: "Draft" },
                 { value: "Closed", label: "Closed" }
+              ] : [
+                { value: "Active", label: "Active" },
+                { value: "Draft", label: "Draft" }
               ]}
             />
           </div>
