@@ -38,37 +38,8 @@ export function up(knex) {
         .defaultTo("Applied");
   
       // File paths
-      table.string("photo_url").nullable();
-      table.string("resume_url").nullable();
       table.string("photo_filename").nullable(); // String for filename, can be NULL
       table.string("resume_filename").nullable(); // String for filename, can be NULL
-  
-      // Personal information columns
-      table.string("father_name").nullable();
-      table.string("cnic").nullable();
-      table.string("date_of_birth").nullable();
-      table.string("gender").nullable();
-      table.string("nationality").nullable();
-      table.string("marital_status").nullable();
-      
-      // Address information columns
-      table.text("address").nullable();
-      table.string("city").nullable();
-      table.string("province").nullable();
-      
-      // Emergency contact columns
-      table.string("emergency_contact_name").nullable();
-      table.string("emergency_contact_phone").nullable();
-      
-      // Additional information columns
-      table.text("why_interested").nullable();
-      table.text("career_goals").nullable();
-      table.string("expected_salary").nullable();
-      table.string("notice_period").nullable();
-      
-      // Boolean flags
-      table.boolean("isFresher").defaultTo(false);
-      table.boolean("hasReferences").defaultTo(false);
   
       table.timestamp("created_at").defaultTo(knex.fn.now()); // Timestamp, defaults to current time
       table.timestamp("updated_at").defaultTo(knex.fn.now()); // Timestamp, defaults to current time
