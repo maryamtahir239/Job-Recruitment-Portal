@@ -4,7 +4,7 @@
 
 .text-control {
   @apply bg-white dark:bg-transparent  transition duration-300 ease-in-out border border-gray-10
-   dark:border-gray-700 dark:text-gray-300 focus:border-indigo-600  dark:focus:border-indigo-600 
+   dark:border-gray-700 dark:text-gray-300 focus:border-blue-500  dark:focus:border-blue-500 
     focus:outline-none rounded
     placeholder:text-gray-400 text-gray-900 text-sm px-3  placeholder:font-normal dark:placeholder:text-gray-400 block w-full;
 }
@@ -28,6 +28,11 @@
 
 .text-control[disabled] {
   @apply cursor-not-allowed bg-gray-100 bg-opacity-70 text-gray-800 placeholder:text-opacity-60 dark:bg-gray-600;
+}
+
+// Ensure all textareas have consistent blue focus styling
+textarea:focus {
+  @apply border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none;
 }
 
 // file input

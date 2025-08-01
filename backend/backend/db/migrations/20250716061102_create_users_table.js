@@ -6,6 +6,7 @@ export function up(knex) {
       table.string("email").notNullable().unique();
       table.string("password").notNullable();
       table.enu("role", ["SuperAdmin", "HR", "Interviewer"]).notNullable();
+      table.string("profile_image").nullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
     });
   }

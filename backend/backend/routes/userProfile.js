@@ -3,6 +3,7 @@ import multer from "multer";
 import { verifyToken } from "../middleware/authMiddleware.js";
 import {
   getUserProfile,
+  updateUserProfile,
   updateProfileImage,
   removeProfileImage,
   resetPassword
@@ -34,6 +35,9 @@ router.use(verifyToken);
 
 // GET /api/user/profile - Get user profile
 router.get("/profile", getUserProfile);
+
+// PUT /api/user/profile - Update user profile (name)
+router.put("/profile", updateUserProfile);
 
 // PUT /api/user/profile-image - Update profile image
 router.put("/profile-image", upload.single('profile_image'), updateProfileImage);

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { safeToastError } from "@/utility/safeToast";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -17,9 +18,21 @@ const LoginForm = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (isSubmitting.current || isLoading) return;
     
-    // Prevent multiple submissions
-    if (isSubmitting.current || isLoading) {
+    // Client-side validation
+    const newErrors = {};
+    if (!email.trim()) {
+      newErrors.email = "Email address is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    if (!password) {
+      newErrors.password = "Password is required";
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
     
@@ -27,70 +40,54 @@ const LoginForm = () => {
     setIsLoading(true);
     clearErrors();
 
-    console.log("LoginForm: Starting login process...");
-
     try {
-      const res = await fetch("http://localhost:3001/api/auth/login", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await res.json();
-      console.log("LoginForm: Response received:", { status: res.status, ok: res.ok, data });
 
       if (!res.ok) {
-        console.log("LoginForm: Login failed with error:", data);
-        // Handle specific error messages
         if (data.field) {
-          // Field-specific error
-          setErrors({ [data.field]: data.error });
-          toast.error(data.error);
+          // Set specific field error with more descriptive message
+          let errorMessage = data.error;
+          if (data.field === 'email' && data.error.includes('not found')) {
+            errorMessage = "Please check your email address and enter the correct email!";
+          } else if (data.field === 'password' && data.error.includes('Incorrect password')) {
+            errorMessage = "Password is incorrect. Please check your password and try again!";
+          }
+          setErrors({ [data.field]: errorMessage });
+          // No toast for field-specific errors
         } else {
-          // General error
-          toast.error(data.error || "Login failed");
+          setErrors({ general: data.error || "Login failed" });
+          safeToastError(data.error || "Login failed"); // Only for general errors
         }
         return;
       }
 
-      // Check if we have valid user data
       if (!data.user || !data.token) {
-        console.log("LoginForm: Invalid response data:", data);
-        toast.error("Invalid response from server");
+        setErrors({ general: "Invalid response from server" });
+        safeToastError("Invalid response from server");
         return;
       }
 
-      // ✅ Role-based Redirect
-      const role = data.user?.role;
-      if (!role) {
-        console.log("LoginForm: No role in user data:", data.user);
-        toast.error("Invalid user data");
-        return;
-      }
-
-      console.log("LoginForm: Login successful for role:", role);
-
-      // Store user data
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Show success message
       toast.success("Login successful");
 
-      // Navigate based on role
-      if (role === "SuperAdmin") {
-        navigate("/superadmin-dashboard");
-      } else if (role === "HR") {
-        navigate("/hr-dashboard");
-      } else if (role === "Interviewer") {
-        navigate("/interviewer-dashboard");
-      } else {
-        toast.error("Unauthorized role");
+      // Redirect based on role
+      if (data.user.role === "SuperAdmin") navigate("/superadmin-dashboard");
+      else if (data.user.role === "HR") navigate("/hr-dashboard");
+      else if (data.user.role === "Interviewer") navigate("/interviewer-dashboard");
+      else {
+        setErrors({ general: "Unauthorized role" });
+        safeToastError("Unauthorized role");
         return;
       }
     } catch (err) {
-      console.error("LoginForm: Login error:", err);
-      toast.error(err.message || "Server error");
+      setErrors({ general: err.message || "Server error" });
+      safeToastError(err.message || "Server error");
     } finally {
       setIsLoading(false);
       isSubmitting.current = false;
@@ -98,40 +95,59 @@ const LoginForm = () => {
   };
 
   const handleInputChange = (field, value) => {
-    // Clear field-specific error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: "" }));
     }
-    
     if (field === 'email') setEmail(value);
     if (field === 'password') setPassword(value);
   };
 
   return (
     <form onSubmit={handleLogin} className="space-y-4">
+      {/* General Error Display */}
+      {errors.general && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <p className="text-sm text-red-600 font-medium">{errors.general}</p>
+          </div>
+        </div>
+      )}
+
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block mb-1 text-sm font-medium">
-          Email
+        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700">
+          Email Address
         </label>
         <input
           id="email"
           type="email"
-          placeholder="Enter your email"
+          placeholder="Enter your email address"
           value={email}
           onChange={(e) => handleInputChange('email', e.target.value)}
           disabled={isLoading}
           required
-          className={`form-input w-full ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
+          className={`w-full px-4 py-3 border rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+            errors.email 
+              ? 'border-red-500 bg-red-50 focus:ring-red-500' 
+              : 'border-gray-300 bg-white hover:border-gray-400'
+          } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         />
         {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          <p className="mt-2 text-sm text-red-600 flex items-center">
+            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {errors.email}
+          </p>
         )}
       </div>
 
       {/* Password */}
       <div>
-        <label htmlFor="password" className="block mb-1 text-sm font-medium">
+        <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-700">
           Password
         </label>
         <input
@@ -142,10 +158,19 @@ const LoginForm = () => {
           onChange={(e) => handleInputChange('password', e.target.value)}
           disabled={isLoading}
           required
-          className={`form-input w-full ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
+          className={`w-full px-4 py-3 border rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+            errors.password 
+              ? 'border-red-500 bg-red-50 focus:ring-red-500' 
+              : 'border-gray-300 bg-white hover:border-gray-400'
+          } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         />
         {errors.password && (
-          <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+          <p className="mt-2 text-sm text-red-600 flex items-center">
+            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {errors.password}
+          </p>
         )}
       </div>
 
@@ -171,10 +196,24 @@ const LoginForm = () => {
       {/* Submit Button */}
       <button
         type="submit"
-        className="btn btn-primary w-full"
+        className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+          isLoading 
+            ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+            : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-sm hover:shadow-md'
+        }`}
         disabled={isLoading}
       >
-        {isLoading ? "Signing in..." : "Sign in"}
+        {isLoading ? (
+          <div className="flex items-center justify-center">
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Signing in...
+          </div>
+        ) : (
+          "Sign in"
+        )}
       </button>
     </form>
   );

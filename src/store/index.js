@@ -7,12 +7,8 @@ const store = configureStore({
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   devTools: false,
-  // reducer: rootReducer,
   middleware: (getDefaultMiddleware) => {
-    // Temporarily disable API slice middleware to fix the issue
-    // const middleware = [...getDefaultMiddleware(), apiSlice.middleware];
-    const middleware = [...getDefaultMiddleware()];
-    return middleware;
+    return [...getDefaultMiddleware(), apiSlice.middleware];
   },
 });
 

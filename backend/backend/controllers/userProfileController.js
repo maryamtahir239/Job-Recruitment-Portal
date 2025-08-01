@@ -24,6 +24,47 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
+// Update user profile (name)
+export const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name } = req.body;
+
+    console.log('Update profile request:', { userId, name });
+
+    if (!name || name.trim() === '') {
+      return res.status(400).json({ error: "Name is required" });
+    }
+
+    // Update user name
+    const affectedRows = await knex("users")
+      .where({ id: userId })
+      .update({ name: name.trim() });
+
+    console.log('Database update result:', { affectedRows });
+
+    if (affectedRows === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Get updated user data
+    const updatedUser = await knex("users")
+      .select("id", "name", "email", "role", "profile_image", "created_at")
+      .where({ id: userId })
+      .first();
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found after update" });
+    }
+
+    console.log('Updated user data:', updatedUser);
+    res.json(updatedUser);
+  } catch (err) {
+    console.error("PUT /api/user/profile error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 // Update user profile image
 export const updateProfileImage = async (req, res) => {
   try {

@@ -8,6 +8,7 @@ import Icon from "@/components/ui/Icon";
 import Textinput from "@/components/ui/Textinput";
 import Select from "@/components/ui/Select";
 import Modal from "@/components/ui/Modal";
+import { safeToastError } from "@/utility/safeToast";
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -35,8 +36,14 @@ const Applications = () => {
       const response = await axios.get("/api/applications");
       setApplications(response.data || []);
     } catch (error) {
-      setError(error.message);
-      toast.error("Failed to fetch applications");
+      // Only show toast for non-authentication errors
+      if (
+        error.response?.status !== 401 &&
+        error.response?.status !== 403 &&
+        error.response?.data?.error !== "Invalid credentials"
+      ) {
+        safeToastError("Failed to fetch applications");
+      }
     } finally {
       setLoading(false);
     }
@@ -100,9 +107,9 @@ const Applications = () => {
       await axios.put(`/api/applications/${applicationId}`, { status: newStatus });
       toast.success("Application status updated successfully");
       fetchApplications();
-    } catch (error) {
-      toast.error("Failed to update application status");
-    }
+          } catch (error) {
+        safeToastError("Failed to update application status");
+      }
   };
 
   if (error) {
@@ -285,32 +292,39 @@ const Applications = () => {
                 filteredApplications.map((application) => (
                   <tr key={application.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           {application.photo_url ? (
                             <img 
                               className="h-10 w-10 rounded-full object-cover" 
-                              src={`/uploads/applications/${application.photo_url}`} 
+                              src={`/api/uploads/applications/${application.photo_url}`} 
                               alt="Profile" 
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
                             />
-                          ) : (
-                            <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                              <Icon icon="ph:user" className="text-gray-600" />
-                            </div>
-                          )}
+                          ) : null}
+                          <div className={`h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center ${application.photo_url ? 'hidden' : ''}`}>
+                            <span className="text-white text-sm font-medium">
+                              {application.full_name ? application.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'NA'}
+                            </span>
+                          </div>
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                        <div className="ml-3">
+                          <div className="text-sm font-medium text-gray-900 truncate max-w-[150px]">
                             {application.full_name}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-gray-500 truncate max-w-[150px]">
                             {application.email}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                      {getJobTitle(application.job_id)}
+                      <div className="truncate max-w-[200px] text-center" title={getJobTitle(application.job_id)}>
+                        {getJobTitle(application.job_id)}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       {getStatusBadge(application.status)}
@@ -319,30 +333,38 @@ const Applications = () => {
                       {formatDate(application.created_at)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                      <div>
-                        <div>{application.phone || "No phone"}</div>
-                        <div className="text-gray-500">{application.email}</div>
+                      <div className="text-center">
+                        <div className="truncate max-w-[120px] text-center" title={application.phone || "No phone"}>
+                          {application.phone || "No phone"}
+                        </div>
+                        <div className="text-gray-500 truncate max-w-[120px] text-center" title={application.email}>
+                          {application.email}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <div className="flex justify-center space-x-2">
+                      <div className="flex justify-center space-x-2 items-center">
                         <Button
                           text="View"
-                          className="btn-outline-primary btn-sm"
+                          className="btn-outline-primary btn-sm h-8"
                           onClick={() => viewApplicationDetails(application)}
                         />
-                        <Select
-                          className="btn-sm"
-                          value={application.status}
-                          onChange={(e) => updateApplicationStatus(application.id, e.target.value)}
-                          options={[
-                            { value: "Applied", label: "Applied" },
-                            { value: "Under Review", label: "Under Review" },
-                            { value: "Shortlisted", label: "Shortlisted" },
-                            { value: "Rejected", label: "Rejected" },
-                            { value: "Hired", label: "Hired" }
-                          ]}
-                        />
+                        <div className="relative">
+                          <select
+                            value={application.status}
+                            onChange={(e) => updateApplicationStatus(application.id, e.target.value)}
+                            className="appearance-none bg-white border border-blue-500 text-blue-600 rounded-md px-3 h-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:bg-blue-50 transition-colors duration-200 min-w-[120px]"
+                          >
+                            <option value="Applied">Applied</option>
+                            <option value="Under Review">Under Review</option>
+                            <option value="Shortlisted">Shortlisted</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Hired">Hired</option>
+                          </select>
+                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-blue-600">
+                            <Icon icon="ph:caret-down" className="text-xs" />
+                          </div>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -412,7 +434,11 @@ const Applications = () => {
                   if (selectedApplication.resume_url) {
                     window.open(`/uploads/applications/${selectedApplication.resume_url}`, '_blank');
                   } else {
-                    toast.error("No resume available");
+                    if (!application.resume_path) {
+                      safeToastError("No resume available");
+                      return;
+                    }
+                    safeToastError("No resume available");
                   }
                 }}
               />

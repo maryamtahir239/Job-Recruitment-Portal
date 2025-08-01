@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Button from "@/components/ui/Button";
@@ -7,8 +8,10 @@ import Badge from "@/components/ui/Badge";
 import Icon from "@/components/ui/Icon";
 import Textinput from "@/components/ui/Textinput";
 import Select from "@/components/ui/Select";
+import { safeToastError } from "@/utility/safeToast";
 
 const Candidates = () => {
+  const navigate = useNavigate();
   const [candidates, setCandidates] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,9 +38,14 @@ const Candidates = () => {
       const response = await axios.get("/api/candidates");
       setCandidates(response.data || []);
     } catch (error) {
-      setError("Failed to fetch candidates");
-      toast.error("Failed to fetch candidates");
-      setCandidates([]);
+      // Only show toast for non-authentication errors
+      if (
+        error.response?.status !== 401 &&
+        error.response?.status !== 403 &&
+        error.response?.data?.error !== "Invalid credentials"
+      ) {
+        safeToastError("Failed to fetch candidates");
+      }
     } finally {
       setLoading(false);
     }
@@ -309,7 +317,7 @@ const Candidates = () => {
                           <Button
                             text="View"
                             className="btn-outline-primary btn-sm"
-                            onClick={() => window.location.href = `/applications/${candidate.id}`}
+                            onClick={() => navigate(`/applications/${candidate.id}`)}
                             disabled={candidate.invite_status !== 'submitted'}
                           />
                           {candidate.invite_status !== 'submitted' && (

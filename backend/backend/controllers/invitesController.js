@@ -47,6 +47,12 @@ export const bulkSendInvites = async (req, res) => {
         token_hash: tokenHash,
         expires_at: expiresAt,
         status: "sent",
+        sent_at: now,
+        metadata: JSON.stringify({
+          message: message || null,
+          sentVia: "bulk_invite",
+          jobId: jobId
+        }),
         created_at: now,
         updated_at: now,
       });
@@ -162,6 +168,7 @@ export const submitApplication = [
       const applicationData = {
         invite_id: invite.id,
         candidate_id: invite.candidate_id,
+        job_id: invite.job_id, // Add the job_id from the invite
         payload: JSON.stringify({ ...payload, files: { photo: photoPath, resume: resumePath } }),
         is_complete: true,
         photo_filename: photoPath,

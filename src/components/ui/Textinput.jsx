@@ -27,8 +27,11 @@ const Textinput = ({
   onFocus,
   defaultValue,
   value,
+  required = false,
   ...rest
 }) => {
+  // Generate a unique ID if none provided
+  const inputId = id || (name ? `input-${name.replace(/\./g, '-')}` : `input-${Math.random().toString(36).substr(2, 9)}`);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(!open);
@@ -58,12 +61,12 @@ const Textinput = ({
     >
       {label && (
         <label
-          htmlFor={id}
+          htmlFor={inputId}
           className={`block capitalize ${classLabel} ${
             horizontal ? "flex-0 mr-6 md:w-[100px] w-[60px] break-words" : ""
           }`}
         >
-          {label}
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
       <div className={`relative ${horizontal ? "flex-1" : ""}`}>
@@ -77,11 +80,11 @@ const Textinput = ({
             onInput={handleChange}
             className={`${
               error ? " is-error" : " "
-            } text-control py-[10px] ${className} `}
+            } text-control py-[10px] ${className} ${type === "date" ? "[&::-webkit-calendar-picker-indicator]:hidden" : ""}`}
             placeholder={placeholder}
             readOnly={readonly}
             disabled={disabled}
-            id={id}
+            id={inputId}
           />
         )}
 
@@ -89,13 +92,13 @@ const Textinput = ({
         {(!name || !register) && !isMask && (
           <input
             type={type === "password" && open === true ? "text" : type}
-            className={`text-control py-[10px] ${className}`}
+            className={`text-control py-[10px] ${className} ${type === "date" ? "[&::-webkit-calendar-picker-indicator]:hidden" : ""}`}
             placeholder={placeholder}
             readOnly={readonly}
             disabled={disabled}
             onChange={propOnChange}
             onInput={propOnChange}
-            id={id}
+            id={inputId}
             name={name}
             value={value}
             defaultValue={defaultValue}
@@ -113,9 +116,9 @@ const Textinput = ({
             options={options}
             className={`${
               error ? " is-error" : " "
-            } text-control py-[10px] ${className} `}
+            } text-control py-[10px] ${className} ${type === "date" ? "[&::-webkit-calendar-picker-indicator]:hidden" : ""}`}
             onFocus={onFocus}
-            id={id}
+            id={inputId}
             readOnly={readonly}
             disabled={disabled}
             onChange={(e) => {
@@ -140,9 +143,9 @@ const Textinput = ({
             options={options}
             className={`${
               error ? " is-error" : " "
-            } text-control py-[10px] ${className} `}
+            } text-control py-[10px] ${className} ${type === "date" ? "[&::-webkit-calendar-picker-indicator]:hidden" : ""}`}
             onFocus={onFocus}
-            id={id}
+            id={inputId}
             readOnly={readonly}
             disabled={disabled}
             onChange={propOnChange}
@@ -158,6 +161,17 @@ const Textinput = ({
             <span className="cursor-pointer text-gray-400" onClick={handleOpen}>
               {open && type === "password" && <Icon icon="heroicons-outline:eye" />}
               {!open && type === "password" && <Icon icon="heroicons-outline:eye-off" />}
+            </span>
+          )}
+          {type === "date" && (
+            <span className="cursor-pointer text-gray-400" onClick={() => {
+              // Trigger click on the input to open the date picker
+              const input = document.getElementById(inputId);
+              if (input) {
+                input.showPicker ? input.showPicker() : input.click();
+              }
+            }}>
+              <Icon icon="ph:calendar" />
             </span>
           )}
           {error && (

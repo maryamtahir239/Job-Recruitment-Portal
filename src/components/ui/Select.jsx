@@ -1,155 +1,82 @@
-import React, { Fragment } from "react";
-import Icon from "@/components/ui/Icon";
-const Select = ({
-  label,
-  placeholder = "Select Option",
+import React from 'react';
+import { forwardRef } from 'react';
+
+const Select = forwardRef(({ 
+  label, 
+  name, 
+  options = [], 
+  error, 
+  className = "", 
+  width = "w-full",
+  placeholder = "Select an option",
+  required = false,
   classLabel = "form-label",
-  className = "",
   classGroup = "",
-  register,
-  name,
-  readonly,
-  value,
-  error,
-  icon,
-  disabled,
-  id,
-  horizontal,
+  horizontal = false,
   validate,
   description,
-  onChange,
-  options,
-  defaultValue,
-  size,
-  multiple,
-  children,
-  ...rest
-}) => {
-  options = options || Array(3).fill("option");
-  
-  // Get all props provided by react-hook-form's register function
-  // Only call register(name) if 'name' is provided AND register function exists
-  const registeredProps = name && register ? register(name) : {};
-
+  ...props 
+}, ref) => {
   return (
-    <div
-      className={`textfiled-wrapper  ${error ? "is-error" : ""}  ${
-        horizontal ? "flex" : ""
-      }  ${validate ? "is-valid" : ""} `}
-    >
+    <div className={`textfiled-wrapper ${error ? "is-error" : ""} ${horizontal ? "flex" : ""} ${validate ? "is-valid" : ""} ${classGroup}`}>
       {label && (
         <label
-          htmlFor={id}
-          className={`block capitalize ${classLabel}  ${
+          htmlFor={name}
+          className={`block capitalize ${classLabel} ${
             horizontal ? "flex-0 mr-6 md:w-[100px] w-[60px] break-words" : ""
           }`}
         >
-          {label}
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      <div className={`relative ${horizontal ? "flex-1" : ""}`}>
-        {name && register ? (
-          <select
-            onChange={onChange}
-            {...registeredProps}
-            {...rest}
-            multiple={multiple}
-            className={`${
-              error ? " is-error" : " "
-            } text-control py-2  appearance-none ${className}  `}
-            placeholder={placeholder}
-            readOnly={readonly}
-            disabled={disabled}
-            id={id}
-            value={value}
-            size={size}
-            defaultValue={defaultValue}
+      <div className={`relative ${horizontal ? "flex-1" : ""} ${width}`}>
+        <select
+          ref={ref}
+          name={name}
+          id={name}
+          className={`
+            text-control py-[10px] appearance-none cursor-pointer
+            ${error ? " is-error" : ""}
+            ${validate ? " is-valid" : ""}
+            ${className}
+          `}
+          {...props}
+        >
+          <option value="" disabled>
+            {placeholder}
+          </option>
+          {options.map((option) => (
+            <option 
+              key={option.value} 
+              value={option.value}
+              className="py-1"
+            >
+              {option.label}
+            </option>
+          ))}
+        </select>
+        
+        {/* Custom dropdown arrow */}
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <svg 
+            className="w-4 h-4 text-gray-400" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
           >
-            {children ? (
-              children
-            ) : (
-              <Fragment>
-                <option value="" disabled>
-                  {placeholder}
-                </option>
-                {options.map((option, i) => (
-                  <Fragment key={i}>
-                    {typeof option === 'object' && option !== null && 'value' in option && 'label' in option ? (
-                      <option key={i} value={option.value}>
-                        {option.label}
-                      </option>
-                    ) : (
-                      <option key={i} value={option}>
-                        {option}
-                      </option>
-                    )}
-                  </Fragment>
-                ))}
-              </Fragment>
-            )}
-          </select>
-        ) : (
-          <select
-            onChange={onChange}
-            multiple={multiple}
-            className={`${
-              error ? " is-error" : " "
-            } text-control py-2 appearance-none ${className}  `}
-            placeholder={placeholder}
-            readOnly={readonly}
-            disabled={disabled}
-            id={id}
-            name={name}
-            value={value}
-            size={size}
-            defaultValue={defaultValue}
-            {...rest}
-          >
-            {children ? (
-              children
-            ) : (
-              <Fragment>
-                <option value="" disabled>
-                  {placeholder}
-                </option>
-                {options.map((option, i) => (
-                  <Fragment key={i}>
-                    {typeof option === 'object' && option !== null && 'value' in option && 'label' in option ? (
-                      <option key={i} value={option.value}>
-                        {option.label}
-                      </option>
-                    ) : (
-                      <option key={i} value={option}>
-                        {option}
-                      </option>
-                    )}
-                  </Fragment>
-                ))}
-              </Fragment>
-            )}
-          </select>
-        )}
-
-        {/* icon */}
-        <div className="flex text-xl absolute ltr:right-[14px] rtl:left-[14px] top-1/2 -translate-y-1/2  space-x-1 rtl:space-x-reverse">
-          <span className=" relative -right-2 inline-block text-gray-900 dark:text-gray-300 pointer-events-none">
-            <Icon icon="heroicons:chevron-down" />
-          </span>
-          {error && (
-            <span className="text-red-500">
-              <Icon icon="ph:info-fill" />
-            </span>
-          )}
-          {validate && (
-            <span className="text-green-500">
-              <Icon icon="ph:check-circle-fill" />
-            </span>
-          )}
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M19 9l-7 7-7-7" 
+            />
+          </svg>
         </div>
       </div>
+      
       {/* error and success message*/}
       {error && (
-        <div className="mt-2 text-red-600 block text-sm">{error.message}</div>
+        <div className="mt-2 text-red-600 block text-sm">{error.message || error}</div>
       )}
       {/* validated and success message*/}
       {validate && (
@@ -159,6 +86,8 @@ const Select = ({
       {description && <span className="input-help">{description}</span>}
     </div>
   );
-};
+});
+
+Select.displayName = 'Select';
 
 export default Select;

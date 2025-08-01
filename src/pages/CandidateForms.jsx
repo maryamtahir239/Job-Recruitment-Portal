@@ -12,7 +12,7 @@ const CandidateForms = () => {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/applications/submitted");
+        const res = await fetch("/api/applications/submitted");
         const data = await res.json();
         setApplications(data);
       } catch (error) {

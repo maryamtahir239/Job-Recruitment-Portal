@@ -2,7 +2,7 @@ export async function up(knex) {
     return knex.schema.createTable("evaluation", (table) => {
       table.increments("id").primary();
       table
-        .integer("candidate_id")
+        .integer("application_id")
         .unsigned()
         .notNullable()
         .references("id")

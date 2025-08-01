@@ -9,7 +9,7 @@ const EvaluatedCandidates = () => {
   useEffect(() => {
     const fetchEvaluations = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/evaluation");
+        const res = await fetch("/api/evaluation");
         const data = await res.json();
         setEvaluations(data);
       } catch (error) {

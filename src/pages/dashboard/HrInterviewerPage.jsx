@@ -9,6 +9,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons"; // Import FontAwesome icons for edit and delete
+import { safeToastError } from "@/utility/safeToast";
 
 const emptyForm = { name: "", email: "", password: "", role: "HR" };
 
@@ -30,7 +31,15 @@ const HrInterviewerPage = () => {
       const data = await listAdminUsers(token);
       setUsers(data);
     } catch (err) {
-      toast.error("Failed to load users");
+      // Only show toast for non-authentication errors
+      if (
+        err.response?.status !== 401 &&
+        err.response?.status !== 403 &&
+        err.message !== "Invalid credentials" &&
+        err.response?.data?.error !== "Invalid credentials"
+      ) {
+        safeToastError("Failed to load users");
+      }
     } finally {
       setLoading(false);
     }
@@ -38,7 +47,7 @@ const HrInterviewerPage = () => {
 
   useEffect(() => {
     if (!token || !user || user.role !== "SuperAdmin") {
-      toast.error("Access denied");
+      safeToastError("Access denied");
       navigate("/login");
       return;
     }
@@ -73,7 +82,14 @@ const HrInterviewerPage = () => {
       }
       resetForm();
     } catch (err) {
-      toast.error("Save failed");
+      // Only show toast for non-authentication errors
+      if (
+        err.response?.status !== 401 && 
+        err.response?.status !== 403 &&
+        err.message !== "Invalid credentials"
+      ) {
+        safeToastError("Save failed");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -98,7 +114,14 @@ const HrInterviewerPage = () => {
       setUsers((u) => u.filter((x) => x.id !== id));
       if (editingId === id) resetForm();
     } catch (err) {
-      toast.error("Delete failed");
+      // Only show toast for non-authentication errors
+      if (
+        err.response?.status !== 401 && 
+        err.response?.status !== 403 &&
+        err.message !== "Invalid credentials"
+      ) {
+        safeToastError("Delete failed");
+      }
     }
   };
 
@@ -118,7 +141,7 @@ const HrInterviewerPage = () => {
             value={formData.name}
             onChange={onChange}
             required
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-gray-300 rounded py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
             placeholder="Full name"
             type="text"
           />
@@ -130,7 +153,7 @@ const HrInterviewerPage = () => {
             value={formData.email}
             onChange={onChange}
             required
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-gray-300 rounded py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
             placeholder="user@example.com"
             type="email"
           />
@@ -143,7 +166,7 @@ const HrInterviewerPage = () => {
             name="password"
             value={formData.password}
             onChange={onChange}
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-gray-300 rounded py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
             placeholder={editingId ? "•••••• (optional)" : "Password"}
             type="password"
           />

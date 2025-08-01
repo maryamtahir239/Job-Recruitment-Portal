@@ -19,6 +19,8 @@ const EvaluationPage = lazy(() => import("./pages/EvaluationPage"));
 const EvaluationForm = lazy(() => import("./pages/EvaluationForm"));
 const CandidateForms = lazy(() => import("./pages/CandidateForms"));
 const EvaluatedCandidates = lazy(() => import("./pages/EvaluatedCandidates"));
+
+// **New Public Application Page**
 const PublicApplicationWrapper = lazy(() => import("./pages/hr/PublicApplicationWrapper"));
 
 function App() {
@@ -33,7 +35,7 @@ function App() {
           {/* Public route for candidate form */}
           <Route path="/apply/:token" element={<PublicApplicationWrapper />} />
 
-          {/* Authenticated routes with shared layout */}
+          {/* All authenticated routes with sidebar/profile go here */}
           <Route path="/*" element={<Layout />}>
             <Route path="dashboard" element={<HRDashboard />} />
             <Route path="hr-dashboard" element={<HRDashboard />} />
@@ -50,8 +52,7 @@ function App() {
             <Route path="evaluate/:id" element={<EvaluationPage />} />
             <Route path="evaluate/:id/form" element={<EvaluationForm />} />
             <Route path="candidate-forms" element={<CandidateForms />} />
-            <Route path="evaluation-form" element={<EvaluationForm />} />
-            <Route path="evaluated-candidates" element={<EvaluatedCandidates />} />
+            <Route path="evaluation/evaluated" element={<EvaluatedCandidates />} />
             <Route path="*" element={<Error />} />
           </Route>
         </Routes>
