@@ -18,7 +18,15 @@ const Candidates = lazy(() => import("./pages/Candidates"));
 const Applications = lazy(() => import("./pages/Applications"));
 const EvaluationPage = lazy(() => import("./pages/EvaluationPage"));
 const EvaluationForm = lazy(() => import("./pages/EvaluationForm"));
+<<<<<<< HEAD
+const CandidateForms = lazy(() => import("./pages/CandidateForms"));
 const EvaluatedCandidates = lazy(() => import("./pages/EvaluatedCandidates"));
+
+
+
+=======
+const EvaluatedCandidates = lazy(() => import("./pages/EvaluatedCandidates"));
+>>>>>>> 733cdea390da55c8f93bc977255360d10545e6bc
 
 // **New Public Application Page**
 const PublicApplicationWrapper = lazy(() => import("./pages/hr/PublicApplicationWrapper"));
@@ -36,14 +44,15 @@ function App() {
           <Route path="/apply/:token" element={<PublicApplicationWrapper />} />
 
           {/* Authenticated routes */}
-          <Route path="/evaluate/:id" element={<EvaluationPage />} />
-          <Route path="/evaluate/:id/form" element={<EvaluationForm />} />
-          <Route path="/candidate-forms" element={<CandidateForms />} />
-          <Route path="/evaluation/evaluated" element={<EvaluatedCandidates />} />
+         
 
           {/* All pages that include sidebar/profile go here */}
+<<<<<<< HEAD
+          <Route path="/" element={<Layout />}>
+=======
           <Route path="/*" element={<Layout />}>
             <Route path="dashboard" element={<HRDashboard />} />
+>>>>>>> 733cdea390da55c8f93bc977255360d10545e6bc
             <Route path="hr-dashboard" element={<HRDashboard />} />
             <Route path="job-postings" element={<JobPostings />} />
             <Route path="job-postings/:jobId" element={<JobDetail />} />
@@ -55,8 +64,15 @@ function App() {
               element={<HrInterviewerPage />}
             />
             <Route path="interviewer-dashboard" element={<InterviewerDashboard />} />
+<<<<<<< HEAD
+             <Route path="/evaluate/:id" element={<EvaluationPage />} />
+          <Route path="/evaluate/:id/form" element={<EvaluationForm />} />
+          <Route path="/candidate-forms" element={<CandidateForms />} />
+          <Route path="/evaluation/evaluated" element={<EvaluatedCandidates />} />
+=======
             <Route path="evaluation-form" element={<EvaluationForm />} />
             <Route path="evaluated-candidates" element={<EvaluatedCandidates />} />
+>>>>>>> 733cdea390da55c8f93bc977255360d10545e6bc
             <Route path="*" element={<Error />} />
           </Route>
         </Routes>
