@@ -14,7 +14,6 @@ const Error = lazy(() => import("./pages/404"));
 const JobPostings = lazy(() => import("./pages/JobPostings"));
 const JobDetail = lazy(() => import("./pages/JobDetail"));
 const Candidates = lazy(() => import("./pages/Candidates"));
-const Applications = lazy(() => import("./pages/Applications"));
 const EvaluationPage = lazy(() => import("./pages/EvaluationPage"));
 const EvaluationForm = lazy(() => import("./pages/EvaluationForm"));
 const CandidateForms = lazy(() => import("./pages/CandidateForms"));
@@ -42,7 +41,7 @@ function App() {
             <Route path="job-postings" element={<JobPostings />} />
             <Route path="job-postings/:jobId" element={<JobDetail />} />
             <Route path="candidates" element={<Candidates />} />
-            <Route path="applications" element={<Applications />} />
+
             <Route path="superadmin-dashboard" element={<SuperAdminDashboard />} />
             <Route
               path="superadmin-dashboard/hr-interview"

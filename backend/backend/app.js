@@ -4,7 +4,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
-
+import "./setup-uploads.js"; // Ensure upload directories exist
 
 dotenv.config();
 

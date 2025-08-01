@@ -93,7 +93,7 @@ const Profile = ({ sticky }) => {
     if (user && token) {
       fetchUserProfile();
     }
-  }, [user]);
+  }, []); // Only run once on component mount
 
   const fetchUserProfile = async () => {
     try {
