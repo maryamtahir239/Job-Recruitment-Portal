@@ -20,6 +20,8 @@ const EvaluationPage = lazy(() => import("./pages/EvaluationPage"));
 const EvaluationForm = lazy(() => import("./pages/EvaluationForm"));
 const CandidateForms = lazy(() => import("./pages/CandidateForms"));
 const EvaluatedCandidates = lazy(() => import("./pages/EvaluatedCandidates"));
+const Evaluations = lazy(() => import("./pages/Evaluations"));
+const PendingEvaluations = lazy(() => import("./pages/PendingEvaluations"));
 
 // **New Public Application Page**
 const PublicApplicationWrapper = lazy(() => import("./pages/hr/PublicApplicationWrapper"));
@@ -55,6 +57,9 @@ function App() {
             <Route path="evaluate/:id/form" element={<EvaluationForm />} />
             <Route path="candidate-forms" element={<CandidateForms />} />
             <Route path="evaluation/evaluated" element={<EvaluatedCandidates />} />
+            <Route path="evaluated-candidates" element={<EvaluatedCandidates />} />
+            <Route path="evaluations" element={<Evaluations />} />
+            <Route path="pending-evaluations" element={<PendingEvaluations />} />
             <Route path="*" element={<Error />} />
           </Route>
         </Routes>
