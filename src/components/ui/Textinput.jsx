@@ -68,6 +68,7 @@ const Textinput = ({
         error={error}
         name={name}
         id={inputId}
+        register={register}
         {...rest}
       />
     );

@@ -15,6 +15,7 @@ const DatePicker = ({
   error,
   name,
   id,
+  register,
   ...rest
 }) => {
   const [picker, setPicker] = useState(value || null);
@@ -22,21 +23,37 @@ const DatePicker = ({
   // Generate unique ID if none provided
   const inputId = id || (name ? `date-${name}` : `date-${Math.random().toString(36).substr(2, 9)}`);
 
+  // Get registered props if register function is provided
+  const registeredProps = register ? register(name) : {};
+
   useEffect(() => {
     setPicker(value || null);
   }, [value]);
 
   const handleDateChange = (date) => {
     setPicker(date);
+    const dateValue = date[0] ? date[0].toISOString().split('T')[0] : '';
+    
+    console.log('DatePicker onChange called with:', dateValue);
+    
+    // Create a synthetic event to match the expected format
+    const syntheticEvent = {
+      target: {
+        name: name,
+        value: dateValue,
+      },
+      type: 'change',
+    };
+    
+    // Call react-hook-form's onChange handler first
+    if (registeredProps.onChange) {
+      console.log('Calling react-hook-form onChange');
+      registeredProps.onChange(syntheticEvent);
+    }
+    
+    // Then call the original onChange prop
     if (onChange) {
-      // Create a synthetic event to match the expected format
-      const syntheticEvent = {
-        target: {
-          name: name,
-          value: date[0] ? date[0].toISOString().split('T')[0] : '',
-        },
-        type: 'change',
-      };
+      console.log('Calling original onChange');
       onChange(syntheticEvent);
     }
   };

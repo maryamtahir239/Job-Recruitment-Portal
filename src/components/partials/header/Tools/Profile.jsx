@@ -95,6 +95,42 @@ const Profile = ({ sticky }) => {
     }
   }, []); // Only run once on component mount
 
+  // Handle clicking outside and escape key to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isDropdownOpen) {
+        // Check if the click is outside the dropdown and profile button
+        const dropdown = document.querySelector('[data-profile-dropdown]');
+        const profileButton = document.querySelector('[data-profile-button]');
+        
+        if (dropdown && profileButton) {
+          const isClickInsideDropdown = dropdown.contains(event.target);
+          const isClickInsideButton = profileButton.contains(event.target);
+          
+          if (!isClickInsideDropdown && !isClickInsideButton) {
+            setIsDropdownOpen(false);
+          }
+        }
+      }
+    };
+
+    const handleEscapeKey = (event) => {
+      if (isDropdownOpen && event.key === 'Escape') {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isDropdownOpen]);
+
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -120,6 +156,7 @@ const Profile = ({ sticky }) => {
 
   const handleFileUpload = () => {
     fileInputRef.current?.click();
+    setIsDropdownOpen(false); // Close dropdown when opening file upload
   };
 
   const handleFileChange = async (e) => {
@@ -186,6 +223,7 @@ const Profile = ({ sticky }) => {
       setUser(updatedUser);
       
       toast.success("Profile image removed successfully");
+      setIsDropdownOpen(false); // Close dropdown after successful removal
     } catch (error) {
       safeToastError(error.message || "Failed to remove profile image");
     }
@@ -235,6 +273,7 @@ const Profile = ({ sticky }) => {
   };
 
   const handleLogout = () => {
+    setIsDropdownOpen(false); // Close dropdown before logout
     setUserProfile(null); // clear profile state
     setUser(null);
     localStorage.removeItem("user");
@@ -264,6 +303,7 @@ const Profile = ({ sticky }) => {
         <div
           className="cursor-pointer"
           onClick={handleImageClick}
+          data-profile-button
         >
           <ProfileLabel 
             sticky={sticky} 
@@ -276,7 +316,11 @@ const Profile = ({ sticky }) => {
 
         {/* Dropdown Menu - Sticky to navbar */}
         {isDropdownOpen && (
-          <div className="absolute right-0 top-full mt-2 w-[280px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+          <div 
+            className="absolute right-0 top-full w-[280px] bg-white dark:bg-gray-800 rounded-b-lg shadow-lg border-l border-r border-b border-gray-200 dark:border-gray-700 z-[60] md:-mr-6 -mr-[15px]"
+            style={{ marginTop: '0' }}
+            data-profile-dropdown
+          >
             {/* User Info Section */}
             <div className="flex items-center px-4 py-3 border-b border-gray-100 dark:border-gray-700">
         <div className="flex-none ltr:mr-[10px] rtl:ml-[10px]">
@@ -306,7 +350,10 @@ const Profile = ({ sticky }) => {
             <div className="py-2">
               {/* Edit Name Option */}
               <div
-                onClick={handleEditName}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditName();
+                }}
                 className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
               >
                 <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-green-500 mr-3">
@@ -318,7 +365,10 @@ const Profile = ({ sticky }) => {
               {/* Upload Photo Option - only show if user doesn't have a profile image */}
               {!userProfile?.profile_image && (
                 <div
-                  onClick={handleFileUpload}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleFileUpload();
+                  }}
                   className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                 >
                   <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-blue-500 mr-3">
@@ -331,7 +381,10 @@ const Profile = ({ sticky }) => {
               {/* Change Photo Option - only show if user has a profile image */}
               {userProfile?.profile_image && (
                 <div
-                  onClick={handleFileUpload}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleFileUpload();
+                  }}
                   className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                 >
                   <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-blue-500 mr-3">
@@ -344,7 +397,10 @@ const Profile = ({ sticky }) => {
               {/* Remove Photo Option - only show if user has a profile image */}
               {userProfile?.profile_image && (
                 <div
-                  onClick={handleRemovePhoto}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemovePhoto();
+                  }}
                   className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                 >
                   <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-red-500 mr-3">
@@ -356,7 +412,10 @@ const Profile = ({ sticky }) => {
 
               {/* Reset Password Option */}
               <div
-                onClick={handleResetPassword}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleResetPassword();
+                }}
                 className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
               >
                 <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-indigo-500 mr-3">
@@ -367,7 +426,10 @@ const Profile = ({ sticky }) => {
 
               {/* Logout Option */}
               <div
-                onClick={handleLogout}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLogout();
+                }}
                 className="flex items-center px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white cursor-pointer transition-colors border-t border-gray-100 dark:border-gray-700 mt-2"
               >
                 <span className="flex-none h-9 w-9 inline-flex items-center justify-center rounded-full text-2xl text-white bg-red-500 mr-3">
@@ -378,14 +440,6 @@ const Profile = ({ sticky }) => {
                 </div>
               </div>
             )}
-
-        {/* Backdrop to close dropdown when clicking outside */}
-        {isDropdownOpen && (
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsDropdownOpen(false)}
-          />
-        )}
       </div>
 
       {/* Reset Password Modal */}

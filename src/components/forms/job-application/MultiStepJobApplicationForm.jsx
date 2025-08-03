@@ -217,11 +217,25 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
         const newFieldErrors = {};
         
         for (const field of requiredFields) {
-          if (!personal[field] || personal[field].trim() === '') {
-            console.log(`Missing required field: ${field}`);
-            const fieldName = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-            newFieldErrors[`personal.${field}`] = `${fieldName} is required`;
-            hasErrors = true;
+          let fieldValue = personal[field];
+          
+          // Special handling for date fields
+          if (field === 'dob') {
+            console.log(`Date field value: "${fieldValue}"`, typeof fieldValue);
+            if (!fieldValue || fieldValue === '') {
+              console.log(`Missing required field: ${field}`);
+              const fieldName = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+              newFieldErrors[`personal.${field}`] = `${fieldName} is required`;
+              hasErrors = true;
+            }
+          } else {
+            // For non-date fields, use trim() to check for empty strings
+            if (!fieldValue || fieldValue.trim() === '') {
+              console.log(`Missing required field: ${field}`);
+              const fieldName = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+              newFieldErrors[`personal.${field}`] = `${fieldName} is required`;
+              hasErrors = true;
+            }
           }
         }
         
