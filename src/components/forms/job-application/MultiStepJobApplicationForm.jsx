@@ -191,8 +191,8 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
       "education.0.course_of_study",
       "education.0.passing_year"
     ],
-    2: [], // Experience is optional
-    3: [], // References is optional
+    2: ["isFresher"], // Experience step - either isFresher or experience data required
+    3: ["hasReferences"], // References step - either hasReferences or references data required
     4: [] // Review step - no additional validation needed
   };
 
@@ -217,11 +217,25 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
         const newFieldErrors = {};
         
         for (const field of requiredFields) {
-          if (!personal[field] || personal[field].trim() === '') {
-            console.log(`Missing required field: ${field}`);
-            const fieldName = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-            newFieldErrors[`personal.${field}`] = `${fieldName} is required`;
-            hasErrors = true;
+          let fieldValue = personal[field];
+          
+          // Special handling for date fields
+          if (field === 'dob') {
+            console.log(`Date field value: "${fieldValue}"`, typeof fieldValue);
+            if (!fieldValue || fieldValue === '') {
+              console.log(`Missing required field: ${field}`);
+              const fieldName = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+              newFieldErrors[`personal.${field}`] = `${fieldName} is required`;
+              hasErrors = true;
+            }
+          } else {
+            // For non-date fields, use trim() to check for empty strings
+            if (!fieldValue || fieldValue.trim() === '') {
+              console.log(`Missing required field: ${field}`);
+              const fieldName = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+              newFieldErrors[`personal.${field}`] = `${fieldName} is required`;
+              hasErrors = true;
+            }
           }
         }
         
@@ -284,7 +298,7 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
         const isFresher = currentStepData.isFresher;
         const newFieldErrors = {};
         
-        // If user is not a fresher, they must have at least one experience entry
+        // User must either be a fresher OR have at least one complete experience entry
         if (!isFresher && (!experience || !Array.isArray(experience) || experience.length === 0)) {
           newFieldErrors.experience = "Please add at least one work experience or select 'I am a fresher'";
           hasErrors = true;
@@ -324,46 +338,40 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
       }
       
       if (currentStep === 3) {
-        // Validate References (Optional)
+        // Validate References
         const references = currentStepData.references;
         const skipReferences = currentStepData.hasReferences; // hasReferences=true means skip
         const newFieldErrors = {};
         
-        // If user has chosen to skip references (hasReferences=true), allow proceeding
-        if (skipReferences) {
-          // User has chosen to skip references, no validation needed
-          setFieldErrors(newFieldErrors);
-        } else {
-          // If user has not chosen to skip references, they must have at least one reference entry
-          if (!references || !Array.isArray(references) || references.length === 0) {
-            newFieldErrors.references = "Please add at least one reference or select 'I don't have references to provide'";
-            hasErrors = true;
-          } else if (references && Array.isArray(references) && references.length > 0) {
-            // Check each reference entry
-            references.forEach((ref, index) => {
-              if (!ref) return;
-              
-              if (!ref.ref_name || ref.ref_name.trim() === '') {
-                newFieldErrors[`references.${index}.ref_name`] = "Reference name is required";
-                hasErrors = true;
-              }
-              
-              if (!ref.ref_phone || ref.ref_phone.trim() === '') {
-                newFieldErrors[`references.${index}.ref_phone`] = "Reference phone number is required";
-                hasErrors = true;
-              }
-              
-              if (!ref.relationship || ref.relationship.trim() === '') {
-                newFieldErrors[`references.${index}.relationship`] = "Relationship is required";
-                hasErrors = true;
-              }
-              
-              if (ref.ref_email && ref.ref_email.trim() !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ref.ref_email.trim())) {
-                newFieldErrors[`references.${index}.ref_email`] = "Invalid email format";
-                hasErrors = true;
-              }
-            });
-          }
+        // User must either skip references OR have at least one complete reference entry
+        if (!skipReferences && (!references || !Array.isArray(references) || references.length === 0)) {
+          newFieldErrors.references = "Please add at least one reference or select 'I don't have references to provide'";
+          hasErrors = true;
+        } else if (!skipReferences && references && Array.isArray(references) && references.length > 0) {
+          // Check each reference entry
+          references.forEach((ref, index) => {
+            if (!ref) return;
+            
+            if (!ref.ref_name || ref.ref_name.trim() === '') {
+              newFieldErrors[`references.${index}.ref_name`] = "Reference name is required";
+              hasErrors = true;
+            }
+            
+            if (!ref.ref_phone || ref.ref_phone.trim() === '') {
+              newFieldErrors[`references.${index}.ref_phone`] = "Reference phone number is required";
+              hasErrors = true;
+            }
+            
+            if (!ref.relationship || ref.relationship.trim() === '') {
+              newFieldErrors[`references.${index}.relationship`] = "Relationship is required";
+              hasErrors = true;
+            }
+            
+            if (ref.ref_email && ref.ref_email.trim() !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ref.ref_email.trim())) {
+              newFieldErrors[`references.${index}.ref_email`] = "Invalid email format";
+              hasErrors = true;
+            }
+          });
         }
         
         setFieldErrors(newFieldErrors);
@@ -822,18 +830,37 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
               }
             }
             
-            // Step 2: Experience (Optional - show complete if user has visited or filled something)
+            // Step 2: Experience (show complete if user is fresher OR has valid experience)
             else if (idx === 2) {
               const experienceData = watch("experience");
-              // For optional steps, show as complete if user has visited the step (currentStep >= 2)
-              // or if they have added some experience data
-              isComplete = currentStep >= 2 || (experienceData && Array.isArray(experienceData) && experienceData.length > 0);
+              const isFresher = watch("isFresher");
+              
+              if (isFresher) {
+                // User has selected they are a fresher
+                isComplete = true;
+              } else if (experienceData && Array.isArray(experienceData) && experienceData.length > 0) {
+                // Check if at least one experience entry is complete
+                const hasValidExperience = experienceData.some(exp => 
+                  exp && exp.company_name && exp.company_name.trim() !== '' &&
+                  exp.position_held && exp.position_held.trim() !== '' &&
+                  exp.employment_type && exp.employment_type.trim() !== '' &&
+                  exp.from && exp.from.trim() !== '' &&
+                  exp.job_description && exp.job_description.trim() !== ''
+                );
+                isComplete = hasValidExperience;
+              }
             }
             
-            // Step 3: References
+            // Step 3: References (show complete if user skips OR has valid references)
             else if (idx === 3) {
               const referencesData = watch("references");
-              if (referencesData && Array.isArray(referencesData)) {
+              const skipReferences = watch("hasReferences"); // hasReferences=true means skip
+              
+              if (skipReferences) {
+                // User has chosen to skip references
+                isComplete = true;
+              } else if (referencesData && Array.isArray(referencesData) && referencesData.length > 0) {
+                // Check if at least one reference entry is complete
                 const hasValidReference = referencesData.some(ref => 
                   ref && ref.ref_name && ref.ref_name.trim() !== '' &&
                   ref.ref_phone && ref.ref_phone.trim() !== '' &&

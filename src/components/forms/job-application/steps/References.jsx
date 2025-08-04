@@ -18,6 +18,12 @@ const References = ({ register, errors, fieldErrors, refFields, addReference, re
     }
   }, [refFields.length, showReferenceForm, setValue]);
 
+  // Sync local state with form values
+  useEffect(() => {
+    const formSkipReferences = watch("hasReferences");
+    setSkipReferences(formSkipReferences || false);
+  }, [watch("hasReferences")]);
+
   const relationshipTypes = [
     { value: "Former Manager", label: "Former Manager" },
     { value: "Former Colleague", label: "Former Colleague" },
@@ -72,7 +78,22 @@ const References = ({ register, errors, fieldErrors, refFields, addReference, re
           <Icon icon="ph:users" className="mr-2" />
           Professional References
         </h3>
-        <p className="text-sm text-gray-600 mb-4">Please provide professional references who can vouch for your work and character. This step is optional.</p>
+        <p className="text-sm text-gray-600 mb-4">
+          Please provide professional references who can vouch for your work and character. 
+          <span className="text-red-500 font-medium"> You must either add references or select that you don't have references to provide.</span>
+        </p>
+        
+        {/* Validation Error Display - Moved to top */}
+        {(fieldErrors.references || errors.references?.message) && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center">
+              <Icon icon="ph:warning" className="text-red-500 mr-2" />
+              <p className="text-red-700 text-sm font-medium">
+                {fieldErrors.references || errors.references?.message}
+              </p>
+            </div>
+          </div>
+        )}
         
         {/* Skip References Option */}
         {!showReferenceForm && refFields.length === 0 && (
@@ -83,14 +104,16 @@ const References = ({ register, errors, fieldErrors, refFields, addReference, re
                   type="checkbox"
                   checked={skipReferences}
                   onChange={(e) => handleSkipReferencesToggle(e.target.checked)}
-                  className="mr-3 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  className="mr-3 h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary"
                 />
-                <span className="text-sm font-medium text-gray-900 dark:text-white">I don't have references to provide</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                  I don't have references to provide <span className="text-red-500">*</span>
+                </span>
               </label>
             </div>
             {skipReferences && (
-              <p className="text-sm text-gray-600 mt-2 ml-7">
-                You've selected that you don't have references. This is completely fine and your application will proceed without references.
+              <p className="text-sm text-green-600 mt-2 ml-8">
+                ✓ You've selected that you don't have references. This is completely fine and your application will proceed without references.
               </p>
             )}
           </div>
@@ -274,9 +297,7 @@ const References = ({ register, errors, fieldErrors, refFields, addReference, re
         </div>
       </div>
       
-      {(fieldErrors.references || errors.references?.message) && (
-        <p className="text-red-500 text-sm mt-1">{fieldErrors.references || errors.references?.message}</p>
-      )}
+      
     </div>
   );
 };

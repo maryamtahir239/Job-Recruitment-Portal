@@ -70,11 +70,14 @@ const SuperAdminDashboard = () => {
         applications: applications.length,
         users: users.length
       });
+      
+      console.log("Users data:", users);
+      console.log("User roles found:", users.map(u => u.role));
 
       // Calculate statistics
       const activeJobs = jobs.filter(job => job.status === "Active").length;
-      const hrUsers = users.filter(user => user.role === "hr").length;
-      const interviewerUsers = users.filter(user => user.role === "interviewer").length;
+      const hrUsers = users.filter(user => user.role === "HR").length;
+      const interviewerUsers = users.filter(user => user.role === "Interviewer").length;
 
       // Job status distribution
       const jobStatusDistribution = jobs.reduce((acc, job) => {
@@ -98,7 +101,7 @@ const SuperAdminDashboard = () => {
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
         .slice(0, 5);
 
-      setStats({
+      const finalStats = {
         totalJobs: jobs.length,
         activeJobs,
         totalCandidates: candidates.length,
@@ -109,7 +112,10 @@ const SuperAdminDashboard = () => {
         recentApplications,
         jobStatusDistribution,
         applicationStatusDistribution
-      });
+      };
+      
+      console.log("Calculated statistics:", finalStats);
+      setStats(finalStats);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       // Only show error for non-authentication issues

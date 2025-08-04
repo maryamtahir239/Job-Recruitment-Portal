@@ -43,7 +43,7 @@ textarea:focus {
   @apply bg-gray-900 text-white px-2 py-[3px] rounded text-sm;
 }
 
-// datae picker
+// date picker
 .flatpickr-day.selected,
 .flatpickr-day.startRange,
 .flatpickr-day.endRange,
@@ -63,4 +63,74 @@ textarea:focus {
 .flatpickr-day.startRange.nextMonthDay,
 .flatpickr-day.endRange.nextMonthDay {
   @apply bg-gray-900 border-gray-500;
+}
+
+// Flatpickr date picker styles
+@import "flatpickr/dist/flatpickr.css";
+
+// Custom date picker styles
+.datepicker-wrapper {
+  @apply relative;
+  
+  &.is-error {
+    .flatpickr-input {
+      @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+    }
+  }
+}
+
+// Flatpickr theme customization
+.flatpickr-calendar {
+  @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg;
+  
+  &.arrowTop:before,
+  &.arrowTop:after {
+    @apply border-b-gray-200 dark:border-b-gray-700;
+  }
+  
+  &.arrowBottom:before,
+  &.arrowBottom:after {
+    @apply border-t-gray-200 dark:border-t-gray-700;
+  }
+}
+
+.flatpickr-months {
+  @apply bg-gray-50 dark:bg-gray-700 rounded-t-lg;
+  
+  .flatpickr-month {
+    @apply text-gray-900 dark:text-white;
+  }
+  
+  .flatpickr-prev-month,
+  .flatpickr-next-month {
+    @apply text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400;
+  }
+}
+
+.flatpickr-weekdays {
+  @apply bg-gray-50 dark:bg-gray-700;
+  
+  .flatpickr-weekday {
+    @apply text-gray-600 dark:text-gray-300 font-medium;
+  }
+}
+
+.flatpickr-days {
+  @apply bg-white dark:bg-gray-800;
+  
+  .flatpickr-day {
+    @apply text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20;
+    
+    &.selected {
+      @apply bg-blue-500 border-blue-500 text-white;
+    }
+    
+    &.today {
+      @apply bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600;
+    }
+    
+    &.disabled {
+      @apply text-gray-400 dark:text-gray-600 cursor-not-allowed;
+    }
+  }
 }

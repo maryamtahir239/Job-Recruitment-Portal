@@ -382,10 +382,13 @@ const ApplicationDetail = () => {
                            <div className="flex items-start justify-between mb-3">
                              <div>
                                <h4 className="text-lg font-semibold text-gray-900 mb-1">
-                                 {edu.level || edu.course_of_study || 'Education Entry'}
+                                 {edu.level || 'Education Entry'}
                                </h4>
+                               {edu.course_of_study && (
+                                 <p className="text-blue-600 font-medium mb-1">{edu.course_of_study}</p>
+                               )}
                                {edu.institution && (
-                                 <p className="text-blue-600 font-medium">{edu.institution}</p>
+                                 <p className="text-gray-600 text-sm">{edu.institution}</p>
                                )}
                              </div>
                              {edu.status && (
