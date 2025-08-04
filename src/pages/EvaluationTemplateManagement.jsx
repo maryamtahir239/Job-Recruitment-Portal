@@ -18,6 +18,121 @@ import {
   deleteEvaluationTemplate,
 } from "@/api/evaluationTemplates";
 import { listJobs } from "@/api/jobRoutes";
+import { Icon } from "@iconify/react";
+
+// EvaluationFormPreview: renders a full evaluation form UI for a template (read-only)
+function EvaluationFormPreview({ template, jobs, onEdit, onDelete }) {
+  const mainQuestions = JSON.parse(template.main_questions || '[]');
+  const extraQuestions = JSON.parse(template.extra_questions || '[]');
+  const job = jobs.find(j => j.id === template.job_id);
+  const jobTitle = job?.title || 'General Template';
+
+  // Table columns for ratings
+  const ratingColumns = [
+    { label: 'Exceptional', value: 5 },
+    { label: 'Above Average', value: 4 },
+    { label: 'Average', value: 3 },
+    { label: 'Satisfactory', value: 2 },
+    { label: 'Unsatisfactory', value: 1 },
+  ];
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-8 mb-12 relative border border-blue-100 print:border-black print:shadow-none">
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-blue-700 mb-1">Interview Evaluation Form</h2>
+          <div className="text-gray-500 mb-1">Template: {template.name}</div>
+          <div className="text-sm text-blue-500 font-medium mb-2">{jobTitle}</div>
+          <Badge className={template.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}>
+            {template.is_active ? 'Active' : 'Inactive'}
+          </Badge>
+        </div>
+        <div className="flex space-x-2">
+          <Button size="sm" className="btn-secondary" onClick={onEdit}>
+            <FontAwesomeIcon icon={faEdit} />
+          </Button>
+          <Button size="sm" className="btn-danger" onClick={onDelete}>
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
+        </div>
+      </div>
+      {/* Header fields */}
+      <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+        <div>Candidate Name: <span className="font-semibold text-gray-700">__________________</span></div>
+        <div>Position Applied For: <span className="font-semibold text-gray-700">{jobTitle}</span></div>
+        <div>Department: <span className="font-semibold text-gray-700">__________________</span></div>
+        <div>Date of Interview: <span className="font-semibold text-gray-700">____/____/______</span></div>
+        <div>Interviewer(s) Name: <span className="font-semibold text-gray-700">__________________</span></div>
+        <div>Interviewer Designation: <span className="font-semibold text-gray-700">__________________</span></div>
+      </div>
+      {/* Rating scale */}
+      <div className="mb-4 text-xs text-gray-600">
+        <span className="font-semibold">Rating Scale:</span> 5 = Exceptional, 4 = Above Average, 3 = Average, 2 = Satisfactory, 1 = Unsatisfactory
+      </div>
+      {/* Evaluation Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-300 print:border-black">
+          <thead className="bg-gray-100 print:bg-white">
+            <tr>
+              <th className="border border-gray-300 print:border-black px-2 py-1 text-xs">Evaluation Criteria</th>
+              {ratingColumns.map(col => (
+                <th key={col.value} className="border border-gray-300 print:border-black px-2 py-1 text-xs text-center">{col.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {mainQuestions.map((q, i) => (
+              <tr key={i}>
+                <td className="border border-gray-300 print:border-black px-2 py-1 text-sm">{q}</td>
+                {ratingColumns.map(col => (
+                  <td key={col.value} className="border border-gray-300 print:border-black px-2 py-1 text-center">
+                    {/* Empty for print, or could show a radio/checkbox for preview */}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {/* Areas for comments and summary fields */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-xs font-semibold mb-1">Areas of Review / Comments:</label>
+          <div className="border border-gray-300 rounded p-2 min-h-[60px] text-gray-500">______________________________</div>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1">Are there any areas where improvement is required? (Please Specify):</label>
+          <div className="border border-gray-300 rounded p-2 min-h-[60px] text-gray-500">______________________________</div>
+        </div>
+      </div>
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-xs font-semibold mb-1">Interview Evaluation:</label>
+          <div className="border border-gray-300 rounded p-2 min-h-[60px] text-gray-500">______________________________</div>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1">HR Representative Comments:</label>
+          <div className="border border-gray-300 rounded p-2 min-h-[60px] text-gray-500">______________________________</div>
+        </div>
+      </div>
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-xs font-semibold mb-1">Strengths/Weaknesses:</label>
+          <div className="border border-gray-300 rounded p-2 min-h-[60px] text-gray-500">______________________________</div>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1">Recommendations:</label>
+          <div className="border border-gray-300 rounded p-2 min-h-[60px] text-gray-500">______________________________</div>
+        </div>
+      </div>
+      <div className="mt-6">
+        <label className="block text-xs font-semibold mb-1">Final Approval:</label>
+        <div className="border border-gray-300 rounded p-2 min-h-[60px] text-gray-500">______________________________</div>
+      </div>
+      <div className="mt-8 text-xs text-gray-400">Created by: {template.created_by_name || 'N/A'}</div>
+    </div>
+  );
+}
 
 const EvaluationTemplateManagement = () => {
   console.log("=== EvaluationTemplateManagement component rendering... ===");
@@ -265,249 +380,163 @@ const EvaluationTemplateManagement = () => {
   try {
     console.log("Inside try block, rendering main UI...");
     return (
-      <div className="space-y-6 p-6">
-        {/* Simple test element to see if anything renders */}
-        <div className="bg-red-500 text-white p-4 mb-4 rounded">
-          <h2 className="text-lg font-bold">DEBUG: Component is rendering!</h2>
-          <p>Templates: {templates.length}, Jobs: {jobs.length}</p>
-        </div>
-        
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold">Evaluation Form Templates</h1>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Evaluation Form Templates</h1>
           <Button
-            text="Create New Template"
-            icon="heroicons-outline:plus"
             onClick={openCreateModal}
-            className="btn-primary"
-          />
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg rounded-full px-6 py-2 text-lg font-semibold"
+          >
+            <FontAwesomeIcon icon={faPlus} className="mr-2" />
+            Create Template
+          </Button>
         </div>
-
-      <Card>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Template Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Job Position
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Questions
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created By
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {templates.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
-                    <div className="flex flex-col items-center">
-                      <div className="text-lg mb-2">No evaluation templates found</div>
-                      <div className="text-sm">Create your first template to get started</div>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                templates.map((template) => (
-                  <tr key={template.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {template.name}
-                        </div>
-                        {template.description && (
-                          <div className="text-sm text-gray-500">
-                            {template.description}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {getJobTitle(template.job_id)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div>
-                        <div className="text-xs text-gray-500">
-                          Main: {JSON.parse(template.main_questions || "[]").length}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Extra: {JSON.parse(template.extra_questions || "[]").length}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge
-                        text={template.is_active ? "Active" : "Inactive"}
-                        className={template.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {template.created_by_name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => openEditModal(template)}
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          <FontAwesomeIcon icon={faEdit} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(template.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
-      {/* Create/Edit Modal */}
-      <Modal
-        title={editingTemplate ? "Edit Template" : "Create New Template"}
-        label="Evaluation Template"
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        size="lg"
-      >
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Textinput
-              label="Template Name"
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
+        {templates.length === 0 ? (
+          <div className="bg-white rounded shadow p-8 text-center text-gray-500">
+            <div className="text-lg mb-2">No evaluation templates found</div>
+            <div className="text-sm">Create your first template to get started</div>
+          </div>
+        ) : (
+          templates.map((template) => (
+            <EvaluationFormPreview
+              key={template.id}
+              template={template}
+              jobs={jobs}
+              onEdit={() => openEditModal(template)}
+              onDelete={() => handleDelete(template.id)}
             />
-            <Select
-              label="Job Position (Optional)"
-              name="job_id"
-              value={formData.job_id}
+          ))
+        )}
+        {/* Modal for create/edit remains unchanged */}
+        <Modal
+          title={editingTemplate ? "Edit Template" : "Create New Template"}
+          label="Evaluation Template"
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          size="lg"
+        >
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Textinput
+                label="Template Name"
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+              />
+              <Select
+                label="Job Position (Optional)"
+                name="job_id"
+                value={formData.job_id}
+                onChange={handleInputChange}
+              >
+                <option value="">General Template</option>
+                {jobs.map((job) => (
+                  <option key={job.id} value={job.id}>
+                    {job.title}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <Textarea
+              label="Description (Optional)"
+              name="description"
+              value={formData.description}
               onChange={handleInputChange}
-            >
-              <option value="">General Template</option>
-              {jobs.map((job) => (
-                <option key={job.id} value={job.id}>
-                  {job.title}
-                </option>
-              ))}
-            </Select>
-          </div>
+              rows={3}
+            />
 
-          <Textarea
-            label="Description (Optional)"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            rows={3}
-          />
-
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium">Main Questions</h3>
-              <Button
-                text="Add Question"
-                onClick={() => addQuestion("main_questions")}
-                className="btn-secondary"
-                size="sm"
-              />
-            </div>
-            {formData.main_questions.map((question, index) => (
-              <div key={index} className="flex gap-2">
-                <Textinput
-                  placeholder="Enter question"
-                  value={question}
-                  onChange={(e) => handleQuestionChange("main_questions", index, e.target.value)}
-                  className="flex-1"
-                />
-                {formData.main_questions.length > 1 && (
-                  <Button
-                    text="Remove"
-                    onClick={() => removeQuestion("main_questions", index)}
-                    className="btn-danger"
-                    size="sm"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium">Extra Questions (Optional)</h3>
-              <Button
-                text="Add Question"
-                onClick={() => addQuestion("extra_questions")}
-                className="btn-secondary"
-                size="sm"
-              />
-            </div>
-            {formData.extra_questions.map((question, index) => (
-              <div key={index} className="flex gap-2">
-                <Textinput
-                  placeholder="Enter extra question"
-                  value={question}
-                  onChange={(e) => handleQuestionChange("extra_questions", index, e.target.value)}
-                  className="flex-1"
-                />
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium">Main Questions</h3>
                 <Button
-                  text="Remove"
-                  onClick={() => removeQuestion("extra_questions", index)}
-                  className="btn-danger"
+                  text="Add Question"
+                  onClick={() => addQuestion("main_questions")}
+                  className="btn-secondary"
                   size="sm"
                 />
               </div>
-            ))}
-          </div>
+              {formData.main_questions.map((question, index) => (
+                <div key={index} className="flex gap-2">
+                  <Textinput
+                    placeholder="Enter question"
+                    value={question}
+                    onChange={(e) => handleQuestionChange("main_questions", index, e.target.value)}
+                    className="flex-1"
+                  />
+                  {formData.main_questions.length > 1 && (
+                    <Button
+                      text="Remove"
+                      onClick={() => removeQuestion("main_questions", index)}
+                      className="btn-danger"
+                      size="sm"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
 
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="is_active"
-              name="is_active"
-              checked={formData.is_active}
-              onChange={(e) => setFormData((prev) => ({ ...prev, is_active: e.target.checked }))}
-              className="mr-2"
-            />
-            <label htmlFor="is_active" className="text-sm text-gray-700">
-              Active Template
-            </label>
-          </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium">Extra Questions (Optional)</h3>
+                <Button
+                  text="Add Question"
+                  onClick={() => addQuestion("extra_questions")}
+                  className="btn-secondary"
+                  size="sm"
+                />
+              </div>
+              {formData.extra_questions.map((question, index) => (
+                <div key={index} className="flex gap-2">
+                  <Textinput
+                    placeholder="Enter extra question"
+                    value={question}
+                    onChange={(e) => handleQuestionChange("extra_questions", index, e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button
+                    text="Remove"
+                    onClick={() => removeQuestion("extra_questions", index)}
+                    className="btn-danger"
+                    size="sm"
+                  />
+                </div>
+              ))}
+            </div>
 
-          <div className="flex justify-end space-x-3">
-            <Button
-              text="Cancel"
-              onClick={() => setShowModal(false)}
-              className="btn-secondary"
-            />
-            <Button
-              text={editingTemplate ? "Update Template" : "Create Template"}
-              type="submit"
-              className="btn-primary"
-              loading={submitting}
-            />
-          </div>
-        </form>
-      </Modal>
-    </div>
-  );
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="is_active"
+                name="is_active"
+                checked={formData.is_active}
+                onChange={(e) => setFormData((prev) => ({ ...prev, is_active: e.target.checked }))}
+                className="mr-2"
+              />
+              <label htmlFor="is_active" className="text-sm text-gray-700">
+                Active Template
+              </label>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <Button
+                text="Cancel"
+                onClick={() => setShowModal(false)}
+                className="btn-secondary"
+              />
+              <Button
+                text={editingTemplate ? "Update Template" : "Create Template"}
+                type="submit"
+                className="btn-primary"
+                loading={submitting}
+              />
+            </div>
+          </form>
+        </Modal>
+      </div>
+    );
   } catch (error) {
     console.error("Error rendering EvaluationTemplateManagement:", error);
     return (

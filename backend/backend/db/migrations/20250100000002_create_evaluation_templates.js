@@ -3,12 +3,14 @@ export async function up(knex) {
     table.increments("id").primary();
     table.string("name").notNullable();
     table.text("description").nullable();
+    // Foreign key to jobs table, required for every template
     table.integer("job_id")
       .unsigned()
-      .nullable()
+      .notNullable()
       .references("id")
       .inTable("jobs")
-      .onDelete("CASCADE");
+      .onDelete("CASCADE")
+      .index();
     table.json("main_questions").notNullable().defaultTo("[]");
     table.json("extra_questions").notNullable().defaultTo("[]");
     table.boolean("is_active").notNullable().defaultTo(true);
