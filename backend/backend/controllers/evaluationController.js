@@ -62,6 +62,11 @@ export const createEvaluation = async (req, res) => {
     
     console.log("Created evaluation with ID:", evaluationId);
 
+    // ✅ Update the application's evaluation status to completed
+    await db("candidate_applications")
+      .where("id", candidate.id)
+      .update({ evaluation_status: "completed" });
+
     // ✅ Insert detailed question ratings (optional table)
     const questionEntries = Object.entries(ratings).map(([question, rating]) => ({
       evaluation_id: evaluationId,
@@ -105,9 +110,25 @@ export const createEvaluation = async (req, res) => {
 
 export const getEvaluations = async (req, res) => {
   try {
+    console.log("Fetching evaluations for user:", req.user);
+    
+    // Test database connection first
+    try {
+      await db.raw('SELECT 1');
+      console.log("Database connection successful");
+    } catch (dbError) {
+      console.error("Database connection failed:", dbError);
+      return res.status(500).json({ 
+        error: "Database connection failed",
+        details: dbError.message 
+      });
+    }
+
+    console.log("Starting evaluation query...");
     const evaluations = await db("evaluation")
       .join("candidate_applications", "evaluation.application_id", "=", "candidate_applications.id")
       .join("users", "evaluation.evaluator_id", "=", "users.id")
+      .leftJoin("jobs", "candidate_applications.job_id", "=", "jobs.id")
       .select(
         "evaluation.id",
         "evaluation.application_id",
@@ -115,9 +136,14 @@ export const getEvaluations = async (req, res) => {
         "evaluation.overall_comments",
         "evaluation.created_at",
         "candidate_applications.payload",
-        "users.name as evaluator_name"
+        "candidate_applications.job_id",
+        "candidate_applications.photo_filename as photo_url",
+        "users.name as evaluator_name",
+        "jobs.title as job_title"
       )
       .orderBy("evaluation.created_at", "desc");
+
+    console.log("Raw evaluations from database:", evaluations);
 
     const evaluationIds = evaluations.map((e) => e.id);
     const scores = await db("evaluation_scores")
@@ -136,15 +162,23 @@ export const getEvaluations = async (req, res) => {
       return {
         id: evalItem.id,
         candidateName: payload.personal?.full_name || "Unknown",
+        photoUrl: evalItem.photo_url,
+        jobTitle: evalItem.job_title || "Unknown Job",
         totalScore: evalItem.rating,
         comments: JSON.parse(evalItem.overall_comments),
         createdAt: evalItem.created_at,
+        evaluatorName: evalItem.evaluator_name,
         scores: scoresGrouped[evalItem.id] || [],
       };
     });
-
+    console.log('Evaluations result:', result);
     res.json(result);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch evaluations" });
+    console.error("Error in getEvaluations:", err);
+    res.status(500).json({ 
+      error: "Failed to fetch evaluations",
+      details: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 };

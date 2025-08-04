@@ -84,7 +84,7 @@ export const interviewerMenuItems = [
     link: "applications",
   },
   {
-    title: "Evaluations",
+    title: "Evaluate Candidates",
     icon: "ph:clipboard-text",
     link: "evaluations",
   },
