@@ -16,6 +16,7 @@ import Textarea from "@/components/ui/Textarea";
 const JobDetail = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
   const [job, setJob] = useState(null);
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -397,11 +398,13 @@ const JobDetail = () => {
           <p className="text-gray-600">{job.department} • {job.location}</p>
         </div>
         <div className="flex space-x-3">
-          <Button
-            text="Edit Job"
-            className="btn-outline-primary"
-            onClick={openEditModal}
-          />
+          {user?.role === 'HR' && (
+            <Button
+              text="Edit Job"
+              className="btn-outline-primary"
+              onClick={openEditModal}
+            />
+          )}
         </div>
       </div>
 
@@ -430,15 +433,17 @@ const JobDetail = () => {
           <Card>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Candidates ({candidates.length})</h3>
-              <Button
-                text="Load More Files"
-                className="btn-outline-primary btn-sm w-32"
-                onClick={() => setUploadModalOpen(true)}
-              />
+              {user?.role === 'HR' && (
+                <Button
+                  text="Load More Files"
+                  className="btn-outline-primary btn-sm w-32"
+                  onClick={() => setUploadModalOpen(true)}
+                />
+              )}
             </div>
             
             {/* Selection indicator */}
-            {checkedCandidates.length > 0 && (
+            {user?.role === 'HR' && checkedCandidates.length > 0 && (
               <div className="mb-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center justify-between px-3">
                   <span className="text-sm text-blue-800">
@@ -465,20 +470,24 @@ const JobDetail = () => {
                   }
                 </p>
                 <div className="space-x-3">
-                  <Button
-                    text={candidatesLoading ? "Loading..." : "Load Candidates"}
-                    className="btn-outline-primary"
-                    onClick={() => {
-                      setShouldAutoSelect(true);
-                      fetchJobCandidates(true);
-                    }}
-                    disabled={candidatesLoading}
-                  />
-                  <Button
-                    text="Upload Candidates"
-                    className="btn-primary"
-                    onClick={() => setUploadModalOpen(true)}
-                  />
+                  {user?.role === 'HR' && (
+                    <>
+                      <Button
+                        text={candidatesLoading ? "Loading..." : "Load Candidates"}
+                        className="btn-outline-primary"
+                        onClick={() => {
+                          setShouldAutoSelect(true);
+                          fetchJobCandidates(true);
+                        }}
+                        disabled={candidatesLoading}
+                      />
+                      <Button
+                        text="Upload Candidates"
+                        className="btn-primary"
+                        onClick={() => setUploadModalOpen(true)}
+                      />
+                    </>
+                  )}
                 </div>
               </div>
             ) : (
@@ -486,27 +495,29 @@ const JobDetail = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <div
-                          onMouseEnter={(e) => {
-                            if (candidatesWithoutInvites.length === 0) {
-                              showTooltipMessage("All candidates already have invites sent", e);
-                            }
-                          }}
-                          onMouseLeave={hideTooltip}
-                          className="inline-block"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isAllSelected}
-                            onChange={handleSelectAll}
-                            disabled={candidatesWithoutInvites.length === 0}
-                            className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
-                              candidatesWithoutInvites.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
-                          />
-                        </div>
-                      </th>
+                      {user?.role === 'HR' && (
+                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <div
+                            onMouseEnter={(e) => {
+                              if (candidatesWithoutInvites.length === 0) {
+                                showTooltipMessage("All candidates already have invites sent", e);
+                              }
+                            }}
+                            onMouseLeave={hideTooltip}
+                            className="inline-block"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isAllSelected}
+                              onChange={handleSelectAll}
+                              disabled={candidatesWithoutInvites.length === 0}
+                              className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
+                                candidatesWithoutInvites.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                              }`}
+                            />
+                          </div>
+                        </th>
+                      )}
                       <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Name
                       </th>
@@ -530,30 +541,32 @@ const JobDetail = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {candidates.map((candidate, index) => (
                       <tr key={candidate.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <div
-                            onMouseEnter={(e) => {
-                              if (candidate.invite_sent) {
-                                const statusText = candidate.invite_status === 'submitted' ? 'has already submitted an application' : 
-                                                 candidate.invite_status === 'opened' ? 'has opened the invite' : 
-                                                 'has already been sent an invite';
-                                showTooltipMessage(`This candidate ${statusText}`, e);
-                              }
-                            }}
-                            onMouseLeave={hideTooltip}
-                            className="inline-block"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={checkedCandidates.includes(candidate.id)}
-                              onChange={() => handleCandidateSelect(candidate.id)}
-                              disabled={candidate.invite_sent}
-                              className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
-                                candidate.invite_sent ? 'opacity-50 cursor-not-allowed' : ''
-                              }`}
-                            />
-                          </div>
-                        </td>
+                        {user?.role === 'HR' && (
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            <div
+                              onMouseEnter={(e) => {
+                                if (candidate.invite_sent) {
+                                  const statusText = candidate.invite_status === 'submitted' ? 'has already submitted an application' : 
+                                                   candidate.invite_status === 'opened' ? 'has opened the invite' : 
+                                                   'has already been sent an invite';
+                                  showTooltipMessage(`This candidate ${statusText}`, e);
+                                }
+                              }}
+                              onMouseLeave={hideTooltip}
+                              className="inline-block"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checkedCandidates.includes(candidate.id)}
+                                onChange={() => handleCandidateSelect(candidate.id)}
+                                disabled={candidate.invite_sent}
+                                className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
+                                  candidate.invite_sent ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                              />
+                            </div>
+                          </td>
+                        )}
                         <td className="px-6 py-4 whitespace-nowrap text-center">
                           <div className="flex items-center justify-center space-x-2">
                             <div className="text-sm font-medium text-gray-900">
@@ -629,252 +642,264 @@ const JobDetail = () => {
 
           <Card>
             <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-            <div className="space-y-3">
-              <div
-                onMouseEnter={(e) => {
-                  if (candidates.length === 0) {
-                    showTooltipMessage("No candidates available for this job", e);
-                  } else if (candidates.every(c => c.invite_sent)) {
-                    showTooltipMessage("All candidates have already received invites", e);
-                  } else if (checkedCandidates.length === 0) {
-                    showTooltipMessage("Please select at least one candidate to send invites", e);
-                  }
-                }}
-                onMouseLeave={hideTooltip}
-                className="inline-block w-full"
-              >
+            {user?.role === 'HR' ? (
+              <div className="space-y-3">
+                <div
+                  onMouseEnter={(e) => {
+                    if (candidates.length === 0) {
+                      showTooltipMessage("No candidates available for this job", e);
+                    } else if (candidates.every(c => c.invite_sent)) {
+                      showTooltipMessage("All candidates have already received invites", e);
+                    } else if (checkedCandidates.length === 0) {
+                      showTooltipMessage("Please select at least one candidate to send invites", e);
+                    }
+                  }}
+                  onMouseLeave={hideTooltip}
+                  className="inline-block w-full"
+                >
+                  <Button
+                    text={
+                      candidates.length === 0 
+                        ? "No Candidates" 
+                        : candidates.every(c => c.invite_sent)
+                        ? "All Invites Sent"
+                        : `Send Invites (${checkedCandidates.length})`
+                    }
+                    className="btn-primary w-full"
+                    onClick={handleSendInvites}
+                    disabled={candidates.length === 0 || checkedCandidates.length === 0 || candidates.every(c => c.invite_sent)}
+                  />
+                </div>
                 <Button
-                  text={
-                    candidates.length === 0 
-                      ? "No Candidates" 
-                      : candidates.every(c => c.invite_sent)
-                      ? "All Invites Sent"
-                      : `Send Invites (${checkedCandidates.length})`
-                  }
-                  className="btn-primary w-full"
-                  onClick={handleSendInvites}
-                  disabled={candidates.length === 0 || checkedCandidates.length === 0 || candidates.every(c => c.invite_sent)}
+                  text="View Applications"
+                  className="btn-outline-primary w-full"
+                  onClick={() => navigate(`/applications?jobId=${jobId}`)}
+                />
+                <Button
+                  text="Close Job"
+                  className="btn-outline-danger w-full"
+                  onClick={() => {
+                    // Implement close job functionality
+                    toast.info("Close job functionality coming soon");
+                  }}
                 />
               </div>
-              <Button
-                text="View Applications"
-                className="btn-outline-primary w-full"
-                onClick={() => navigate(`/applications?jobId=${jobId}`)}
-              />
-              <Button
-                text="Close Job"
-                className="btn-outline-danger w-full"
-                onClick={() => {
-                  // Implement close job functionality
-                  toast.info("Close job functionality coming soon");
-                }}
-              />
-            </div>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-gray-500 text-sm">View-only access for admin users</p>
+              </div>
+            )}
           </Card>
         </div>
       </div>
 
       {/* Upload Candidates Modal */}
-      <Modal
-        open={uploadModalOpen}
-        onClose={() => setUploadModalOpen(false)}
-        title="Upload Candidates"
-        label="Upload Candidates"
-      >
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select File (Excel/CSV)
-            </label>
-            <div className="cursor-pointer">
-              <input
-                type="file"
-                accept=".xlsx,.xls,.csv"
-                onChange={handleFileChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer"
-                style={{ cursor: 'pointer' }}
+      {user?.role === 'HR' && (
+        <Modal
+          open={uploadModalOpen}
+          onClose={() => setUploadModalOpen(false)}
+          title="Upload Candidates"
+          label="Upload Candidates"
+        >
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select File (Excel/CSV)
+              </label>
+              <div className="cursor-pointer">
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={handleFileChange}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer"
+                  style={{ cursor: 'pointer' }}
+                />
+              </div>
+              {selectedFile && (
+                <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg mt-2">
+                  <div className="flex items-center">
+                    <span className="text-sm text-gray-600">
+                      📎 Selected: <span className="font-medium">{selectedFile.name}</span> ({(selectedFile.size / 1024).toFixed(1)} KB)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const fileInput = document.querySelector('input[type="file"]');
+                      if (fileInput) fileInput.value = '';
+                      setSelectedFile(null);
+                    }}
+                    className="ml-2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200 cursor-pointer"
+                    title="Remove file"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
+              )}
+              <p className="text-xs text-gray-500 mt-1">
+                Supported formats: Excel (.xlsx, .xls) or CSV (.csv)
+              </p>
+            </div>
+
+            {/* File Requirements */}
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 className="text-sm font-medium text-blue-800 mb-2 flex items-center">
+                📋 File Requirements:
+              </h4>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Must include columns: <strong>name</strong>, <strong>email</strong>, <strong>phone</strong>, <strong>designation</strong>, <strong>location</strong></li>
+                <li>• Email addresses must be unique per job</li>
+                <li>• Same candidates can be uploaded to different jobs</li>
+                <li>• Duplicate candidates within the same job will be skipped</li>
+              </ul>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <Button
+                text="Cancel"
+                className="btn-outline-secondary"
+                onClick={() => setUploadModalOpen(false)}
+              />
+              <Button
+                text={uploading ? "Uploading..." : "Upload Candidates"}
+                className="btn-primary"
+                onClick={handleUploadCandidates}
+                disabled={!selectedFile || uploading}
               />
             </div>
-            {selectedFile && (
-              <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg mt-2">
-                <div className="flex items-center">
-                  <span className="text-sm text-gray-600">
-                    📎 Selected: <span className="font-medium">{selectedFile.name}</span> ({(selectedFile.size / 1024).toFixed(1)} KB)
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const fileInput = document.querySelector('input[type="file"]');
-                    if (fileInput) fileInput.value = '';
-                    setSelectedFile(null);
-                  }}
-                  className="ml-2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200 cursor-pointer"
-                  title="Remove file"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                  </svg>
-                </button>
-              </div>
-            )}
-            <p className="text-xs text-gray-500 mt-1">
-              Supported formats: Excel (.xlsx, .xls) or CSV (.csv)
-            </p>
           </div>
-
-          {/* File Requirements */}
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <h4 className="text-sm font-medium text-blue-800 mb-2 flex items-center">
-              📋 File Requirements:
-            </h4>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Must include columns: <strong>name</strong>, <strong>email</strong>, <strong>phone</strong>, <strong>designation</strong>, <strong>location</strong></li>
-              <li>• Email addresses must be unique per job</li>
-              <li>• Same candidates can be uploaded to different jobs</li>
-              <li>• Duplicate candidates within the same job will be skipped</li>
-            </ul>
-          </div>
-
-          <div className="flex justify-end space-x-3">
-            <Button
-              text="Cancel"
-              className="btn-outline-secondary"
-              onClick={() => setUploadModalOpen(false)}
-            />
-            <Button
-              text={uploading ? "Uploading..." : "Upload Candidates"}
-              className="btn-primary"
-              onClick={handleUploadCandidates}
-              disabled={!selectedFile || uploading}
-            />
-          </div>
-        </div>
-      </Modal>
+        </Modal>
+      )}
 
       {/* Send Invite Modal */}
-      <SendInviteModal
-        open={sendInviteModalOpen}
-        onClose={() => setSendInviteModalOpen(false)}
-        selectedCandidates={selectedCandidates}
-        onSendSuccess={handleInviteSuccess}
-        jobId={jobId}
-      />
+      {user?.role === 'HR' && (
+        <SendInviteModal
+          open={sendInviteModalOpen}
+          onClose={() => setSendInviteModalOpen(false)}
+          selectedCandidates={selectedCandidates}
+          onSendSuccess={handleInviteSuccess}
+          jobId={jobId}
+        />
+      )}
 
       {/* Edit Job Modal */}
-      <Modal
-        open={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        title="Edit Job"
-        label="Edit Job"
-      >
-        <form onSubmit={handleEditSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Textinput
-              label="Job Title"
-              type="text"
-              name="title"
-              value={editFormData.title}
+      {user?.role === 'HR' && (
+        <Modal
+          open={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          title="Edit Job"
+          label="Edit Job"
+        >
+          <form onSubmit={handleEditSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Textinput
+                label="Job Title"
+                type="text"
+                name="title"
+                value={editFormData.title}
+                onChange={handleEditInputChange}
+                placeholder="Enter job title"
+                required
+              />
+              <Textinput
+                label="Department"
+                type="text"
+                name="department"
+                value={editFormData.department}
+                onChange={handleEditInputChange}
+                placeholder="Enter department"
+              />
+              <Textinput
+                label="Number of Openings"
+                type="number"
+                name="openings"
+                value={editFormData.openings}
+                onChange={handleEditInputChange}
+                min="1"
+                required
+              />
+              <Select
+                label="Job Type"
+                name="job_type"
+                value={editFormData.job_type}
+                onChange={handleEditInputChange}
+                options={[
+                  { value: "Full-time", label: "Full-time" },
+                  { value: "Part-time", label: "Part-time" },
+                  { value: "Contract", label: "Contract" },
+                  { value: "Internship", label: "Internship" }
+                ]}
+              />
+              <Textinput
+                label="Location"
+                type="text"
+                name="location"
+                value={editFormData.location}
+                onChange={handleEditInputChange}
+                placeholder="Enter job location"
+              />
+              <Textinput
+                label="Salary Range"
+                type="text"
+                name="salary_range"
+                value={editFormData.salary_range}
+                onChange={handleEditInputChange}
+                placeholder="e.g., $50,000 - $70,000"
+              />
+              <Textinput
+                label="Application Deadline"
+                type="date"
+                name="deadline"
+                value={editFormData.deadline}
+                onChange={handleEditInputChange}
+                required
+              />
+              <Select
+                label="Status"
+                name="status"
+                value={editFormData.status}
+                onChange={handleEditInputChange}
+                options={[
+                  { value: "Active", label: "Active" },
+                  { value: "Draft", label: "Draft" },
+                  { value: "Closed", label: "Closed" }
+                ]}
+              />
+            </div>
+            <Textarea
+              label="Job Description"
+              name="description"
+              value={editFormData.description}
               onChange={handleEditInputChange}
-              placeholder="Enter job title"
-              required
+              placeholder="Enter detailed job description"
+              rows="4"
             />
-            <Textinput
-              label="Department"
-              type="text"
-              name="department"
-              value={editFormData.department}
+            <Textarea
+              label="Requirements"
+              name="requirements"
+              value={editFormData.requirements}
               onChange={handleEditInputChange}
-              placeholder="Enter department"
+              placeholder="Enter job requirements and qualifications"
+              rows="4"
             />
-            <Textinput
-              label="Number of Openings"
-              type="number"
-              name="openings"
-              value={editFormData.openings}
-              onChange={handleEditInputChange}
-              min="1"
-              required
-            />
-            <Select
-              label="Job Type"
-              name="job_type"
-              value={editFormData.job_type}
-              onChange={handleEditInputChange}
-              options={[
-                { value: "Full-time", label: "Full-time" },
-                { value: "Part-time", label: "Part-time" },
-                { value: "Contract", label: "Contract" },
-                { value: "Internship", label: "Internship" }
-              ]}
-            />
-            <Textinput
-              label="Location"
-              type="text"
-              name="location"
-              value={editFormData.location}
-              onChange={handleEditInputChange}
-              placeholder="Enter job location"
-            />
-            <Textinput
-              label="Salary Range"
-              type="text"
-              name="salary_range"
-              value={editFormData.salary_range}
-              onChange={handleEditInputChange}
-              placeholder="e.g., $50,000 - $70,000"
-            />
-            <Textinput
-              label="Application Deadline"
-              type="date"
-              name="deadline"
-              value={editFormData.deadline}
-              onChange={handleEditInputChange}
-              required
-            />
-            <Select
-              label="Status"
-              name="status"
-              value={editFormData.status}
-              onChange={handleEditInputChange}
-              options={[
-                { value: "Active", label: "Active" },
-                { value: "Draft", label: "Draft" },
-                { value: "Closed", label: "Closed" }
-              ]}
-            />
-          </div>
-          <Textarea
-            label="Job Description"
-            name="description"
-            value={editFormData.description}
-            onChange={handleEditInputChange}
-            placeholder="Enter detailed job description"
-            rows="4"
-          />
-          <Textarea
-            label="Requirements"
-            name="requirements"
-            value={editFormData.requirements}
-            onChange={handleEditInputChange}
-            placeholder="Enter job requirements and qualifications"
-            rows="4"
-          />
-          <div className="flex justify-end space-x-3">
-            <Button
-              text="Cancel"
-              className="btn-outline-secondary"
-              onClick={() => setEditModalOpen(false)}
-              type="button"
-            />
-            <Button
-              text="Update Job"
-              className="btn-primary"
-              type="submit"
-            />
-          </div>
-        </form>
-      </Modal>
+            <div className="flex justify-end space-x-3">
+              <Button
+                text="Cancel"
+                className="btn-outline-secondary"
+                onClick={() => setEditModalOpen(false)}
+                type="button"
+              />
+              <Button
+                text="Update Job"
+                className="btn-primary"
+                type="submit"
+              />
+            </div>
+          </form>
+        </Modal>
+      )}
 
       {/* Tooltip */}
       {showTooltip && (

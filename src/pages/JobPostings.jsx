@@ -195,13 +195,15 @@ const JobPostings = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Job Postings</h1>
           <p className="text-gray-600 mt-2">
-            {(user?.role === 'SuperAdmin' || user?.role === 'HR')
-              ? 'Manage and create job postings for your organization' 
+            {user?.role === 'HR' 
+              ? 'Manage and create job postings for your organization'
+              : user?.role === 'SuperAdmin'
+              ? 'View job postings across the organization'
               : 'Monitor and view job postings across the organization'
             }
           </p>
         </div>
-        {(user?.role === 'SuperAdmin' || user?.role === 'HR') && (
+        {user?.role === 'HR' && (
           <Button
             text="Create New Job"
             className="btn-primary"
@@ -291,15 +293,17 @@ const JobPostings = () => {
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Created
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                {user?.role === 'HR' && (
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {jobs.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={user?.role === 'HR' ? "7" : "6"} className="px-6 py-4 text-center text-gray-500">
                     No jobs found. Create your first job posting!
                   </td>
                 </tr>
@@ -324,29 +328,27 @@ const JobPostings = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                       {formatDate(job.created_at)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <div className="flex justify-center space-x-2">
-                        <Button
-                          text="View Details"
-                          className="btn-outline-primary btn-sm"
-                          onClick={() => navigate(`/job-postings/${job.id}`)}
-                        />
-                        {(user?.role === 'SuperAdmin' || user?.role === 'HR') && (
-                          <>
-                            <Button
-                              text="Edit"
-                              className="btn-outline-primary btn-sm"
-                              onClick={() => openModal(job)}
-                            />
-                            <Button
-                              text="Delete"
-                              className="btn-outline-danger btn-sm"
-                              onClick={() => handleDelete(job.id)}
-                            />
-                          </>
-                        )}
-                      </div>
-                    </td>
+                    {user?.role === 'HR' && (
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <div className="flex justify-center space-x-2">
+                          <Button
+                            text="View Details"
+                            className="btn-outline-primary btn-sm"
+                            onClick={() => navigate(`/job-postings/${job.id}`)}
+                          />
+                          <Button
+                            text="Edit"
+                            className="btn-outline-primary btn-sm"
+                            onClick={() => openModal(job)}
+                          />
+                          <Button
+                            text="Delete"
+                            className="btn-outline-danger btn-sm"
+                            onClick={() => handleDelete(job.id)}
+                          />
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -355,133 +357,135 @@ const JobPostings = () => {
         </div>
       </Card>
 
-      {/* Create/Edit Job Modal */}
-      <Modal
-        open={modalOpen}
-        onClose={closeModal}
-        title={editingJob ? "Edit Job" : "Create New Job"}
-        label="Job Form"
-      >
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Textinput
-              label="Job Title"
-              type="text"
-              name="title"
-              value={formData.title}
+      {/* Create/Edit Job Modal - Only for HR */}
+      {user?.role === 'HR' && (
+        <Modal
+          open={modalOpen}
+          onClose={closeModal}
+          title={editingJob ? "Edit Job" : "Create New Job"}
+          label="Job Form"
+        >
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Textinput
+                label="Job Title"
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                placeholder="Enter job title"
+                required
+              />
+              
+              <Textinput
+                label="Department"
+                type="text"
+                name="department"
+                value={formData.department}
+                onChange={handleInputChange}
+                placeholder="Enter department"
+              />
+              
+              <Textinput
+                label="Number of Openings"
+                type="number"
+                name="openings"
+                value={formData.openings}
+                onChange={handleInputChange}
+                min="1"
+                required
+              />
+              
+              <Select
+                label="Job Type"
+                name="job_type"
+                value={formData.job_type}
+                onChange={handleInputChange}
+                options={[
+                  { value: "Full-time", label: "Full-time" },
+                  { value: "Part-time", label: "Part-time" },
+                  { value: "Contract", label: "Contract" },
+                  { value: "Internship", label: "Internship" }
+                ]}
+              />
+              
+              <Textinput
+                label="Location"
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                placeholder="Enter job location"
+              />
+              
+              <Textinput
+                label="Salary Range"
+                type="text"
+                name="salary_range"
+                value={formData.salary_range}
+                onChange={handleInputChange}
+                placeholder="e.g., $50,000 - $70,000"
+              />
+              
+              <Textinput
+                label="Application Deadline"
+                type="date"
+                name="deadline"
+                value={formData.deadline}
+                onChange={handleInputChange}
+                required
+              />
+              
+              <Select
+                label="Status"
+                name="status"
+                value={formData.status}
+                onChange={handleInputChange}
+                options={editingJob ? [
+                  { value: "Active", label: "Active" },
+                  { value: "Draft", label: "Draft" },
+                  { value: "Closed", label: "Closed" }
+                ] : [
+                  { value: "Active", label: "Active" },
+                  { value: "Draft", label: "Draft" }
+                ]}
+              />
+            </div>
+            
+            <Textarea
+              label="Job Description"
+              name="description"
+              value={formData.description}
               onChange={handleInputChange}
-              placeholder="Enter job title"
-              required
+              placeholder="Enter detailed job description"
+              rows="4"
             />
             
-            <Textinput
-              label="Department"
-              type="text"
-              name="department"
-              value={formData.department}
+            <Textarea
+              label="Requirements"
+              name="requirements"
+              value={formData.requirements}
               onChange={handleInputChange}
-              placeholder="Enter department"
+              placeholder="Enter job requirements and qualifications"
+              rows="4"
             />
             
-            <Textinput
-              label="Number of Openings"
-              type="number"
-              name="openings"
-              value={formData.openings}
-              onChange={handleInputChange}
-              min="1"
-              required
-            />
-            
-            <Select
-              label="Job Type"
-              name="job_type"
-              value={formData.job_type}
-              onChange={handleInputChange}
-              options={[
-                { value: "Full-time", label: "Full-time" },
-                { value: "Part-time", label: "Part-time" },
-                { value: "Contract", label: "Contract" },
-                { value: "Internship", label: "Internship" }
-              ]}
-            />
-            
-            <Textinput
-              label="Location"
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleInputChange}
-              placeholder="Enter job location"
-            />
-            
-            <Textinput
-              label="Salary Range"
-              type="text"
-              name="salary_range"
-              value={formData.salary_range}
-              onChange={handleInputChange}
-              placeholder="e.g., $50,000 - $70,000"
-            />
-            
-            <Textinput
-              label="Application Deadline"
-              type="date"
-              name="deadline"
-              value={formData.deadline}
-              onChange={handleInputChange}
-              required
-            />
-            
-            <Select
-              label="Status"
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              options={editingJob ? [
-                { value: "Active", label: "Active" },
-                { value: "Draft", label: "Draft" },
-                { value: "Closed", label: "Closed" }
-              ] : [
-                { value: "Active", label: "Active" },
-                { value: "Draft", label: "Draft" }
-              ]}
-            />
-          </div>
-          
-          <Textarea
-            label="Job Description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            placeholder="Enter detailed job description"
-            rows="4"
-          />
-          
-          <Textarea
-            label="Requirements"
-            name="requirements"
-            value={formData.requirements}
-            onChange={handleInputChange}
-            placeholder="Enter job requirements and qualifications"
-            rows="4"
-          />
-          
-          <div className="flex justify-end space-x-3">
-            <Button
-              text="Cancel"
-              className="btn-outline-secondary"
-              onClick={closeModal}
-              type="button"
-            />
-            <Button
-              text={editingJob ? "Update Job" : "Create Job"}
-              className="btn-primary"
-              type="submit"
-            />
-          </div>
-        </form>
-      </Modal>
+            <div className="flex justify-end space-x-3">
+              <Button
+                text="Cancel"
+                className="btn-outline-secondary"
+                onClick={closeModal}
+                type="button"
+              />
+              <Button
+                text={editingJob ? "Update Job" : "Create Job"}
+                className="btn-primary"
+                type="submit"
+              />
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 };

@@ -48,7 +48,7 @@ const SuperAdminDashboard = () => {
       // Fetch all required data
       const [jobsRes, candidatesRes, applicationsRes, usersRes] = await Promise.all([
         axios.get("/api/jobs"), // No auth required
-        axios.get("/api/candidates"), // No auth required
+        axios.get("/api/candidates", { headers }), // Auth required
         axios.get("/api/applications", { headers }), // Auth required
         axios.get("/api/admin/users", { headers }) // Auth required
       ]);

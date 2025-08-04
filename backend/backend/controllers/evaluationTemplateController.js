@@ -80,11 +80,15 @@ export const getEvaluationTemplateByJobId = async (req, res) => {
 // Create new evaluation template
 export const createEvaluationTemplate = async (req, res) => {
   try {
-    const { name, description, job_id, main_questions, extra_questions } = req.body;
+    console.log("Creating evaluation template with data:", req.body);
+    const { name, description, job_id, main_questions, is_active, department } = req.body;
     const created_by = req.user.id;
+
+    console.log("Extracted data:", { name, description, job_id, main_questions, is_active, department, created_by });
 
     // Validate required fields
     if (!name || !main_questions || !Array.isArray(main_questions)) {
+      console.log("Validation failed:", { name, main_questions, isArray: Array.isArray(main_questions) });
       return res.status(400).json({ error: "Name and main questions are required" });
     }
 
@@ -101,11 +105,11 @@ export const createEvaluationTemplate = async (req, res) => {
       description,
       job_id,
       main_questions: JSON.stringify(main_questions),
-      extra_questions: JSON.stringify(extra_questions || []),
       created_by,
-      is_active: true
+      is_active: is_active !== undefined ? is_active : true
     };
 
+    console.log("Template data to insert:", templateData);
     const [templateId] = await db("evaluation_templates").insert(templateData);
     
     const newTemplate = await db("evaluation_templates")
@@ -121,7 +125,8 @@ export const createEvaluationTemplate = async (req, res) => {
 
     res.status(201).json(newTemplate);
   } catch (error) {
-    console.error("Error creating evaluation template:", error);
+    console.error("Error creating evaluation template:", error.message);
+    console.error("Full error:", error);
     res.status(500).json({ error: "Failed to create evaluation template" });
   }
 };
@@ -130,7 +135,7 @@ export const createEvaluationTemplate = async (req, res) => {
 export const updateEvaluationTemplate = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, job_id, main_questions, extra_questions, is_active } = req.body;
+    const { name, description, job_id, main_questions, is_active } = req.body;
 
     // Check if template exists
     const existingTemplate = await db("evaluation_templates").where("id", id).first();
@@ -156,7 +161,6 @@ export const updateEvaluationTemplate = async (req, res) => {
       description,
       job_id,
       main_questions: JSON.stringify(main_questions),
-      extra_questions: JSON.stringify(extra_questions || []),
       is_active: is_active !== undefined ? is_active : existingTemplate.is_active,
       updated_at: db.fn.now()
     };

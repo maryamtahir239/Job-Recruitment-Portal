@@ -6,13 +6,12 @@ export async function up(knex) {
     // Foreign key to jobs table, required for every template
     table.integer("job_id")
       .unsigned()
-      .notNullable()
+      .nullable()
       .references("id")
       .inTable("jobs")
       .onDelete("CASCADE")
       .index();
     table.json("main_questions").notNullable().defaultTo("[]");
-    table.json("extra_questions").notNullable().defaultTo("[]");
     table.boolean("is_active").notNullable().defaultTo(true);
     table.integer("created_by")
       .unsigned()
