@@ -35,7 +35,21 @@ const Candidates = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get("/api/candidates");
+      
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No authentication token found. Please log in.");
+        setCandidates([]);
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.get("/api/candidates", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
       setCandidates(response.data || []);
     } catch (error) {
       // Only show toast for non-authentication errors
