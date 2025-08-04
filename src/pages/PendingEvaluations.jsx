@@ -13,7 +13,18 @@ const PendingEvaluations = () => {
       try {
         const res = await fetch("/api/evaluation/pending");
         const data = await res.json();
-        setPendingEvaluations(data);
+        
+        // Ensure data is an array
+        if (Array.isArray(data)) {
+          setPendingEvaluations(data);
+        } else if (data && Array.isArray(data.pendingEvaluations)) {
+          setPendingEvaluations(data.pendingEvaluations);
+        } else if (data && Array.isArray(data.data)) {
+          setPendingEvaluations(data.data);
+        } else {
+          console.warn("API returned unexpected data format:", data);
+          setPendingEvaluations([]);
+        }
       } catch (error) {
         console.error("Error fetching pending evaluations:", error);
         // For now, show empty state if API doesn't exist
@@ -53,7 +64,7 @@ const PendingEvaluations = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pendingEvaluations.map((evaluation) => (
+            {Array.isArray(pendingEvaluations) && pendingEvaluations.map((evaluation) => (
               <Card
                 key={evaluation.id}
                 className="border border-yellow-200 shadow-sm p-6 bg-white hover:shadow-md transition-shadow"

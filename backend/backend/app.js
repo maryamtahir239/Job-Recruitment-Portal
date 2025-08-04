@@ -22,6 +22,7 @@ import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import adminUserRoutes from "./routes/adminUsers.js";
 import userProfileRoutes from "./routes/userProfile.js";
+import dashboardRoutes from "./routes/dashboard.js";
 import inviteRoutes from "./routes/invites.js";
 import candidateRoutes from "./routes/candidates.js";
 import testEmailRoutes from "./routes/testEmail.js";
@@ -37,6 +38,7 @@ app.get("/api/test", (req, res) => {
 // Use routes with base paths
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userProfileRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/invites", inviteRoutes);

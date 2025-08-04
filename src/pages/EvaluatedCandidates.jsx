@@ -11,9 +11,21 @@ const EvaluatedCandidates = () => {
       try {
         const res = await fetch("/api/evaluation");
         const data = await res.json();
-        setEvaluations(data);
+        
+        // Ensure data is an array
+        if (Array.isArray(data)) {
+          setEvaluations(data);
+        } else if (data && Array.isArray(data.evaluations)) {
+          setEvaluations(data.evaluations);
+        } else if (data && Array.isArray(data.data)) {
+          setEvaluations(data.data);
+        } else {
+          console.warn("API returned unexpected data format:", data);
+          setEvaluations([]);
+        }
       } catch (error) {
-        // console.error("Error fetching evaluations:", error);
+        console.error("Error fetching evaluations:", error);
+        setEvaluations([]);
       } finally {
         setLoading(false);
       }
@@ -32,7 +44,7 @@ const EvaluatedCandidates = () => {
         <p className="text-center text-gray-500">No evaluations found.</p>
       ) : (
         <div className="flex flex-wrap justify-center gap-6">
-          {evaluations.map((evalItem) => (
+          {Array.isArray(evaluations) && evaluations.map((evalItem) => (
             <Card
               key={evalItem.id}
               className="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 border border-gray-200 shadow-sm p-6 bg-white"
