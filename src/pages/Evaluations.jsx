@@ -379,8 +379,8 @@ const Evaluations = () => {
 
              {/* Evaluation Form Modal */}
        {showEvaluationForm && selectedCandidate && (
-         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
-           <div className="bg-white rounded-lg w-full max-w-6xl max-h-[95vh] overflow-y-auto">
+         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 transition-all duration-300 ease-in-out">
+           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] overflow-hidden transform transition-all duration-300 ease-in-out scale-100">
              <EvaluationForm 
                candidate={selectedCandidate} 
                onClose={handleEvaluationClose}

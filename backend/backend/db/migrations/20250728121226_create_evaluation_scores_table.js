@@ -12,7 +12,7 @@ export async function up(knex) {
         .onDelete("CASCADE"); // If the referenced evaluation is deleted, delete this row too
   
       table.string("question").notNullable(); // String for the question text
-      table.integer("rating").unsigned().notNullable(); // Integer for the rating, non-negative
+      table.string("rating").notNullable(); // String for the rating (excellent, good, average, etc.)
     });
   }
   
