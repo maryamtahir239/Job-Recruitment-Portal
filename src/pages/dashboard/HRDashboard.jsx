@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -10,9 +10,12 @@ import { safeToastError } from "@/utility/safeToast";
 
 const HRDashboard = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
+  const mountCountRef = useRef(0);
   
+  // Declare state first
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [hasFetched, setHasFetched] = useState(false);
   const [stats, setStats] = useState({
     totalJobs: 0,
     activeJobs: 0,
@@ -23,36 +26,93 @@ const HRDashboard = () => {
   const [recentJobs, setRecentJobs] = useState([]);
   const [candidates, setCandidates] = useState([]);
   const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetchDashboardData();
+  
+  mountCountRef.current += 1;
+  console.log("HRDashboard component rendered at:", new Date().toISOString(), "Mount count:", mountCountRef.current, "Loading state:", loading);
+  
+  // Use useMemo to ensure stable references
+  const user = useMemo(() => {
+    const userData = localStorage.getItem("user");
+    return userData ? JSON.parse(userData) : null;
   }, []);
+  
+  const token = useMemo(() => localStorage.getItem("token"), []);
+  
+  // Check if user is authenticated and fetch data
+  useEffect(() => {
+    console.log("HRDashboard useEffect called at:", new Date().toISOString());
+    console.log("hasFetched:", hasFetched);
+    
+    if (!token || !user) {
+      console.error("User not authenticated. Token:", !!token, "User:", !!user);
+      navigate("/login");
+      return;
+    }
+    
+    if (user.role !== "HR") {
+      console.error("User role is not HR:", user.role);
+      navigate("/login");
+      return;
+    }
+    
+    if (!hasFetched) {
+      console.log("Setting hasFetched to true and calling fetchDashboardData");
+      setHasFetched(true);
+      fetchDashboardData();
+    } else {
+      console.log("Data already fetched, skipping fetchDashboardData");
+    }
+    
+    // Cleanup function
+    return () => {
+      console.log("HRDashboard useEffect cleanup called");
+      setHasFetched(false);
+    };
+  }, []); // Only run once on mount
 
   const fetchDashboardData = async () => {
+    console.log("fetchDashboardData called at:", new Date().toISOString());
+    
+    // Prevent multiple simultaneous calls
+    if (loading) {
+      console.log("fetchDashboardData: Already loading, skipping call. Loading state:", loading);
+      return;
+    }
+    
+    // Set loading to true immediately to prevent multiple calls
+    console.log("Setting loading to true");
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
       
       const config = {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        timeout: 10000 // 10 second timeout
       };
       
+      console.log("Fetching dashboard data with token:", token ? "Present" : "Missing");
+      
       // Fetch jobs
+      console.log("Fetching jobs...");
       const jobsResponse = await axios.get("/api/jobs", config);
       const jobs = jobsResponse.data;
+      console.log("Jobs fetched successfully:", jobs.length);
       
       // Fetch candidates
+      console.log("Fetching candidates...");
       const candidatesResponse = await axios.get("/api/candidates", config);
       const candidates = candidatesResponse.data;
+      console.log("Candidates fetched successfully:", candidates.length);
       
       // Fetch applications
+      console.log("Fetching applications...");
       const applicationsResponse = await axios.get("/api/applications", config);
       const applications = applicationsResponse.data;
+      console.log("Applications fetched successfully:", applications.length);
       
       // Calculate stats
       const activeJobs = jobs.filter(job => job.status === "Active").length;
@@ -78,16 +138,43 @@ const HRDashboard = () => {
       // Get recent jobs (last 5)
       setRecentJobs(jobs.slice(0, 5));
     } catch (error) {
-      setError(error.message);
+      console.error("Dashboard data fetch error:", error);
+      console.error("Error response:", error.response);
+      console.error("Error status:", error.response?.status);
+      console.error("Error data:", error.response?.data);
+      
+      let errorMessage = "Failed to load dashboard data";
+      
+      if (error.code === "ECONNABORTED") {
+        errorMessage = "Request timeout - server might be down";
+      } else if (error.code === "ERR_NETWORK") {
+        errorMessage = "Network error - please check your connection";
+      } else if (error.response?.status === 401) {
+        errorMessage = "Authentication failed - please log in again";
+        // Redirect to login
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
+        return;
+      } else if (error.response?.status === 403) {
+        errorMessage = "Access denied - insufficient permissions";
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
       // Only show toast for non-authentication errors
       if (
         error.response?.status !== 401 &&
         error.response?.status !== 403 &&
         error.response?.data?.error !== "Invalid credentials"
       ) {
-        safeToastError(`Failed to load dashboard data: ${error.response?.data?.error || error.message}`);
+        safeToastError(errorMessage);
       }
     } finally {
+      console.log("Setting loading to false");
       setLoading(false);
     }
   };

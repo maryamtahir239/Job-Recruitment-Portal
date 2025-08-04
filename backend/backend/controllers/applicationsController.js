@@ -32,6 +32,7 @@ export const getAllApplications = async (req, res) => {
         resume_url: payload.files?.resume || "",
         job_id: row.job_id,
         status: row.status || "Applied",
+        evaluation_status: row.evaluation_status || "pending",
         created_at: row.created_at,
         updated_at: row.updated_at
       };
@@ -185,5 +186,40 @@ export const updateApplicationStatus = async (req, res) => {
     res.json({ message: "Application status updated successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to update application status" });
+  }
+};
+
+export const updateEvaluationStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { evaluation_status } = req.body;
+
+    // Convert id to number
+    const applicationId = parseInt(id);
+
+    // Validate evaluation status
+    const validEvaluationStatuses = ["pending", "completed"];
+    if (!validEvaluationStatuses.includes(evaluation_status)) {
+      return res.status(400).json({ 
+        error: "Invalid evaluation_status value. Must be 'pending' or 'completed'" 
+      });
+    }
+
+    // Update the application evaluation status
+    const updatedRows = await db("candidate_applications")
+      .where({ id: applicationId })
+      .update({ 
+        evaluation_status,
+        updated_at: new Date()
+      });
+
+    if (updatedRows === 0) {
+      return res.status(404).json({ error: "Application not found" });
+    }
+
+    res.json({ message: "Evaluation status updated successfully" });
+  } catch (error) {
+    console.error("Error updating evaluation status:", error);
+    res.status(500).json({ error: "Failed to update evaluation status" });
   }
 };

@@ -1,20 +1,31 @@
 import React, { useState, useEffect } from "react";
 import Button from "@/components/ui/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import Card from "@/components/ui/Card";
+import Badge from "@/components/ui/Badge";
+import Icon from "@/components/ui/Icon";
 import { useMemo } from "react";
 import { getEvaluationTemplateByJobId } from "@/api/evaluationTemplates";
 import { safeToastError } from "@/utility/safeToast";
 
-
 const EvaluationForm = ({ candidate, onClose }) => {
-  const [questions, setQuestions] = useState([]);
-  const [template, setTemplate] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const [questions] = useState([
+    "Educational Qualifications",
+    "Work Experience",
+    "Technical/Professional Skills",
+    "Communication Skills",
+    "Confidence and Clarity",
+  ]);
 
   const [ratings, setRatings] = useState({});
-  const [newQuestion, setNewQuestion] = useState("");
-  const [editingIndex, setEditingIndex] = useState(null);
+  
+  // Simplified rating options
+  const ratingOptions = [
+    { value: "excellent", label: "Excellent" },
+    { value: "good", label: "Good" },
+    { value: "average", label: "Average" },
+    { value: "satisfactory", label: "Satisfactory" },
+    { value: "unsatisfactory", label: "Unsatisfactory" }
+  ];
   const [comments, setComments] = useState({
     improvement: "",
     evaluation: "",
@@ -69,96 +80,76 @@ const EvaluationForm = ({ candidate, onClose }) => {
     setRatings({ ...ratings, [question]: value });
   };
 
-  const handleAddQuestion = () => {
-    // Only allow adding questions if user is SuperAdmin and no template is loaded
-    if (!template && newQuestion.trim() !== "") {
-      if (editingIndex !== null) {
-        const updated = [...questions];
-        updated[editingIndex] = newQuestion;
-        setQuestions(updated);
-        setEditingIndex(null);
-      } else {
-        setQuestions([...questions, newQuestion]);
-      }
-      setNewQuestion("");
-    }
-  };
-
-  const handleEditQuestion = (index) => {
-    // Only allow editing if no template is loaded (for SuperAdmin flexibility)
-    if (!template) {
-      setNewQuestion(questions[index]);
-      setEditingIndex(index);
-    }
-  };
-
-  const handleDeleteQuestion = (index) => {
-    // Only allow deleting if no template is loaded
-    if (!template) {
-      const updated = questions.filter((_, i) => i !== index);
-      setQuestions(updated);
-    }
-  };
-
   const handleCommentChange = (e) => {
     const { name, value } = e.target;
     setComments({ ...comments, [name]: value });
   };
 
- const handleSubmit = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please log in to submit evaluation.");
-      return;
-    }
+  const handleSubmit = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in to submit evaluation.");
+        return;
+      }
 
-    const evaluationPayload = {
-      candidate: { id: candidate.id },
-      ratings,
-      comments,
-    };
+      const evaluationPayload = {
+        candidate: { id: candidate.id },
+        ratings,
+        comments,
+      };
 
-    const response = await fetch("/api/evaluation", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify(evaluationPayload),
-    });
+      const response = await fetch("/api/evaluation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(evaluationPayload),
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Submission failed");
-    }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Submission failed");
+      }
 
-    alert("Evaluation submitted successfully!");
-    onClose(); 
-  } catch (err) {
-    alert(`Failed to submit evaluation: ${err.message}`);
-  }
-};
-
-
-  const getLabel = (value) => {
-    switch (value) {
-      case "5": return "Exceptional";
-      case "4": return "Above Average";
-      case "3": return "Average";
-      case "2": return "Satisfactory";
-      case "1": return "Unsatisfactory";
-      default: return "";
+      alert("Evaluation submitted successfully!");
+      onClose();
+    } catch (err) {
+      alert(`Failed to submit evaluation: ${err.message}`);
     }
   };
 
-  const totalScore = useMemo(() => {
-  return questions.reduce((sum, q) => {
-    const value = parseInt(ratings[q], 10);
-    return sum + (isNaN(value) ? 0 : value);
-  }, 0);
-}, [ratings, questions]);
+  const getLabel = (value) => {
+    const option = ratingOptions.find(opt => opt.value === value);
+    return option ? option.label : "";
+  };
 
+  const totalScore = useMemo(() => {
+    return questions.reduce((sum, q) => {
+      const rating = ratings[q];
+      if (!rating) return sum;
+      
+      // Convert text ratings to numeric scores for calculation
+      const scoreMap = {
+        "excellent": 5,
+        "good": 4,
+        "average": 3,
+        "satisfactory": 2,
+        "unsatisfactory": 1
+      };
+      return sum + (scoreMap[rating] || 0);
+    }, 0);
+  }, [ratings, questions]);
+
+  const getJobTitle = (jobId) => {
+    // Use job title from candidate object if available, otherwise fallback
+    return candidate.job_title || "Software Engineer";
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
 
   if (loading) {
     return (
@@ -171,94 +162,143 @@ const EvaluationForm = ({ candidate, onClose }) => {
   }
 
   return (
-    <div className="bg-white p-6 rounded shadow-md w-full max-w-4xl mx-auto mt-10">
-      <h2 className="text-2xl font-semibold mb-6 pt-8 text-center">Interview Evaluation Form</h2>
-      
-      {template && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
-          <p className="text-sm text-blue-800">
-            <strong>Template:</strong> {template.name}
-            {template.description && ` - ${template.description}`}
-          </p>
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-2xl relative flex-shrink-0">
+        <div className="flex justify-between items-center pr-12">
+          <div>
+            <h2 className="text-2xl text-white font-semibold">Interview Evaluation Form</h2>
+            <p className="text-blue-100 mt-1 text-sm">Comprehensive candidate assessment</p>
+          </div>
+          <div className="text-right">
+            <div className="text-sm text-blue-100">Total Score</div>
+            <div className="text-2xl font-bold">{totalScore}/25</div>
+          </div>
         </div>
-      )}
-
-      <div className="text-sm text-gray-700 mb-6">
-        <p><strong>Name:</strong> {candidate.full_name}</p>
-        <p><strong>Position:</strong> {candidate.position}</p>
-        <p><strong>Department:</strong> {candidate.department}</p>
-        <p><strong>Date:</strong> {candidate.date?.slice(0, 10)}</p>
-
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white hover:text-blue-200 transition-colors duration-200 p-2 rounded-full hover:bg-white/10"
+        >
+          <Icon icon="ph:x" className="text-xl" />
+        </button>
       </div>
 
-      <h3 className="text-lg font-semibold mb-4 text-gray-800">Evaluation</h3>
-      <div className="overflow-x-auto mb-6">
-        <table className="min-w-full text-sm border text-center">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="border px-4 py-2 text-center">Criteria</th>
-              <th className="border px-4 py-2 text-center">Poor (1)</th>
-              <th className="border px-4 py-2 text-center">Fair (2)</th>
-              <th className="border px-4 py-2 text-center">Good (3)</th>
-              <th className="border px-4 py-2 text-center">Very Good (4)</th>
-              <th className="border px-4 py-2 text-center">Excellent (5)</th>
-            </tr>
-          </thead>
-          <tbody>
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Candidate Information */}
+        <div className="p-6 border-b border-gray-200 bg-gray-50">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <Icon icon="ph:user" className="text-blue-600 text-lg" />
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 uppercase tracking-wide">Candidate Name</div>
+                <div className="font-medium text-gray-900 text-sm">{candidate.full_name}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <Icon icon="ph:briefcase" className="text-green-600 text-lg" />
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 uppercase tracking-wide">Position</div>
+                <div className="font-medium text-gray-900 text-sm">{getJobTitle(candidate.job_id)}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <Icon icon="ph:buildings" className="text-purple-600 text-lg" />
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 uppercase tracking-wide">Department</div>
+                <div className="font-medium text-gray-900 text-sm">IT Department</div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                <Icon icon="ph:calendar" className="text-orange-600 text-lg" />
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 uppercase tracking-wide">Applied Date</div>
+                <div className="font-medium text-gray-900 text-sm">{formatDate(candidate.created_at)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Evaluation Criteria */}
+        <div className="p-6">
+          <h3 className="text-lg font-medium text-gray-800 mb-4">Evaluation Criteria</h3>
+          
+          <div className="space-y-4">
             {questions.map((criteria, index) => (
-              <tr key={index}>
-                <td className="border px-4 py-2 text-center font-medium">{criteria}</td>
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <td key={rating} className="border px-4 py-2 text-center">
-                    <input
-                      type="radio"
-                      name={`criteria_${index}`}
-                      value={rating}
-                      onChange={(e) => handleRatingChange(criteria, parseInt(e.target.value))}
-                      className="mr-2"
-                    />
-                  </td>
-                ))}
-              </tr>
+              <Card key={index} className="p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div className="mb-3">
+                  <h4 className="text-base font-medium text-gray-900 mb-3">{criteria}</h4>
+                  <div className="flex flex-wrap items-center gap-3">
+                    {ratingOptions.map((option) => (
+                      <label key={option.value} className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name={`criteria_${index}`}
+                          value={option.value}
+                          onChange={(e) => handleRatingChange(criteria, e.target.value)}
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">
+                          {option.label}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  {ratings[criteria] && (
+                    <div className="mt-2">
+                      <Badge className="badge-success text-xs">
+                        Selected: {getLabel(ratings[criteria])}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              </Card>
             ))}
-          </tbody>
-        </table>
-
-        {!template && (
-          <div className="flex items-center gap-4 mt-6">
-            <input
-              type="text"
-              placeholder="Add or edit question"
-              className="border px-3 py-2 rounded w-full"
-              value={newQuestion}
-              onChange={(e) => setNewQuestion(e.target.value)}
-            />
-            <Button text={editingIndex !== null ? "Update" : "Add"} onClick={handleAddQuestion} />
           </div>
-        )}
 
-      </div>
+          {/* Comments Section */}
+          <div className="mt-6">
+            <h3 className="text-lg font-medium text-gray-800 mb-4">Additional Comments</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.keys(comments).map((key) => (
+                <div key={key}>
+                  <label className="block text-gray-700 font-medium mb-2 capitalize text-sm">
+                    {key.replace(/([A-Z])/g, " $1")}
+                  </label>
+                  <textarea
+                    name={key}
+                    value={comments[key]}
+                    onChange={handleCommentChange}
+                    className="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-none"
+                    rows={3}
+                    placeholder={`Enter your ${key.replace(/([A-Z])/g, " $1").toLowerCase()}...`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
 
-      <div className="space-y-4">
-        {Object.keys(comments).map((key) => (
-          <div key={key}>
-            <label className="block text-gray-700 font-medium mb-1 capitalize">
-              {key.replace(/([A-Z])/g, " $1")}
-            </label>
-            <textarea
-              name={key}
-              value={comments[key]}
-              onChange={handleCommentChange}
-              className="w-full border border-gray-300 rounded py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-              rows={3}
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+            <Button
+              text="Submit Evaluation"
+              onClick={handleSubmit}
+              className="btn-primary px-6 py-2 text-sm font-medium"
             />
           </div>
-        ))}
-      </div>
-
-      <div className="flex justify-end gap-4 mt-6">
-        <Button text="Cancel" onClick={onClose} className="bg-gray-300" />
-        <Button text="Submit Evaluation" onClick={handleSubmit} className="btn-primary px-6" />
+        </div>
       </div>
     </div>
   );

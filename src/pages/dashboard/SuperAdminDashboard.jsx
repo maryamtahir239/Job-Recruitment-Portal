@@ -24,10 +24,19 @@ const SuperAdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("SuperAdminDashboard useEffect called at:", new Date().toISOString());
     fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async () => {
+    console.log("SuperAdminDashboard fetchDashboardData called at:", new Date().toISOString());
+    
+    // Prevent multiple simultaneous calls
+    if (loading) {
+      console.log("SuperAdminDashboard fetchDashboardData: Already loading, skipping call");
+      return;
+    }
+    
     try {
       setLoading(true);
       

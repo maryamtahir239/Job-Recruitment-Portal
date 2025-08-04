@@ -1,6 +1,6 @@
 import express from "express";
 import { verifyToken } from "../middleware/authMiddleware.js";
-import { getSubmittedApplications, getAllApplications, getApplicationById, updateApplicationStatus } from "../controllers/applicationsController.js";
+import { getSubmittedApplications, getAllApplications, getApplicationById, updateApplicationStatus, updateEvaluationStatus } from "../controllers/applicationsController.js";
 import db from "../db/knex.js";
 
 const router = express.Router();
@@ -36,5 +36,6 @@ router.get("/debug", verifyToken, async (req, res) => {
 });
 router.get("/:id", verifyToken, getApplicationById);
 router.put("/:id", verifyToken, updateApplicationStatus);
+router.put("/:id/evaluation-status", verifyToken, updateEvaluationStatus);
 
 export default router;

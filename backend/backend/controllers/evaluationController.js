@@ -17,8 +17,18 @@ export const createEvaluation = async (req, res) => {
     }
 
     const totalScore = Object.values(ratings)
-      .map(Number)
-      .reduce((sum, val) => sum + (isNaN(val) ? 0 : val), 0);
+      .map(rating => {
+        // Convert text ratings to numeric scores
+        const scoreMap = {
+          "excellent": 5,
+          "good": 4,
+          "average": 3,
+          "satisfactory": 2,
+          "unsatisfactory": 1
+        };
+        return scoreMap[rating] || 0;
+      })
+      .reduce((sum, val) => sum + val, 0);
     
     console.log("Calculated total score:", totalScore);
 
@@ -53,10 +63,10 @@ export const createEvaluation = async (req, res) => {
     console.log("Created evaluation with ID:", evaluationId);
 
     // ✅ Insert detailed question ratings (optional table)
-    const questionEntries = Object.entries(ratings).map(([question, value]) => ({
+    const questionEntries = Object.entries(ratings).map(([question, rating]) => ({
       evaluation_id: evaluationId,
       question,
-      rating: Number(value),
+      rating: rating, // Keep the text rating as is
     }));
 
     if (questionEntries.length > 0) {

@@ -89,7 +89,12 @@ export const interviewerMenuItems = [
     link: "evaluations",
   },
   {
-    title: "Evaluated Candidates",
+    title: "Pending Evaluations",
+    icon: "ph:clock",
+    link: "pending-evaluations",
+  },
+  {
+    title: "Completed Evaluations",
     icon: "ph:chart-bar",
     link: "evaluated-candidates",
   },

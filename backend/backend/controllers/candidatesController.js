@@ -22,25 +22,28 @@ export const getAllCandidates = async (req, res) => {
           .whereIn("status", ["sent", "opened", "submitted"])
           .first();
         
-                 // Get application ID if candidate has submitted an application
-         let application_id = null;
-         if (invite && invite.status === 'submitted') {
-           console.log(`Looking for application for candidate ${candidate.id}, job ${candidate.job_id}`);
-           const application = await db("candidate_applications")
-             .where({ 
-               candidate_id: candidate.id,
-               job_id: candidate.job_id 
-             })
-             .first();
-           application_id = application ? application.id : null;
-           console.log(`Found application ID: ${application_id} for candidate ${candidate.id}`);
-         }
+        // Get application ID and evaluation status if candidate has submitted an application
+        let application_id = null;
+        let evaluation_status = null;
+        if (invite && invite.status === 'submitted') {
+          console.log(`Looking for application for candidate ${candidate.id}, job ${candidate.job_id}`);
+          const application = await db("candidate_applications")
+            .where({ 
+              candidate_id: candidate.id,
+              job_id: candidate.job_id 
+            })
+            .first();
+          application_id = application ? application.id : null;
+          evaluation_status = application ? application.evaluation_status : null;
+          console.log(`Found application ID: ${application_id} for candidate ${candidate.id}`);
+        }
         
         return {
           ...candidate,
           invite_sent: !!invite,
           invite_status: invite ? invite.status : null,
           application_id: application_id,
+          evaluation_status: evaluation_status,
           status: invite ? (invite.status === 'submitted' ? 'Applied' : 'Under Review') : 'Not Invited'
         };
       })
@@ -51,6 +54,65 @@ export const getAllCandidates = async (req, res) => {
   } catch (error) {
     console.error("Error fetching candidates:", error);
     res.status(500).json({ error: "Failed to fetch candidates" });
+  }
+};
+
+/**
+ * PUT /api/candidates/:id/evaluation-status
+ * Updates the evaluation status for a candidate's application
+ */
+export const updateEvaluationStatus = async (req, res) => {
+  const { id } = req.params;
+  const { evaluation_status } = req.body;
+
+  if (!evaluation_status || !['pending', 'completed'].includes(evaluation_status)) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "evaluation_status is required and must be 'pending' or 'completed'" 
+    });
+  }
+
+  try {
+    // Get the candidate to find their job_id
+    const candidate = await db("candidates")
+      .where({ id })
+      .first();
+
+    if (!candidate) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Candidate not found" 
+      });
+    }
+
+    // Update evaluation status in candidate_applications table
+    const updated = await db("candidate_applications")
+      .where({ 
+        candidate_id: id,
+        job_id: candidate.job_id 
+      })
+      .update({ 
+        evaluation_status,
+        updated_at: db.fn.now()
+      });
+
+    if (updated === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Candidate application not found" 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      message: "Evaluation status updated successfully" 
+    });
+  } catch (error) {
+    console.error("Error updating evaluation status:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to update evaluation status" 
+    });
   }
 };
 
