@@ -39,32 +39,8 @@ export function up(knex) {
       .notNullable()
       .defaultTo("pending");
 
-    table.string("photo_url").nullable();
-    table.string("resume_url").nullable();
     table.string("photo_filename").nullable();
     table.string("resume_filename").nullable();
-
-    table.string("father_name").nullable();
-    table.string("cnic").nullable();
-    table.string("date_of_birth").nullable();
-    table.string("gender").nullable();
-    table.string("nationality").nullable();
-    table.string("marital_status").nullable();
-
-    table.text("address").nullable();
-    table.string("city").nullable();
-    table.string("province").nullable();
-
-    table.string("emergency_contact_name").nullable();
-    table.string("emergency_contact_phone").nullable();
-
-    table.text("why_interested").nullable();
-    table.text("career_goals").nullable();
-    table.string("expected_salary").nullable();
-    table.string("notice_period").nullable();
-
-    table.boolean("isFresher").defaultTo(false);
-    table.boolean("hasReferences").defaultTo(false);
 
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.timestamp("updated_at").defaultTo(knex.fn.now());

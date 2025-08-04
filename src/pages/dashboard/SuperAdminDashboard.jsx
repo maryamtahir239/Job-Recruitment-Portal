@@ -31,12 +31,6 @@ const SuperAdminDashboard = () => {
   const fetchDashboardData = async () => {
     console.log("SuperAdminDashboard fetchDashboardData called at:", new Date().toISOString());
     
-    // Prevent multiple simultaneous calls
-    if (loading) {
-      console.log("SuperAdminDashboard fetchDashboardData: Already loading, skipping call");
-      return;
-    }
-    
     try {
       setLoading(true);
       

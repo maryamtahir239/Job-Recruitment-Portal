@@ -22,28 +22,20 @@ import { listJobs } from "@/api/jobRoutes";
 const EvaluationTemplateManagement = () => {
   console.log("=== EvaluationTemplateManagement component rendering... ===");
   
-  // Immediate test render to see if component loads
-  try {
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    
-    console.log("User:", user);
-    console.log("Token:", token ? "Present" : "Missing");
-    console.log("User role:", user?.role);
-    
-    // If we can't even get basic data, show error
-    if (typeof localStorage === 'undefined') {
-      console.error("localStorage not available");
-      return <div className="p-6">Error: localStorage not available</div>;
-    }
-  } catch (error) {
-    console.error("Error in component initialization:", error);
-    return <div className="p-6">Error: {error.message}</div>;
+  const navigate = useNavigate();
+  
+  // Check localStorage availability
+  if (typeof localStorage === 'undefined') {
+    console.error("localStorage not available");
+    return <div className="p-6">Error: localStorage not available</div>;
   }
   
-  const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "null");
+  
+  console.log("User:", user);
+  console.log("Token:", token ? "Present" : "Missing");
+  console.log("User role:", user?.role);
 
   const [templates, setTemplates] = useState([]);
   const [jobs, setJobs] = useState([]);
@@ -70,7 +62,7 @@ const EvaluationTemplateManagement = () => {
     }
     console.log("Loading data...");
     loadData();
-  }, [token, user, navigate]);
+  }, [token, user?.role]); // Only depend on token and user role
 
   const loadData = async () => {
     setLoading(true);
@@ -390,8 +382,8 @@ const EvaluationTemplateManagement = () => {
       <Modal
         title={editingTemplate ? "Edit Template" : "Create New Template"}
         label="Evaluation Template"
-        modalOpen={showModal}
-        setModalOpen={setShowModal}
+        open={showModal}
+        onClose={() => setShowModal(false)}
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
