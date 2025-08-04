@@ -1,6 +1,4 @@
 // Frontend/src/api/adminUsers.js
-const API_BASE = import.meta.env.VITE_API_BASE || "";
-
 function authHeaders(token) {
   return {
     "Content-Type": "application/json",
@@ -9,7 +7,7 @@ function authHeaders(token) {
 }
 
 export async function listAdminUsers(token) {
-  const res = await fetch(`${API_BASE}/api/admin/users`, {
+  const res = await fetch(`/api/admin/users`, {
     headers: authHeaders(token),
   });
   if (!res.ok) throw new Error(await res.text());
@@ -17,7 +15,7 @@ export async function listAdminUsers(token) {
 }
 
 export async function createAdminUser(token, payload) {
-  const res = await fetch(`${API_BASE}/api/admin/users`, {
+  const res = await fetch(`/api/admin/users`, {
     method: "POST",
     headers: authHeaders(token),
     body: JSON.stringify(payload),
@@ -27,7 +25,7 @@ export async function createAdminUser(token, payload) {
 }
 
 export async function updateAdminUser(token, id, payload) {
-  const res = await fetch(`${API_BASE}/api/admin/users/${id}`, {
+  const res = await fetch(`/api/admin/users/${id}`, {
     method: "PUT",
     headers: authHeaders(token),
     body: JSON.stringify(payload),
@@ -37,7 +35,7 @@ export async function updateAdminUser(token, id, payload) {
 }
 
 export async function deleteAdminUser(token, id) {
-  const res = await fetch(`${API_BASE}/api/admin/users/${id}`, {
+  const res = await fetch(`/api/admin/users/${id}`, {
     method: "DELETE",
     headers: authHeaders(token),
   });

@@ -1,18 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@/components/ui/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useMemo } from "react";
+import { getEvaluationTemplateByJobId } from "@/api/evaluationTemplates";
+import { safeToastError } from "@/utility/safeToast";
 
 
 const EvaluationForm = ({ candidate, onClose }) => {
-  const [questions, setQuestions] = useState([
-    "Educational Qualifications",
-    "Work Experience",
-    "Technical/Professional Skills",
-    "Communication Skills",
-    "Confidence and Clarity",
-  ]);
+  const [questions, setQuestions] = useState([]);
+  const [template, setTemplate] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [ratings, setRatings] = useState({});
   const [newQuestion, setNewQuestion] = useState("");
@@ -24,12 +22,56 @@ const EvaluationForm = ({ candidate, onClose }) => {
     hrComments: "",
   });
 
+  // Load evaluation template for the candidate's job
+  useEffect(() => {
+    const loadTemplate = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("token");
+        if (!token || !candidate.job_id) {
+          // Fallback to default questions if no template found
+          setQuestions([
+            "Educational Qualifications",
+            "Work Experience",
+            "Technical/Professional Skills",
+            "Communication Skills",
+            "Confidence and Clarity",
+          ]);
+          return;
+        }
+
+        const templateData = await getEvaluationTemplateByJobId(token, candidate.job_id);
+        setTemplate(templateData);
+        
+        // Combine main and extra questions
+        const mainQuestions = JSON.parse(templateData.main_questions || "[]");
+        const extraQuestions = JSON.parse(templateData.extra_questions || "[]");
+        setQuestions([...mainQuestions, ...extraQuestions]);
+      } catch (error) {
+        console.error("Failed to load evaluation template:", error);
+        // Fallback to default questions
+        setQuestions([
+          "Educational Qualifications",
+          "Work Experience",
+          "Technical/Professional Skills",
+          "Communication Skills",
+          "Confidence and Clarity",
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTemplate();
+  }, [candidate.job_id]);
+
   const handleRatingChange = (question, value) => {
     setRatings({ ...ratings, [question]: value });
   };
 
   const handleAddQuestion = () => {
-    if (newQuestion.trim() !== "") {
+    // Only allow adding questions if user is SuperAdmin and no template is loaded
+    if (!template && newQuestion.trim() !== "") {
       if (editingIndex !== null) {
         const updated = [...questions];
         updated[editingIndex] = newQuestion;
@@ -43,13 +85,19 @@ const EvaluationForm = ({ candidate, onClose }) => {
   };
 
   const handleEditQuestion = (index) => {
-    setNewQuestion(questions[index]);
-    setEditingIndex(index);
+    // Only allow editing if no template is loaded (for SuperAdmin flexibility)
+    if (!template) {
+      setNewQuestion(questions[index]);
+      setEditingIndex(index);
+    }
   };
 
   const handleDeleteQuestion = (index) => {
-    const updated = questions.filter((_, i) => i !== index);
-    setQuestions(updated);
+    // Only allow deleting if no template is loaded
+    if (!template) {
+      const updated = questions.filter((_, i) => i !== index);
+      setQuestions(updated);
+    }
   };
 
   const handleCommentChange = (e) => {
@@ -112,9 +160,28 @@ const EvaluationForm = ({ candidate, onClose }) => {
 }, [ratings, questions]);
 
 
+  if (loading) {
+    return (
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-4xl mx-auto mt-10">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">Loading evaluation form...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white p-6 rounded shadow-md w-full max-w-4xl mx-auto mt-10">
       <h2 className="text-2xl font-semibold mb-6 pt-8 text-center">Interview Evaluation Form</h2>
+      
+      {template && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+          <p className="text-sm text-blue-800">
+            <strong>Template:</strong> {template.name}
+            {template.description && ` - ${template.description}`}
+          </p>
+        </div>
+      )}
 
       <div className="text-sm text-gray-700 mb-6">
         <p><strong>Name:</strong> {candidate.full_name}</p>
@@ -157,16 +224,18 @@ const EvaluationForm = ({ candidate, onClose }) => {
           </tbody>
         </table>
 
-        <div className="flex items-center gap-4 mt-6">
-  <input
-    type="text"
-    placeholder="Add or edit question"
-    className="border px-3 py-2 rounded w-full"
-    value={newQuestion}
-    onChange={(e) => setNewQuestion(e.target.value)}
-  />
-  <Button text={editingIndex !== null ? "Update" : "Add"} onClick={handleAddQuestion} />
-</div>
+        {!template && (
+          <div className="flex items-center gap-4 mt-6">
+            <input
+              type="text"
+              placeholder="Add or edit question"
+              className="border px-3 py-2 rounded w-full"
+              value={newQuestion}
+              onChange={(e) => setNewQuestion(e.target.value)}
+            />
+            <Button text={editingIndex !== null ? "Update" : "Add"} onClick={handleAddQuestion} />
+          </div>
+        )}
 
       </div>
 

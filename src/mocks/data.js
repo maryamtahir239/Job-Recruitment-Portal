@@ -29,6 +29,11 @@ export const superAdminMenuItems = [
     icon: "ph:file-text",
     link: "applications",
   },
+  {
+    title: "Evaluation Form Templates",
+    icon: "ph:note-pencil",
+    link: "evaluation-templates",
+  },
 ];
 
 export const hrMenuItems = [

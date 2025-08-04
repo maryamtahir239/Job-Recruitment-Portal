@@ -22,6 +22,9 @@ const CandidateForms = lazy(() => import("./pages/CandidateForms"));
 const EvaluatedCandidates = lazy(() => import("./pages/EvaluatedCandidates"));
 const Evaluations = lazy(() => import("./pages/Evaluations"));
 const PendingEvaluations = lazy(() => import("./pages/PendingEvaluations"));
+const EvaluationTemplateManagement = lazy(() => import("./pages/EvaluationTemplateManagement"));
+const TestEvaluationTemplate = lazy(() => import("./pages/TestEvaluationTemplate"));
+const SimpleEvaluationTemplate = lazy(() => import("./pages/SimpleEvaluationTemplate"));
 
 // **New Public Application Page**
 const PublicApplicationWrapper = lazy(() => import("./pages/hr/PublicApplicationWrapper"));
@@ -38,6 +41,10 @@ function App() {
           {/* Public route for candidate form */}
           <Route path="/apply/:token" element={<PublicApplicationWrapper />} />
 
+          {/* Test route without Layout */}
+          <Route path="test-eval-direct" element={<EvaluationTemplateManagement />} />
+          <Route path="simple-eval" element={<SimpleEvaluationTemplate />} />
+          
           {/* All authenticated routes with sidebar/profile go here */}
           <Route path="/*" element={<Layout />}>
             <Route path="dashboard" element={<HRDashboard />} />
@@ -60,6 +67,8 @@ function App() {
             <Route path="evaluated-candidates" element={<EvaluatedCandidates />} />
             <Route path="evaluations" element={<Evaluations />} />
             <Route path="pending-evaluations" element={<PendingEvaluations />} />
+            <Route path="evaluation-templates" element={<EvaluationTemplateManagement />} />
+            <Route path="test-evaluation-template" element={<TestEvaluationTemplate />} />
             <Route path="*" element={<Error />} />
           </Route>
         </Routes>

@@ -1,6 +1,4 @@
 // Frontend/src/api/userProfile.js
-const API_BASE = import.meta.env.VITE_API_BASE || "";
-
 function authHeaders(token) {
   return {
     Authorization: `Bearer ${token}`,
@@ -9,7 +7,7 @@ function authHeaders(token) {
 
 // Get user profile
 export async function getUserProfile(token) {
-  const res = await fetch(`${API_BASE}/api/user/profile`, {
+  const res = await fetch(`/api/user/profile`, {
     headers: authHeaders(token),
   });
   if (!res.ok) {
@@ -44,7 +42,7 @@ export async function updateUserName(token, name) {
   const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
   
   try {
-    const res = await fetch(`${API_BASE}/api/user/profile`, {
+    const res = await fetch(`/api/user/profile`, {
       method: "PUT",
       headers: {
         ...authHeaders(token),
@@ -103,7 +101,7 @@ export async function updateProfileImage(token, file) {
   const formData = new FormData();
   formData.append('profile_image', file);
 
-  const res = await fetch(`${API_BASE}/api/user/profile-image`, {
+  const res = await fetch(`/api/user/profile-image`, {
     method: "PUT",
     headers: {
       ...authHeaders(token),
@@ -138,7 +136,7 @@ export async function updateProfileImage(token, file) {
 
 // Remove profile image
 export async function removeProfileImage(token) {
-  const res = await fetch(`${API_BASE}/api/user/profile-image`, {
+  const res = await fetch(`/api/user/profile-image`, {
     method: "DELETE",
     headers: authHeaders(token),
   });
@@ -170,7 +168,7 @@ export async function removeProfileImage(token) {
 
 // Reset password
 export async function resetPassword(token, currentPassword, newPassword) {
-  const res = await fetch(`${API_BASE}/api/user/reset-password`, {
+  const res = await fetch(`/api/user/reset-password`, {
     method: "PUT",
     headers: {
       ...authHeaders(token),

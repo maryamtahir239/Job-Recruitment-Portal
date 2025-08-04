@@ -338,7 +338,7 @@ const SuperAdminDashboard = () => {
           <Icon icon="ph:gear" className="text-gray-600 mr-2" />
           System Management
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Button
             text="Manage Users"
             className="btn-outline-primary w-full"
@@ -353,6 +353,11 @@ const SuperAdminDashboard = () => {
             text="View All Applications"
             className="btn-outline-info w-full"
             onClick={() => navigate("/applications")}
+          />
+          <Button
+            text="Evaluation Templates"
+            className="btn-outline-warning w-full"
+            onClick={() => navigate("/evaluation-templates")}
           />
         </div>
       </Card>

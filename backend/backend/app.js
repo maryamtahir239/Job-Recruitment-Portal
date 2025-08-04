@@ -26,6 +26,7 @@ import inviteRoutes from "./routes/invites.js";
 import candidateRoutes from "./routes/candidates.js";
 import testEmailRoutes from "./routes/testEmail.js";
 import evaluationRoutes from "./routes/evaluation.js";
+import evaluationTemplateRoutes from "./routes/evaluationTemplates.js";
 import applicationRoutes from "./routes/applications.js";
 import jobRoutes from "./routes/jobRoutes.js";
 
@@ -43,6 +44,7 @@ app.use("/api/invites", inviteRoutes);
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/test-email", testEmailRoutes);
 app.use("/api/evaluation", evaluationRoutes);
+app.use("/api/evaluation-templates", evaluationTemplateRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/jobs", jobRoutes);
 
