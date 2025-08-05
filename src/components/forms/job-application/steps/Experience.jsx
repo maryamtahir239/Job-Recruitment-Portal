@@ -3,8 +3,15 @@ import Textinput from '@/components/ui/Textinput';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Select from '@/components/ui/Select';
+import useDigitOnly from '@/hooks/useDigitOnly';
 
-const Experience = ({ register, errors, fieldErrors, expFields, addExperience, removeExperience, watch, setValue }) => {
+const Experience = ({ register, errors, fieldErrors, expFields, addExperience, removeExperience, watch, setValue, digitErrors: parentDigitErrors }) => {
+  // Initialize digit-only validation hook
+  const { validateDigitOnly, digitErrors } = useDigitOnly();
+  
+  // Use parent digit errors if provided, otherwise use local ones
+  const finalDigitErrors = parentDigitErrors || digitErrors;
+  
   const [isFresher, setIsFresher] = useState(false);
   const [showExperienceForm, setShowExperienceForm] = useState(false);
 
@@ -240,8 +247,10 @@ const Experience = ({ register, errors, fieldErrors, expFields, addExperience, r
                 label="Salary (Optional)" 
                 register={register} 
                 name={`experience.${index}.salary`} 
-                error={fieldErrors[`experience.${index}.salary`] ? { message: fieldErrors[`experience.${index}.salary`] } : (errors.experience?.[index]?.salary?.message ? { message: errors.experience[index].salary.message } : null)}
+                error={fieldErrors[`experience.${index}.salary`] ? { message: fieldErrors[`experience.${index}.salary`] } : (errors.experience?.[index]?.salary?.message ? { message: errors.experience[index].salary.message } : null) || (finalDigitErrors[`experience.${index}.salary`] ? { message: finalDigitErrors[`experience.${index}.salary`] } : null)}
                 placeholder="e.g., $50,000 per year"
+                isDigitOnly={true}
+                onDigitValidation={validateDigitOnly}
               />
               
               <Textinput 

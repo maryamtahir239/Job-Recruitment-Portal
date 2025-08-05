@@ -766,22 +766,19 @@ const EvaluationTemplateManagement = () => {
                     text="View"
                     onClick={() => handleViewTemplate(template)}
                     className="btn-secondary"
-                    size="sm"
-                    icon={faEye}
+                    size="md"
                   />
                   <Button
                     text="Edit"
                     onClick={() => handleEditTemplate(template)}
                     className="btn-primary"
-                    size="sm"
-                    icon={faEdit}
+                    size="md"
                   />
                   <Button
                     text="Delete"
                     onClick={() => handleDeleteTemplate(template.id)}
                     className="btn-danger"
-                    size="sm"
-                    icon={faTrash}
+                    size="md"
                   />
                 </div>
               </div>

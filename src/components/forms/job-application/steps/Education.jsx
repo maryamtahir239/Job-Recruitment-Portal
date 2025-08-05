@@ -3,8 +3,15 @@ import Textinput from '@/components/ui/Textinput';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Select from '@/components/ui/Select';
+import useDigitOnly from '@/hooks/useDigitOnly';
 
-const Education = ({ register, errors, fieldErrors, eduFields, addEducation, removeEducation }) => {
+const Education = ({ register, errors, fieldErrors, eduFields, addEducation, removeEducation, digitErrors: parentDigitErrors }) => {
+  // Initialize digit-only validation hook
+  const { validateDigitOnly, digitErrors } = useDigitOnly();
+  
+  // Use parent digit errors if provided, otherwise use local ones
+  const finalDigitErrors = parentDigitErrors || digitErrors;
+
   const educationLevels = [
     { value: "Primary School", label: "Primary School" },
     { value: "Middle School", label: "Middle School" },
@@ -82,17 +89,21 @@ const Education = ({ register, errors, fieldErrors, eduFields, addEducation, rem
                 label="Passing Year" 
                 register={register} 
                 name={`education.${index}.passing_year`} 
-                error={fieldErrors[`education.${index}.passing_year`] ? { message: fieldErrors[`education.${index}.passing_year`] } : (errors.education?.[index]?.passing_year?.message ? { message: errors.education[index].passing_year.message } : null)}
+                error={fieldErrors[`education.${index}.passing_year`] ? { message: fieldErrors[`education.${index}.passing_year`] } : (errors.education?.[index]?.passing_year?.message ? { message: errors.education[index].passing_year.message } : null) || (finalDigitErrors[`education.${index}.passing_year`] ? { message: finalDigitErrors[`education.${index}.passing_year`] } : null)}
                 placeholder="YYYY"
                 required={true}
+                isDigitOnly={true}
+                onDigitValidation={validateDigitOnly}
               />
               
               <Textinput 
                 label="CGPA/Grade" 
                 register={register} 
                 name={`education.${index}.gpa`} 
-                error={fieldErrors[`education.${index}.gpa`] ? { message: fieldErrors[`education.${index}.gpa`] } : (errors.education?.[index]?.gpa?.message ? { message: errors.education[index].gpa.message } : null)}
+                error={fieldErrors[`education.${index}.gpa`] ? { message: fieldErrors[`education.${index}.gpa`] } : (errors.education?.[index]?.gpa?.message ? { message: errors.education[index].gpa.message } : null) || (finalDigitErrors[`education.${index}.gpa`] ? { message: finalDigitErrors[`education.${index}.gpa`] } : null)}
                 placeholder="e.g., 3.5/4.0 or A+"
+                isDigitOnly={true}
+                onDigitValidation={validateDigitOnly}
               />
               
               <Select

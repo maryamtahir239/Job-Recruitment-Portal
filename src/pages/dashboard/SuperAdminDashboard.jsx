@@ -266,6 +266,37 @@ const SuperAdminDashboard = () => {
         </Card>
       </div>
 
+
+      <Card>
+        <h3 className="text-xl font-semibold mb-4 flex items-center">
+          <Icon icon="ph:gear" className="text-gray-600 mr-2" />
+          System Management
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Button
+            text="Manage Users"
+            className="btn-outline-primary w-full"
+            onClick={() => navigate("/superadmin-dashboard/hr-interview")}
+          />
+          <Button
+            text="View All Jobs"
+            className="btn-outline-secondary w-full"
+            onClick={() => navigate("/job-postings")}
+          />
+          <Button
+            text="View All Applications"
+            className="btn-outline-info w-full"
+            onClick={() => navigate("/applications")}
+          />
+          <Button
+            text="Evaluation Templates"
+            className="btn-outline-warning w-full"
+            onClick={() => navigate("/evaluation-templates")}
+          />
+        </div>
+      </Card>
+
+
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Jobs */}
@@ -336,34 +367,7 @@ const SuperAdminDashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <h3 className="text-xl font-semibold mb-4 flex items-center">
-          <Icon icon="ph:gear" className="text-gray-600 mr-2" />
-          System Management
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Button
-            text="Manage Users"
-            className="btn-outline-primary w-full"
-            onClick={() => navigate("/superadmin-dashboard/hr-interview")}
-          />
-          <Button
-            text="View All Jobs"
-            className="btn-outline-secondary w-full"
-            onClick={() => navigate("/job-postings")}
-          />
-          <Button
-            text="View All Applications"
-            className="btn-outline-info w-full"
-            onClick={() => navigate("/applications")}
-          />
-          <Button
-            text="Evaluation Templates"
-            className="btn-outline-warning w-full"
-            onClick={() => navigate("/evaluation-templates")}
-          />
-        </div>
-      </Card>
+      
     </div>
   );
 };

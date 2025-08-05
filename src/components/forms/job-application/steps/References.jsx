@@ -3,8 +3,15 @@ import Textinput from '@/components/ui/Textinput';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Select from '@/components/ui/Select';
+import useDigitOnly from '@/hooks/useDigitOnly';
 
-const References = ({ register, errors, fieldErrors, refFields, addReference, removeReference, watch, setValue }) => {
+const References = ({ register, errors, fieldErrors, refFields, addReference, removeReference, watch, setValue, digitErrors: parentDigitErrors }) => {
+  // Initialize digit-only validation hook
+  const { validateDigitOnly, digitErrors } = useDigitOnly();
+  
+  // Use parent digit errors if provided, otherwise use local ones
+  const finalDigitErrors = parentDigitErrors || digitErrors;
+  
   const [skipReferences, setSkipReferences] = useState(false);
   const [showReferenceForm, setShowReferenceForm] = useState(false);
 
@@ -198,9 +205,11 @@ const References = ({ register, errors, fieldErrors, refFields, addReference, re
                     label="Phone Number" 
                     register={register} 
                     name={`references.${index}.ref_phone`} 
-                    error={fieldErrors[`references.${index}.ref_phone`] ? { message: fieldErrors[`references.${index}.ref_phone`] } : (errors.references?.[index]?.ref_phone?.message ? { message: errors.references[index].ref_phone.message } : null)}
+                    error={fieldErrors[`references.${index}.ref_phone`] ? { message: fieldErrors[`references.${index}.ref_phone`] } : (errors.references?.[index]?.ref_phone?.message ? { message: errors.references[index].ref_phone.message } : null) || (finalDigitErrors[`references.${index}.ref_phone`] ? { message: finalDigitErrors[`references.${index}.ref_phone`] } : null)}
                     placeholder="+92-300-1234567"
                     required={true}
+                    isDigitOnly={true}
+                    onDigitValidation={validateDigitOnly}
                   />
                   
                   <Textinput 
@@ -277,6 +286,25 @@ const References = ({ register, errors, fieldErrors, refFields, addReference, re
               type="text"
               className="input rounded border border-gray-300 w-[40%] py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
               placeholder="e.g., $40,000 - $60,000 per year"
+              onKeyPress={(e) => {
+                // Allow: digits, dots, commas, spaces, hyphens, backspace, delete, arrow keys
+                const allowedKeys = [
+                  'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+                  'Tab', 'Enter', 'Home', 'End'
+                ];
+                
+                // Check if the pressed key is allowed
+                if (allowedKeys.includes(e.key)) {
+                  return true;
+                }
+                
+                // Check if the character is a digit or allowed symbol
+                const digitRegex = /[\d.,\s-]/;
+                if (!digitRegex.test(e.key)) {
+                  e.preventDefault();
+                  return false;
+                }
+              }}
             />
             {(fieldErrors["additional.expected_salary"] || errors.additional?.expected_salary?.message) && (
               <p className="text-red-500 text-sm mt-1">{fieldErrors["additional.expected_salary"] || errors.additional.expected_salary.message}</p>
