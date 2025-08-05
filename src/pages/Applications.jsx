@@ -163,17 +163,19 @@ const Applications = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Applications</h1>
-          <p className="text-gray-600 mt-2">Review and manage all job applications</p>
-        </div>
-      </div>
+             {/* Header */}
+       <Card className="bg-white shadow border">
+         <div className="flex justify-between items-center">
+           <div>
+             <h1 className="text-3xl font-bold text-gray-900">Applications</h1>
+             <p className="text-gray-600 mt-2">Review and manage all job applications</p>
+           </div>
+         </div>
+       </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
             <div className="flex-1">
               <h4 className="text-2xl font-bold text-gray-900">{applications.length}</h4>
@@ -185,7 +187,7 @@ const Applications = () => {
           </div>
         </Card>
         
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
             <div className="flex-1">
               <h4 className="text-2xl font-bold text-gray-900">
@@ -199,7 +201,7 @@ const Applications = () => {
           </div>
         </Card>
         
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
             <div className="flex-1">
               <h4 className="text-2xl font-bold text-gray-900">
@@ -213,7 +215,7 @@ const Applications = () => {
           </div>
         </Card>
         
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
             <div className="flex-1">
               <h4 className="text-2xl font-bold text-gray-900">
@@ -229,7 +231,7 @@ const Applications = () => {
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="bg-white shadow border">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Textinput
             label="Search Applications"
@@ -277,7 +279,7 @@ const Applications = () => {
       </Card>
 
       {/* Applications Table */}
-      <Card>
+      <Card className="bg-white shadow border">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">

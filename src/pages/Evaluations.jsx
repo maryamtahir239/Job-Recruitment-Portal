@@ -167,13 +167,15 @@ const Evaluations = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Evaluations</h1>
-          <p className="text-gray-600 mt-2">Evaluate and manage candidate assessments</p>
-        </div>
-      </div>
+             {/* Header */}
+       <Card className="bg-white shadow border">
+         <div className="flex justify-between items-center">
+           <div>
+             <h1 className="text-3xl font-bold text-gray-900">Candidates Assessment</h1>
+             <p className="text-gray-600 mt-2">Evaluate and manage candidate assessments</p>
+           </div>
+         </div>
+       </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -189,12 +191,12 @@ const Evaluations = () => {
           </div>
         </Card>
         
-        <Card>
+                <Card className="bg-white shadow border">
           <div className="flex items-center">
             <div className="flex-1">
-                             <h4 className="text-2xl font-bold text-gray-900">
-                 {applications.filter(a => a.evaluation_status === 'pending' || !a.evaluation_status).length}
-               </h4>
+              <h4 className="text-2xl font-bold text-gray-900">
+                {applications.filter(a => a.evaluation_status === 'pending' || !a.evaluation_status).length}
+              </h4>
               <p className="text-gray-600">Pending Evaluations</p>
             </div>
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -203,7 +205,7 @@ const Evaluations = () => {
           </div>
         </Card>
         
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
             <div className="flex-1">
               <h4 className="text-2xl font-bold text-gray-900">
@@ -219,7 +221,7 @@ const Evaluations = () => {
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="bg-white shadow border">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Textinput
             label="Search Candidates"
@@ -264,7 +266,7 @@ const Evaluations = () => {
       </Card>
 
       {/* Applications Table */}
-      <Card>
+      <Card className="bg-white shadow border">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
