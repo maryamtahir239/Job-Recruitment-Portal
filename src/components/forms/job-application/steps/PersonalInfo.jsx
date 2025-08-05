@@ -4,6 +4,7 @@ import Fileinput from '@/components/ui/Fileinput';
 import Button from '@/components/ui/Button';
 import Icon from '@/components/ui/Icon';
 import Select from '@/components/ui/Select';
+import useDigitOnly from '@/hooks/useDigitOnly';
 
 const PersonalInfo = ({
   register,
@@ -17,7 +18,14 @@ const PersonalInfo = ({
   handleResumeChange,
   deleteResume,
   resumeError,
+  digitErrors: parentDigitErrors,
 }) => {
+  // Initialize digit-only validation hook
+  const { validateDigitOnly, digitErrors } = useDigitOnly();
+  
+  // Use parent digit errors if provided, otherwise use local ones
+  const finalDigitErrors = parentDigitErrors || digitErrors;
+
   // Clear field error when user starts typing
   const handleFieldChange = (fieldName) => {
     if (fieldErrors[fieldName]) {
@@ -63,6 +71,8 @@ const PersonalInfo = ({
             error={fieldErrors["personal.cnic"] ? { message: fieldErrors["personal.cnic"] } : (errors.personal?.cnic?.message ? { message: errors.personal.cnic.message } : null)}
             placeholder="00000-0000000-0"
             required={true}
+            isDigitOnly={true}
+            onDigitValidation={validateDigitOnly}
           />
           <Textinput 
             label="Date of Birth" 
@@ -108,9 +118,11 @@ const PersonalInfo = ({
             label="Phone Number" 
             register={register} 
             name="personal.phone" 
-            error={fieldErrors["personal.phone"] ? { message: fieldErrors["personal.phone"] } : (errors.personal?.phone?.message ? { message: errors.personal.phone.message } : null)}
+            error={fieldErrors["personal.phone"] ? { message: fieldErrors["personal.phone"] } : (errors.personal?.phone?.message ? { message: errors.personal.phone.message } : null) || (finalDigitErrors["personal.phone"] ? { message: finalDigitErrors["personal.phone"] } : null)}
             placeholder="+92-300-1234567"
             required={true}
+            isDigitOnly={true}
+            onDigitValidation={validateDigitOnly}
           />
           <Textinput 
             label="Emergency Contact Name" 
@@ -123,8 +135,10 @@ const PersonalInfo = ({
             label="Emergency Contact Phone" 
             register={register} 
             name="personal.emergency_contact_phone" 
-            error={errors.personal?.emergency_contact_phone?.message ? { message: errors.personal.emergency_contact_phone.message } : null}
+            error={errors.personal?.emergency_contact_phone?.message ? { message: errors.personal.emergency_contact_phone.message } : (finalDigitErrors["personal.emergency_contact_phone"] ? { message: finalDigitErrors["personal.emergency_contact_phone"] } : null)}
             placeholder="+92-300-1234567"
+            isDigitOnly={true}
+            onDigitValidation={validateDigitOnly}
           />
         </div>
       </div>
@@ -207,7 +221,6 @@ const PersonalInfo = ({
                   selectedFile={selectedPhoto}
                   preview={false}
                   onChange={handlePhotoChange}
-                  error={errors.personal?.photo?.message || photoError}
                   className="cursor-pointer"
                 >
                   <div className="space-y-2">
@@ -251,7 +264,6 @@ const PersonalInfo = ({
                   selectedFile={selectedResume}
                   preview={false}
                   onChange={handleResumeChange}
-                  error={errors.personal?.resume?.message || resumeError}
                   className="cursor-pointer"
                 >
                   <div className="space-y-2">

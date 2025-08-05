@@ -1,7 +1,26 @@
 .btn {
-  @apply font-medium  text-sm    tracking-[0.025rem] py-[10px] px-5
-  rounded-lg capitalize  transition-all duration-150 md:whitespace-nowrap whitespace-normal  items-center
-  relative;
+  @apply font-medium tracking-[0.025rem] rounded-lg capitalize transition-all duration-150 md:whitespace-nowrap whitespace-normal items-center relative;
+}
+
+// Button sizes - maintaining original sizing
+.btn-sm {
+  @apply px-3 py-2 text-xs;
+}
+
+.btn-md {
+  @apply px-5 py-[10px] text-sm;
+}
+
+.btn-lg {
+  @apply px-6 py-3 text-base;
+}
+
+// Ensure text centering for all button types
+.btn {
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn.block-btn {

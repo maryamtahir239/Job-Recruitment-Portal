@@ -29,6 +29,8 @@ const Textinput = ({
   defaultValue,
   value,
   required = false,
+  isDigitOnly = false,
+  onDigitValidation,
   ...rest
 }) => {
   // Generate a unique ID if none provided
@@ -51,6 +53,33 @@ const Textinput = ({
     // 2. Then call the original onChange prop passed from the parent component, if it exists
     if (propOnChange) {
       propOnChange(e);
+    }
+    // 3. If digit-only validation is enabled, validate the input
+    if (isDigitOnly && onDigitValidation) {
+      onDigitValidation(e.target.value, name);
+    }
+  };
+
+  // Handle key press for digit-only validation
+  const handleKeyPress = (e) => {
+    if (isDigitOnly && onDigitValidation) {
+      // Allow: digits, dots, commas, spaces, hyphens, backspace, delete, arrow keys
+      const allowedKeys = [
+        'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+        'Tab', 'Enter', 'Home', 'End'
+      ];
+      
+      // Check if the pressed key is allowed
+      if (allowedKeys.includes(e.key)) {
+        return true;
+      }
+      
+      // Check if the character is a digit or allowed symbol
+      const digitRegex = /[\d.,\s-]/;
+      if (!digitRegex.test(e.key)) {
+        e.preventDefault();
+        return false;
+      }
     }
   };
 
@@ -99,6 +128,7 @@ const Textinput = ({
              {...rest}
              onChange={handleChange}
              onInput={handleChange}
+             onKeyPress={handleKeyPress}
              className={`${
                error ? " is-error" : " "
              } text-control py-[10px] ${className}`}
@@ -119,6 +149,7 @@ const Textinput = ({
              disabled={disabled}
              onChange={propOnChange}
              onInput={propOnChange}
+             onKeyPress={handleKeyPress}
              id={inputId}
              name={name}
              value={value}

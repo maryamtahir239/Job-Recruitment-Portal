@@ -20,14 +20,29 @@ function Button({
   rotate,
   hFlip,
   vFlip,
+  size = "md", // Add size prop with default
 }) {
+  // Define size-specific classes
+  const getSizeClasses = () => {
+    switch (size) {
+      case "sm":
+        return "px-3 py-2 text-xs";
+      case "lg":
+        return "px-6 py-3 text-base";
+      default: // md
+        return "px-5 py-[10px] text-sm";
+    }
+  };
+
+  const sizeClasses = getSizeClasses();
+
   return (
     <>
       {!link && !div && (
         <button
           type={type}
           onClick={onClick}
-          className={`btn btn inline-flex justify-center   ${
+          className={`btn inline-flex items-center justify-center ${sizeClasses} ${
             isLoading ? " pointer-events-none" : ""
           }
           ${disabled || isLoading ? " opacity-60 cursor-not-allowed" : ""} {/* Combine disabled and isLoading for visual feedback */}
@@ -39,7 +54,7 @@ function Button({
 
           {/* if no children and  loading*/}
           {!children && !isLoading && (
-            <span className="flex items-center">
+            <div className="flex items-center justify-center w-full">
               {/* if has icon */}
               {icon && (
                 <span
@@ -60,8 +75,8 @@ function Button({
                   />
                 </span>
               )}
-              <span>{text}</span>
-            </span>
+              <span className="text-center flex-1">{text}</span>
+            </div>
           )}
 
           {/* if loading*/}
@@ -104,7 +119,7 @@ function Button({
       {!link && div && (
         <div
           onClick={disabled || isLoading ? null : onClick} // Explicitly nullify onClick if disabled or loading
-          className={`btn btn inline-flex justify-center   ${
+          className={`btn inline-flex items-center justify-center ${sizeClasses} ${
             isLoading ? " pointer-events-none" : ""
           }
           ${disabled ? " opacity-60 cursor-not-allowed pointer-events-none" : ""} {/* Add pointer-events-none */}
@@ -113,7 +128,7 @@ function Button({
           {children && !isLoading && children}
 
           {!children && !isLoading && (
-            <span className="flex items-center">
+            <div className="flex items-center justify-center w-full">
               {icon && (
                 <span
                   className={`
@@ -127,8 +142,8 @@ function Button({
                   <Icon icon={icon} />
                 </span>
               )}
-              <span>{text}</span>
-            </span>
+              <span className="text-center flex-1">{text}</span>
+            </div>
           )}
 
           {isLoading && (
@@ -165,7 +180,7 @@ function Button({
           // You need to prevent navigation and clicks via classes or conditional rendering.
           // `pointer-events-none` is the best approach for visual disabled state.
           onClick={disabled || isLoading ? (e) => e.preventDefault() : onClick} // Prevent default navigation
-          className={`btn btn inline-flex justify-center   ${
+          className={`btn inline-flex items-center justify-center ${sizeClasses} ${
             isLoading ? " pointer-events-none" : ""
           }
           ${disabled ? " opacity-60 cursor-not-allowed pointer-events-none" : ""} {/* Add pointer-events-none */}
@@ -176,7 +191,7 @@ function Button({
 
           {/* if no children and  loading*/}
           {!children && !isLoading && (
-            <span className="flex items-center">
+            <div className="flex items-center justify-center w-full">
               {/* if has icon */}
               {icon && (
                 <span
@@ -191,8 +206,8 @@ function Button({
                   <Icon icon={icon} />
                 </span>
               )}
-              <span>{text}</span>
-            </span>
+              <span className="text-center flex-1">{text}</span>
+            </div>
           )}
 
           {/* if loading*/}

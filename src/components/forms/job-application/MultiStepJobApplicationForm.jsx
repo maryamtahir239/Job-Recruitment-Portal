@@ -5,6 +5,7 @@ import { applicationFormZ } from "@/lib/applicationFormZod";
 import Button from "@/components/ui/Button";
 import axios from "axios";
 import { toast } from "react-toastify";
+import useDigitOnly from "@/hooks/useDigitOnly";
 
 // Import step components
 import PersonalInfo from "./steps/PersonalInfo";
@@ -24,6 +25,9 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
   const [isLoadingInvite, setIsLoadingInvite] = useState(true);
   const [validationError, setValidationError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+
+  // Initialize digit-only validation hook
+  const { digitErrors, clearAllDigitErrors } = useDigitOnly();
 
   const form = useForm({
     resolver: zodResolver(applicationFormZ),
@@ -204,6 +208,21 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
     setFieldErrors({});
     
     console.log("Next step clicked, current step:", currentStep);
+    
+    // Check for digit-only validation errors first
+    if (Object.keys(digitErrors).length > 0) {
+      console.log("Digit validation errors found:", digitErrors);
+      setTimeout(() => {
+        const firstErrorElement = document.querySelector('.text-red-500');
+        if (firstErrorElement) {
+          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      return;
+    }
+    
+    // Clear digit errors when moving to next step
+    clearAllDigitErrors();
     
     try {
       // Custom validation for current step
@@ -695,6 +714,7 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
             handleResumeChange={handleResumeChange}
             deleteResume={deleteResume}
             resumeError={resumeError}
+            digitErrors={digitErrors}
           />
         );
       case 1:
@@ -706,6 +726,7 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
             eduFields={eduFields}
             addEducation={addEducation}
             removeEducation={removeEducation}
+            digitErrors={digitErrors}
           />
         );
       case 2:
@@ -719,6 +740,7 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
             removeExperience={removeExperience}
             watch={watch}
             setValue={setValue}
+            digitErrors={digitErrors}
           />
         );
       case 3:
@@ -732,6 +754,7 @@ const MultiStepJobApplicationForm = ({ token, invite }) => {
             removeReference={removeReference}
             watch={watch}
             setValue={setValue}
+            digitErrors={digitErrors}
           />
         );
       case 4:

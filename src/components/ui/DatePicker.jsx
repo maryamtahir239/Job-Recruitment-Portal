@@ -63,7 +63,7 @@ const DatePicker = ({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          className="block capitalize form-label"
         >
           {label} {required && <span className="text-red-500">*</span>}
         </label>
