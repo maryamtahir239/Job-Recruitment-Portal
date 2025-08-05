@@ -214,72 +214,58 @@ const InterviewerDashboard = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 w-full max-w-6xl px-2 mb-8">
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {loading ? "..." : stats.totalApplications}
-              </h4>
-              <p className="text-gray-600">Total Applications</p>
-            </div>
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-blue-600 text-xl" />
+              <Icon icon="ph:file-text" className="text-blue-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.totalApplications}</div>
+              <div className="text-sm text-gray-600">Total Applications</div>
             </div>
           </div>
         </Card>
-
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {loading ? "..." : stats.pendingEvaluations}
-              </h4>
-              <p className="text-gray-600">Pending Evaluations</p>
-            </div>
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:clock" className="text-yellow-600 text-xl" />
+              <Icon icon="ph:clock" className="text-yellow-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.pendingEvaluations}</div>
+              <div className="text-sm text-gray-600">Pending Evaluations</div>
             </div>
           </div>
         </Card>
-
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {loading ? "..." : stats.completedEvaluations}
-              </h4>
-              <p className="text-gray-600">Completed Evaluations</p>
-            </div>
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:check-circle" className="text-green-600 text-xl" />
+              <Icon icon="ph:check-circle" className="text-green-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.completedEvaluations}</div>
+              <div className="text-sm text-gray-600">Completed Evaluations</div>
             </div>
           </div>
         </Card>
-
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {loading ? "..." : stats.upcomingInterviews}
-              </h4>
-              <p className="text-gray-600">Upcoming Interviews</p>
-            </div>
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:calendar" className="text-purple-600 text-xl" />
+              <Icon icon="ph:calendar" className="text-purple-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.upcomingInterviews}</div>
+              <div className="text-sm text-gray-600">Upcoming Interviews</div>
             </div>
           </div>
         </Card>
-
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-xl font-bold text-gray-900">Last updated</h4>
-              <p className="text-gray-600">
-                {loading ? "Loading..." : formatLastUpdated(stats.lastUpdated)}
-              </p>
+            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center -mt-6">
+              <Icon icon="ph:activity" className="text-red-600 text-2xl" />
             </div>
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center -mt-6 justify-center">
-              <Icon icon="ph:activity" className="text-red-600 text-xl" />
+            <div className="ml-4">
+              <div className="text-xl font-bold text-gray-900">Last updated</div>
+              <div className="text-sm text-gray-600">{loading ? "Loading..." : formatLastUpdated(stats.lastUpdated)}</div>
             </div>
           </div>
         </Card>

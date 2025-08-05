@@ -146,6 +146,7 @@ const Candidates = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
+      <div className="bg-white shadow border rounded p-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Candidates</h1>
@@ -153,59 +154,50 @@ const Candidates = () => {
         </div>
         {/* Removed Add Candidate button */}
       </div>
-
+      </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">{candidates.length}</h4>
-              <p className="text-gray-600">Total Candidates</p>
-            </div>
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:users" className="text-blue-600 text-xl" />
+              <Icon icon="ph:users" className="text-blue-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{candidates.length}</div>
+              <div className="text-sm text-gray-600">Total Candidates</div>
             </div>
           </div>
         </Card>
-        
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {candidates.filter(c => c.invite_sent).length}
-              </h4>
-              <p className="text-gray-600">Invites Sent</p>
-            </div>
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:envelope" className="text-green-600 text-xl" />
+              <Icon icon="ph:envelope" className="text-green-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{candidates.filter(c => c.invite_sent).length}</div>
+              <div className="text-sm text-gray-600">Invites Sent</div>
             </div>
           </div>
         </Card>
-        
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {candidates.filter(c => c.invite_status === "submitted").length}
-              </h4>
-              <p className="text-gray-600">Applications Submitted</p>
-            </div>
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-yellow-600 text-xl" />
+              <Icon icon="ph:file-text" className="text-yellow-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{candidates.filter(c => c.invite_status === "submitted").length}</div>
+              <div className="text-sm text-gray-600">Applications Submitted</div>
             </div>
           </div>
         </Card>
-        
-        <Card>
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {candidates.filter(c => c.invite_status === "opened").length}
-              </h4>
-              <p className="text-gray-600">Invites Opened</p>
-            </div>
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:eye" className="text-blue-600 text-xl" />
+              <Icon icon="ph:eye" className="text-blue-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{candidates.filter(c => c.invite_status === "opened").length}</div>
+              <div className="text-sm text-gray-600">Invites Opened</div>
             </div>
           </div>
         </Card>

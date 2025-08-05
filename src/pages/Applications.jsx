@@ -177,54 +177,45 @@ const Applications = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">{applications.length}</h4>
-              <p className="text-gray-600">Total Applications</p>
-            </div>
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-blue-600 text-xl" />
+              <Icon icon="ph:file-text" className="text-blue-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{applications.length}</div>
+              <div className="text-sm text-gray-600">Total Applications</div>
             </div>
           </div>
         </Card>
-        
         <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {applications.filter(a => a.status === "Applied").length}
-              </h4>
-              <p className="text-gray-600">New Applications</p>
-            </div>
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:plus-circle" className="text-green-600 text-xl" />
+              <Icon icon="ph:plus-circle" className="text-green-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.status === "Applied").length}</div>
+              <div className="text-sm text-gray-600">New Applications</div>
             </div>
           </div>
         </Card>
-        
         <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {applications.filter(a => a.status === "Shortlisted").length}
-              </h4>
-              <p className="text-gray-600">Shortlisted</p>
-            </div>
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:star" className="text-yellow-600 text-xl" />
+              <Icon icon="ph:star" className="text-yellow-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.status === "Shortlisted").length}</div>
+              <div className="text-sm text-gray-600">Shortlisted</div>
             </div>
           </div>
         </Card>
-        
         <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {applications.filter(a => a.status === "Hired").length}
-              </h4>
-              <p className="text-gray-600">Hired</p>
-            </div>
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:check-circle" className="text-purple-600 text-xl" />
+              <Icon icon="ph:check-circle" className="text-purple-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.status === "Hired").length}</div>
+              <div className="text-sm text-gray-600">Hired</div>
             </div>
           </div>
         </Card>

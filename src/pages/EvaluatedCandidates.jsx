@@ -4,6 +4,7 @@ import Textinput from "@/components/ui/Textinput";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
+import Icon from "@/components/ui/Icon";
 
 const EvaluatedCandidates = () => {
   const [evaluations, setEvaluations] = useState([]);
@@ -139,10 +140,8 @@ const EvaluatedCandidates = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-gray-100 text-gray-600">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:check-circle" className="text-blue-600 text-2xl" />
             </div>
             <div className="ml-4">
               <div className="text-2xl font-bold text-gray-900">{totalEvaluations}</div>
@@ -153,10 +152,8 @@ const EvaluatedCandidates = () => {
 
         <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-gray-100 text-gray-600">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:star" className="text-green-600 text-2xl" />
             </div>
             <div className="ml-4">
               <div className="text-2xl font-bold text-gray-900">{averageScore}</div>
@@ -167,10 +164,8 @@ const EvaluatedCandidates = () => {
 
         <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-gray-100 text-gray-600">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
-              </svg>
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:briefcase" className="text-purple-600 text-2xl" />
             </div>
             <div className="ml-4">
               <div className="text-2xl font-bold text-gray-900">{uniqueJobs}</div>
@@ -181,10 +176,8 @@ const EvaluatedCandidates = () => {
 
         <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-gray-100 text-gray-600">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:calendar" className="text-yellow-600 text-2xl" />
             </div>
             <div className="ml-4">
               <div className="text-2xl font-bold text-gray-900">{thisMonth}</div>
@@ -351,10 +344,8 @@ const EvaluatedCandidates = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <Badge className="badge-success bg-green-100 text-green-800 border-green-200">
-                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                      <Badge className="badge-success bg-green-100 text-green-800 border-green-200 flex items-center">
+                        <Icon icon="ph:check-circle" className="w-4 h-4 mr-1 text-green-600" />
                         Completed
                       </Badge>
                     </td>
