@@ -123,27 +123,23 @@ const EvaluatedCandidates = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with enhanced styling */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
+      {/* Header with simple styling */}
+      <div className="bg-white shadow border rounded p-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">Evaluated Candidates</h1>
-            <p className="text-blue-100 mt-2">View and manage completed candidate evaluations</p>
+            <h1 className="text-3xl font-bold text-gray-900">Evaluated Candidates</h1>
+            <p className="text-gray-600 mt-2">View and manage completed candidate evaluations</p>
           </div>
           <div className="hidden md:block">
-            <div className="text-right">
-              <div className="text-2xl font-bold">{totalEvaluations}</div>
-              <div className="text-blue-100 text-sm">Total Evaluations</div>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-green-500 text-white">
+            <div className="p-3 rounded-full bg-gray-100 text-gray-600">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -155,9 +151,9 @@ const EvaluatedCandidates = () => {
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-blue-500 text-white">
+            <div className="p-3 rounded-full bg-gray-100 text-gray-600">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
@@ -169,9 +165,9 @@ const EvaluatedCandidates = () => {
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-purple-500 text-white">
+            <div className="p-3 rounded-full bg-gray-100 text-gray-600">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
               </svg>
@@ -183,9 +179,9 @@ const EvaluatedCandidates = () => {
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="p-3 rounded-full bg-orange-500 text-white">
+            <div className="p-3 rounded-full bg-gray-100 text-gray-600">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -199,7 +195,7 @@ const EvaluatedCandidates = () => {
       </div>
 
       {/* Enhanced Filters */}
-      <Card className="bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200">
+      <Card className="bg-white shadow border">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Textinput
             label="Search Candidates"
@@ -232,8 +228,8 @@ const EvaluatedCandidates = () => {
       </Card>
 
       {/* Enhanced Evaluations Table */}
-      <Card className="overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+      <Card className="overflow-hidden bg-white shadow border">
+        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <h3 className="text-lg font-semibold text-gray-900">Evaluation Results</h3>
           <p className="text-sm text-gray-600 mt-1">Showing {filteredEvaluations.length} of {evaluations.length} evaluations</p>
         </div>
@@ -333,8 +329,8 @@ const EvaluatedCandidates = () => {
                               }}
                             />
                           ) : null}
-                          <div className={`h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center border-2 border-gray-200 ${ev.photoUrl ? 'hidden' : ''}`}>
-                            <span className="text-white text-sm font-medium">
+                          <div className={`h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-200 ${ev.photoUrl ? 'hidden' : ''}`}>
+                            <span className="text-gray-600 text-sm font-medium">
                               {ev.candidateName ? ev.candidateName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'NA'}
                             </span>
                           </div>
@@ -394,101 +390,101 @@ const EvaluatedCandidates = () => {
 
       {/* Enhanced Modal for viewing evaluation details */}
       {selectedEvaluation && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-xl">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold">Evaluation Details</h2>
-                  <p className="text-blue-100 mt-1">{selectedEvaluation.candidateName}</p>
-                </div>
-                <button
-                  onClick={() => setSelectedEvaluation(null)}
-                  className="text-white hover:text-blue-100 transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            
-            <div className="p-6 space-y-6">
-              {/* Basic Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-gray-900 mb-2">Candidate Information</h3>
-                  <div className="space-y-2 text-sm">
-                    <div><span className="font-medium">Name:</span> {selectedEvaluation.candidateName}</div>
-                    <div><span className="font-medium">Position:</span> {selectedEvaluation.jobTitle}</div>
-                    <div><span className="font-medium">Evaluator:</span> {selectedEvaluation.evaluatorName || "—"}</div>
-                    <div><span className="font-medium">Date:</span> {new Date(selectedEvaluation.createdAt).toLocaleDateString()}</div>
-                  </div>
-                </div>
-                
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-gray-900 mb-2">Score Summary</h3>
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-blue-100 text-blue-800 rounded-full h-16 w-16 flex items-center justify-center">
-                      <span className="text-2xl font-bold">{selectedEvaluation.totalScore}</span>
-                    </div>
-                    <div>
-                      <div className="text-sm text-gray-600">Total Score</div>
-                      <div className="text-sm text-gray-500">out of 25 points</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" style={{ marginTop: '80px' }}>
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+                         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-xl">
+               <div className="flex justify-between items-start">
+                 <div>
+                   <h2 className="text-2xl text-white font-bold">Evaluation Details</h2>
+                   <p className="text-white mt-1">{selectedEvaluation.candidateName}</p>
+                 </div>
+                 <button
+                   onClick={() => setSelectedEvaluation(null)}
+                   className="text-white hover:text-gray-200 transition-colors"
+                 >
+                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                   </svg>
+                 </button>
+               </div>
+             </div>
+             
+             <div className="p-6 space-y-6">
+               {/* Basic Info */}
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="bg-gray-50 p-4 rounded-lg">
+                   <h3 className="font-semibold text-gray-900 mb-2">Candidate Information</h3>
+                   <div className="space-y-2 text-sm">
+                     <div><span className="font-medium">Name:</span> {selectedEvaluation.candidateName}</div>
+                     <div><span className="font-medium">Position:</span> {selectedEvaluation.jobTitle}</div>
+                     <div><span className="font-medium">Evaluator:</span> {selectedEvaluation.evaluatorName || "—"}</div>
+                     <div><span className="font-medium">Date:</span> {new Date(selectedEvaluation.createdAt).toLocaleDateString()}</div>
+                   </div>
+                 </div>
+                 
+                 <div className="bg-gray-50 p-4 rounded-lg">
+                   <h3 className="font-semibold text-gray-900 mb-2">Score Summary</h3>
+                   <div className="flex items-center space-x-3">
+                     <div className="bg-blue-100 text-blue-800 rounded-full h-16 w-16 flex items-center justify-center">
+                       <span className="text-2xl font-bold">{selectedEvaluation.totalScore}</span>
+                     </div>
+                     <div>
+                       <div className="text-sm text-gray-600">Total Score</div>
+                       <div className="text-sm text-gray-500">out of 25 points</div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
 
-              {/* Comments Section */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-gray-900 mb-3">Evaluation Comments</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium text-gray-700 mb-2">Improvement Areas</h4>
-                    <p className="text-sm text-gray-600 bg-white p-3 rounded border">
-                      {selectedEvaluation.comments?.improvement || "No improvement areas noted."}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-700 mb-2">Overall Evaluation</h4>
-                    <p className="text-sm text-gray-600 bg-white p-3 rounded border">
-                      {selectedEvaluation.comments?.evaluation || "No evaluation comments."}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-700 mb-2">Recommendation</h4>
-                    <p className="text-sm text-gray-600 bg-white p-3 rounded border">
-                      {selectedEvaluation.comments?.recommendation || "No recommendation provided."}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-700 mb-2">HR Comments</h4>
-                    <p className="text-sm text-gray-600 bg-white p-3 rounded border">
-                      {selectedEvaluation.comments?.hrComments || "No HR comments."}
-                    </p>
-                  </div>
-                </div>
-              </div>
+               {/* Question-wise Ratings */}
+               {selectedEvaluation.scores && selectedEvaluation.scores.length > 0 && (
+                 <div className="bg-gray-50 p-4 rounded-lg">
+                   <h1 className="text-lg font-semibold text-gray-900 mb-3">Question-wise Ratings:</h1>
+                   <div className="space-y-3">
+                     {selectedEvaluation.scores.map((q, i) => (
+                       <div key={i} className="bg-white p-3 rounded border">
+                         <div className="flex justify-between items-center">
+                           <span className="font-medium text-gray-700">{q.question}</span>
+                           <Badge className={`badge-${q.rating === 'excellent' ? 'success' : q.rating === 'good' ? 'primary' : q.rating === 'average' ? 'warning' : 'danger'}`}>
+                             {q.rating}
+                           </Badge>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 </div>
+               )}
 
-              {/* Question-wise Ratings */}
-              {selectedEvaluation.scores && selectedEvaluation.scores.length > 0 && (
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-gray-900 mb-3">Question-wise Ratings</h3>
-                  <div className="space-y-3">
-                    {selectedEvaluation.scores.map((q, i) => (
-                      <div key={i} className="bg-white p-3 rounded border">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium text-gray-700">{q.question}</span>
-                          <Badge className={`badge-${q.rating === 'excellent' ? 'success' : q.rating === 'good' ? 'primary' : q.rating === 'average' ? 'warning' : 'danger'}`}>
-                            {q.rating}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+               {/* Comments Section */}
+               <div className="bg-gray-50 p-4 rounded-lg">
+                 <h1 className="text-lg font-semibold text-gray-900 mb-3">Evaluation Comments:</h1>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   <div>
+                     <p className="font-semibold text-gray-700 mb-2">Improvement Areas:</p>
+                     <p className="text-sm text-gray-600 bg-white p-3 rounded border">
+                       {selectedEvaluation.comments?.improvement || "No improvement areas noted."}
+                     </p>
+                   </div>
+                   <div>
+                     <p className="font-semibold text-gray-700 mb-2">Overall Evaluation:</p>
+                     <p className="text-sm text-gray-600 bg-white p-3 rounded border">
+                       {selectedEvaluation.comments?.evaluation || "No evaluation comments."}
+                     </p>
+                   </div>
+                   <div>
+                     <p className="font-semibold text-gray-700 mb-2">Recommendation:</p>
+                     <p className="text-sm text-gray-600 bg-white p-3 rounded border">
+                       {selectedEvaluation.comments?.recommendation || "No recommendation provided."}
+                     </p>
+                   </div>
+                   <div>
+                     <p className="font-semibold text-gray-700 mb-2">HR Comments:</p>
+                     <p className="text-sm text-gray-600 bg-white p-3 rounded border">
+                       {selectedEvaluation.comments?.hrComments || "No HR comments."}
+                     </p>
+                   </div>
+                 </div>
+               </div>
             </div>
           </div>
         </div>

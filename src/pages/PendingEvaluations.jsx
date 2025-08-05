@@ -67,7 +67,7 @@ const PendingEvaluations = () => {
             {Array.isArray(pendingEvaluations) && pendingEvaluations.map((evaluation) => (
               <Card
                 key={evaluation.id}
-                className="border border-yellow-200 shadow-sm p-6 bg-white hover:shadow-md transition-shadow"
+                className="border border-yellow-200 shadow border p-6 bg-white hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold text-gray-800">
