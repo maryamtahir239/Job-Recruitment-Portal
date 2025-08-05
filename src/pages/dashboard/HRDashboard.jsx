@@ -270,55 +270,55 @@ const HRDashboard = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:briefcase" className="text-blue-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalJobs}</div>
               <div className="text-sm text-gray-600">Jobs</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:check-circle" className="text-green-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.activeJobs}</div>
               <div className="text-sm text-gray-600">Active Jobs</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:users" className="text-purple-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalCandidates}</div>
               <div className="text-sm text-gray-600">Candidates</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:file-text" className="text-yellow-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalApplications}</div>
               <div className="text-sm text-gray-600">Applications</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:clock" className="text-red-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.recentApplications}</div>
               <div className="text-sm text-gray-600">This Week</div>
             </div>

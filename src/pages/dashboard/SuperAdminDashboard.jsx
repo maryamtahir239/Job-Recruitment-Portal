@@ -171,44 +171,44 @@ const SuperAdminDashboard = () => {
       {/* Key Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:briefcase" className="text-blue-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalJobs}</div>
               <div className="text-sm text-gray-600">Total Jobs</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:users" className="text-green-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalCandidates}</div>
               <div className="text-sm text-gray-600">Total Candidates</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:file-text" className="text-purple-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalApplications}</div>
               <div className="text-sm text-gray-600">Total Applications</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:user-circle" className="text-orange-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalHR + stats.totalInterviewers}</div>
               <div className="text-sm text-gray-600">Total Users</div>
             </div>

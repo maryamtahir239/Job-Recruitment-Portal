@@ -139,11 +139,11 @@ const EvaluatedCandidates = () => {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:check-circle" className="text-blue-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{totalEvaluations}</div>
               <div className="text-sm text-gray-600">Total Evaluations</div>
             </div>
@@ -151,11 +151,11 @@ const EvaluatedCandidates = () => {
         </Card>
 
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:star" className="text-green-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{averageScore}</div>
               <div className="text-sm text-gray-600">Average Score</div>
             </div>
@@ -163,11 +163,11 @@ const EvaluatedCandidates = () => {
         </Card>
 
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:briefcase" className="text-purple-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{uniqueJobs}</div>
               <div className="text-sm text-gray-600">Unique Positions</div>
             </div>
@@ -175,11 +175,11 @@ const EvaluatedCandidates = () => {
         </Card>
 
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:calendar" className="text-yellow-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{thisMonth}</div>
               <div className="text-sm text-gray-600">This Month</div>
             </div>
