@@ -179,42 +179,36 @@ const Evaluations = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">{applications.length}</h4>
-              <p className="text-gray-600">Total Applications</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-blue-600 text-xl" />
-            </div>
-          </div>
-        </Card>
-        
-                <Card className="bg-white shadow border">
-          <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {applications.filter(a => a.evaluation_status === 'pending' || !a.evaluation_status).length}
-              </h4>
-              <p className="text-gray-600">Pending Evaluations</p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:clock" className="text-yellow-600 text-xl" />
-            </div>
-          </div>
-        </Card>
-        
         <Card className="bg-white shadow border">
           <div className="flex items-center">
-            <div className="flex-1">
-              <h4 className="text-2xl font-bold text-gray-900">
-                {applications.filter(a => a.evaluation_status === 'completed').length}
-              </h4>
-              <p className="text-gray-600">Completed Evaluations</p>
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:file-text" className="text-blue-600 text-2xl" />
             </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{applications.length}</div>
+              <div className="text-sm text-gray-600">Total Applications</div>
+            </div>
+          </div>
+        </Card>
+        <Card className="bg-white shadow border">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:clock" className="text-yellow-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.evaluation_status === 'pending' || !a.evaluation_status).length}</div>
+              <div className="text-sm text-gray-600">Pending Evaluations</div>
+            </div>
+          </div>
+        </Card>
+        <Card className="bg-white shadow border">
+          <div className="flex items-center">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:check-circle" className="text-green-600 text-xl" />
+              <Icon icon="ph:check-circle" className="text-green-600 text-2xl" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.evaluation_status === 'completed').length}</div>
+              <div className="text-sm text-gray-600">Completed Evaluations</div>
             </div>
           </div>
         </Card>
