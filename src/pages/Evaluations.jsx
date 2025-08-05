@@ -261,6 +261,10 @@ const Evaluations = () => {
 
       {/* Applications Table */}
       <Card className="bg-white shadow border">
+        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+          <h3 className="text-lg font-semibold text-gray-900">Candidates</h3>
+          <p className="text-sm text-gray-600 mt-1">Showing {filteredApplications.length} of {applications.length} candidates</p>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -272,13 +276,13 @@ const Evaluations = () => {
                   Job Applied
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Department
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Evaluation Status
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Applied Date
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -327,21 +331,17 @@ const Evaluations = () => {
                         {getJobTitle(application.job_id)}
                       </div>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                      {(() => {
+                        const job = jobs.find(j => j.id === application.job_id);
+                        return job && job.department ? job.department : 'N/A';
+                      })()}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       {getEvaluationStatusBadge(application.evaluation_status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                       {formatDate(application.created_at)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                      <div className="text-center">
-                        <div className="truncate max-w-[120px] text-center" title={application.phone || "No phone"}>
-                          {application.phone || "No phone"}
-                        </div>
-                        <div className="text-gray-500 break-all text-center" title={application.email}>
-                          {application.email}
-                        </div>
-                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex justify-center space-x-2 items-center">
