@@ -215,55 +215,55 @@ const InterviewerDashboard = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 w-full max-w-6xl px-2 mb-8">
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:file-text" className="text-blue-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.totalApplications}</div>
               <div className="text-sm text-gray-600">Total Applications</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:clock" className="text-yellow-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.pendingEvaluations}</div>
               <div className="text-sm text-gray-600">Pending Evaluations</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:check-circle" className="text-green-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.completedEvaluations}</div>
               <div className="text-sm text-gray-600">Completed Evaluations</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:calendar" className="text-purple-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.upcomingInterviews}</div>
               <div className="text-sm text-gray-600">Upcoming Interviews</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center -mt-6">
               <Icon icon="ph:activity" className="text-red-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-xl font-bold text-gray-900">Last updated</div>
               <div className="text-sm text-gray-600">{loading ? "Loading..." : formatLastUpdated(stats.lastUpdated)}</div>
             </div>

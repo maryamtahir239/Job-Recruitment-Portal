@@ -158,44 +158,44 @@ const Candidates = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:users" className="text-blue-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{candidates.length}</div>
               <div className="text-sm text-gray-600">Total Candidates</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:envelope" className="text-green-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{candidates.filter(c => c.invite_sent).length}</div>
               <div className="text-sm text-gray-600">Invites Sent</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:file-text" className="text-yellow-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{candidates.filter(c => c.invite_status === "submitted").length}</div>
               <div className="text-sm text-gray-600">Applications Submitted</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:eye" className="text-blue-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{candidates.filter(c => c.invite_status === "opened").length}</div>
               <div className="text-sm text-gray-600">Invites Opened</div>
             </div>

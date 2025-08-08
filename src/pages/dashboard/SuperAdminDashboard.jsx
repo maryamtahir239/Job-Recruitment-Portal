@@ -24,21 +24,15 @@ const SuperAdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("SuperAdminDashboard useEffect called at:", new Date().toISOString());
     fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async () => {
-    console.log("SuperAdminDashboard fetchDashboardData called at:", new Date().toISOString());
-    
     try {
       setLoading(true);
       
       const token = localStorage.getItem("token");
       const user = JSON.parse(localStorage.getItem("user") || "null");
-      
-      console.log("Current user:", user);
-      console.log("Token:", token ? "Present" : "Missing");
       
       const headers = {
         'Authorization': `Bearer ${token}`,
@@ -58,16 +52,6 @@ const SuperAdminDashboard = () => {
       const applications = applicationsRes.data || [];
       const users = usersRes.data || [];
       
-      console.log("Fetched data:", {
-        jobs: jobs.length,
-        candidates: candidates.length,
-        applications: applications.length,
-        users: users.length
-      });
-      
-      console.log("Users data:", users);
-      console.log("User roles found:", users.map(u => u.role));
-
       // Calculate statistics
       const activeJobs = jobs.filter(job => job.status === "Active").length;
       const hrUsers = users.filter(user => user.role === "HR").length;
@@ -108,10 +92,8 @@ const SuperAdminDashboard = () => {
         applicationStatusDistribution
       };
       
-      console.log("Calculated statistics:", finalStats);
       setStats(finalStats);
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
       // Only show error for non-authentication issues
       if (
         error.response?.status !== 401 &&
@@ -171,44 +153,44 @@ const SuperAdminDashboard = () => {
       {/* Key Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:briefcase" className="text-blue-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalJobs}</div>
               <div className="text-sm text-gray-600">Total Jobs</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:users" className="text-green-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalCandidates}</div>
               <div className="text-sm text-gray-600">Total Candidates</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:file-text" className="text-purple-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalApplications}</div>
               <div className="text-sm text-gray-600">Total Applications</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:user-circle" className="text-orange-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalHR + stats.totalInterviewers}</div>
               <div className="text-sm text-gray-600">Total Users</div>
             </div>

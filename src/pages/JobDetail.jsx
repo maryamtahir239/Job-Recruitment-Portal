@@ -10,7 +10,7 @@ import Icon from "@/components/ui/Icon";
 import Modal from "@/components/ui/Modal";
 import Textinput from "@/components/ui/Textinput";
 import Select from "@/components/ui/Select";
-import SendInviteModal from "@/components/SendInviteModal";
+import IndividualInviteModal from "@/components/IndividualInviteModal";
 import Textarea from "@/components/ui/Textarea";
 
 const JobDetail = () => {
@@ -21,13 +21,11 @@ const JobDetail = () => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [candidatesLoading, setCandidatesLoading] = useState(false);
-  const [hasCheckedCandidates, setHasCheckedCandidates] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [sendInviteModalOpen, setSendInviteModalOpen] = useState(false);
-  const [selectedCandidates, setSelectedCandidates] = useState([]);
-  const [checkedCandidates, setCheckedCandidates] = useState([]);
+  const [individualInviteModalOpen, setIndividualInviteModalOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({
     title: "",
@@ -49,21 +47,6 @@ const JobDetail = () => {
   // Auto-select all candidates when they are loaded after upload
   useEffect(() => {
     if (shouldAutoSelect && candidates.length > 0) {
-      // Only select candidates who haven't received invites yet
-      const candidatesWithoutInvites = candidates.filter(candidate => !candidate.invite_sent);
-      
-      const candidateIdsToSelect = candidatesWithoutInvites.map(c => c.id).filter(id => id != null);
-      
-      // If no IDs found, try alternative field names
-      if (candidateIdsToSelect.length === 0) {
-        const alternativeIds = candidatesWithoutInvites.map(c => c.candidate_id || c.user_id || c._id).filter(id => id != null);
-        if (alternativeIds.length > 0) {
-          setCheckedCandidates(alternativeIds);
-        }
-      } else {
-        setCheckedCandidates(candidateIdsToSelect);
-      }
-      
       setShouldAutoSelect(false); // Reset the flag
     }
   }, [candidates, shouldAutoSelect]);
@@ -73,35 +56,9 @@ const JobDetail = () => {
     // Remove automatic candidate fetching - only fetch when needed
   }, [jobId]);
 
-  // Handle individual candidate selection
-  const handleCandidateSelect = (candidateId) => {
-    
-    setCheckedCandidates(prev => {
-      const newSelection = prev.includes(candidateId)
-        ? prev.filter(id => id !== candidateId)
-        : [...prev, candidateId];
-      return newSelection;
-    });
-  };
+  // Handle individual candidate selection - REMOVED since we're using individual buttons
 
-  // Handle select all candidates
-  const handleSelectAll = () => {
-    const candidatesWithoutInvites = candidates.filter(candidate => !candidate.invite_sent);
-    const allCandidateIds = candidatesWithoutInvites.map(c => c.id).filter(id => id != null);
-    
-    if (checkedCandidates.length === allCandidateIds.length && allCandidateIds.length > 0) {
-      // If all candidates without invites are selected, deselect all
-      setCheckedCandidates([]);
-    } else {
-      // Select all candidates without invites
-      setCheckedCandidates(allCandidateIds);
-    }
-  };
-
-  // Check if all candidates without invites are selected
-  const candidatesWithoutInvites = candidates.filter(candidate => !candidate.invite_sent);
-  const isAllSelected = candidatesWithoutInvites.length > 0 && 
-    checkedCandidates.length === candidatesWithoutInvites.length;
+  // Handle select all candidates - REMOVED since we're using individual buttons
 
   // Tooltip functions
   const showTooltipMessage = (text, event) => {
@@ -142,7 +99,6 @@ const JobDetail = () => {
 
   const fetchJobCandidates = async (showErrorOnFail = true, autoSelectAll = false) => {
     setCandidatesLoading(true);
-    setHasCheckedCandidates(true);
     try {
       const response = await axios.get(`/api/jobs/${jobId}/candidates`);
       if (Array.isArray(response.data)) {
@@ -262,7 +218,6 @@ const JobDetail = () => {
       
       setUploadModalOpen(false);
       setSelectedFile(null);
-      setHasCheckedCandidates(true); // Mark that we've checked for candidates
       setShouldAutoSelect(true); // Set flag to auto-select after upload
       
       // Fetch updated candidates
@@ -295,33 +250,17 @@ const JobDetail = () => {
     return candidates.filter(candidate => !candidate.invite_sent);
   };
 
-  // Handle candidate selection for invites
-  const handleSendInvites = () => {
-    if (checkedCandidates.length === 0) {
-      safeToastError("Please select at least one candidate to send invites");
-      return;
-    }
-    
-    const candidatesToInvite = candidates.filter(candidate => 
-      checkedCandidates.includes(candidate.id) && !candidate.invite_sent
-    );
-    
-    if (candidatesToInvite.length === 0) {
-      safeToastError("Selected candidates already have invites sent");
-      return;
-    }
-    
-    setSelectedCandidates(candidatesToInvite);
-    setSendInviteModalOpen(true);
+  // Handle individual invite sending
+  const handleIndividualInvite = (candidate) => {
+    setSelectedCandidate(candidate);
+    setIndividualInviteModalOpen(true);
   };
 
-  // Handle successful invite sending
-  const handleInviteSuccess = (sentCount) => {
-    toast.success(`Successfully sent invites to ${sentCount} candidates!`);
+  // Handle individual invite success
+  const handleIndividualInviteSuccess = (sentCount) => {
+    toast.success(`Successfully sent invite to ${selectedCandidate.name}!`);
     // Refresh candidates to update invite status
     fetchJobCandidates(true);
-    // Clear selected candidates after sending invites
-    setCheckedCandidates([]);
   };
 
   // Open edit modal and prefill form
@@ -390,7 +329,8 @@ const JobDetail = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <div className="bg-white shadow border rounded p-6">
+      <div className="flex justify-between items-center">
         <div>
           <div className="mb-2">
             <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
@@ -407,210 +347,36 @@ const JobDetail = () => {
           )}
         </div>
       </div>
+      </div>
 
       {/* Job Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
+        {/* Main Content: Description & Requirements */}
+        <div className="lg:col-span-5">
+          <Card className="h-full min-h-[100px]">
+            <div className="flex flex-col h-full justify-between">
               <div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-3">Description</h4>
-                <p className="text-gray-700 text-base leading-relaxed">
-                  {job.description}
-                </p>
+                <div className="min-h-[100px] bg-gray-50 p-5 rounded-lg">
+                  <p className="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
+                    {job.description}
+                  </p>
+                </div>
               </div>
-              
-              <div>
+              <div className="mt-6">
                 <h4 className="text-lg font-semibold text-gray-900 mb-3">Requirements</h4>
-                <p className="text-gray-700 text-base leading-relaxed">
-                  {job.requirements}
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Candidates Section */}
-          <Card>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Candidates ({candidates.length})</h3>
-              {user?.role === 'HR' && (
-                <Button
-                  text="Load More Files"
-                  className="btn-outline-primary btn-sm w-32"
-                  onClick={() => setUploadModalOpen(true)}
-                />
-              )}
-            </div>
-            
-            {/* Selection indicator */}
-            {user?.role === 'HR' && checkedCandidates.length > 0 && (
-              <div className="mb-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center justify-between px-3">
-                  <span className="text-sm text-blue-800">
-                    {checkedCandidates.length} candidate{checkedCandidates.length !== 1 ? 's' : ''} selected
-                  </span>
-                  <Button
-                    text="Clear Selection"
-                    className="btn-outline-secondary btn-sm w-32"
-                    onClick={() => setCheckedCandidates([])}
-                  />
+                <div className="min-h-[100px] bg-gray-50 p-5 rounded-lg">
+                  <p className="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
+                    {job.requirements}
+                  </p>
                 </div>
               </div>
-            )}
-            
-            {candidates.length === 0 ? (
-              <div className="text-center py-8">
-                <Icon icon="ph:users" className="text-gray-400 text-4xl mx-auto mb-4" />
-                <p className="text-gray-500 mb-4">
-                  {candidatesLoading ? 
-                    "Loading candidates..." : 
-                    hasCheckedCandidates ? 
-                      "No candidates found for this job." : 
-                      "Click 'Load Candidates' to check for uploaded candidates."
-                  }
-                </p>
-                <div className="space-x-3">
-                  {user?.role === 'HR' && (
-                    <>
-                      <Button
-                        text={candidatesLoading ? "Loading..." : "Load Candidates"}
-                        className="btn-outline-primary"
-                        onClick={() => {
-                          setShouldAutoSelect(true);
-                          fetchJobCandidates(true);
-                        }}
-                        disabled={candidatesLoading}
-                      />
-                      <Button
-                        text="Upload Candidates"
-                        className="btn-primary"
-                        onClick={() => setUploadModalOpen(true)}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      {user?.role === 'HR' && (
-                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          <div
-                            onMouseEnter={(e) => {
-                              if (candidatesWithoutInvites.length === 0) {
-                                showTooltipMessage("All candidates already have invites sent", e);
-                              }
-                            }}
-                            onMouseLeave={hideTooltip}
-                            className="inline-block"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isAllSelected}
-                              onChange={handleSelectAll}
-                              disabled={candidatesWithoutInvites.length === 0}
-                              className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
-                                candidatesWithoutInvites.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                              }`}
-                            />
-                          </div>
-                        </th>
-                      )}
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                      </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Phone
-                      </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Designation
-                      </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Location
-                      </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Invite Status
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {candidates.map((candidate, index) => (
-                      <tr key={candidate.id} className="hover:bg-gray-50">
-                        {user?.role === 'HR' && (
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
-                            <div
-                              onMouseEnter={(e) => {
-                                if (candidate.invite_sent) {
-                                  const statusText = candidate.invite_status === 'submitted' ? 'has already submitted an application' : 
-                                                   candidate.invite_status === 'opened' ? 'has opened the invite' : 
-                                                   'has already been sent an invite';
-                                  showTooltipMessage(`This candidate ${statusText}`, e);
-                                }
-                              }}
-                              onMouseLeave={hideTooltip}
-                              className="inline-block"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={checkedCandidates.includes(candidate.id)}
-                                onChange={() => handleCandidateSelect(candidate.id)}
-                                disabled={candidate.invite_sent}
-                                className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
-                                  candidate.invite_sent ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
-                              />
-                            </div>
-                          </td>
-                        )}
-                        <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <div className="flex items-center justify-center space-x-2">
-                            <div className="text-sm font-medium text-gray-900">
-                              {candidate.name}
-                            </div>
-                            {index < 5 && (
-                              <Badge className="badge-success badge-sm">New</Badge>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                          {candidate.email}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                          {candidate.phone || "Not provided"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                          {candidate.designation || "Not specified"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                          {candidate.location ? candidate.location : "Not specified"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center">
-                          {candidate.invite_sent ? (
-                            <Badge className={`badge-${candidate.invite_status === 'submitted' ? 'success' : candidate.invite_status === 'opened' ? 'warning' : 'info'}`}>
-                              {candidate.invite_status === 'submitted' ? 'Submitted' : 
-                               candidate.invite_status === 'opened' ? 'Opened' : 'Sent'}
-                            </Badge>
-                          ) : (
-                            <Badge className="badge-secondary">Not Sent</Badge>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            </div>
           </Card>
         </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          <Card>
+        {/* Sidebar: Job Summary */}
+        <div className="lg:col-span-2">
+          <Card className="h-full min-h-[100px]">
             <h3 className="text-lg font-semibold mb-4">Job Summary</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -639,58 +405,137 @@ const JobDetail = () => {
               </div>
             </div>
           </Card>
+        </div>
+      </div>
 
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-            {user?.role === 'HR' ? (
-              <div className="space-y-3">
-                <div
-                  onMouseEnter={(e) => {
-                    if (candidates.length === 0) {
-                      showTooltipMessage("No candidates available for this job", e);
-                    } else if (candidates.every(c => c.invite_sent)) {
-                      showTooltipMessage("All candidates have already received invites", e);
-                    } else if (checkedCandidates.length === 0) {
-                      showTooltipMessage("Please select at least one candidate to send invites", e);
-                    }
-                  }}
-                  onMouseLeave={hideTooltip}
-                  className="inline-block w-full"
-                >
-                  <Button
-                    text={
-                      candidates.length === 0 
-                        ? "No Candidates" 
-                        : candidates.every(c => c.invite_sent)
-                        ? "All Invites Sent"
-                        : `Send Invites (${checkedCandidates.length})`
-                    }
-                    className="btn-primary w-full"
-                    onClick={handleSendInvites}
-                    disabled={candidates.length === 0 || checkedCandidates.length === 0 || candidates.every(c => c.invite_sent)}
-                  />
+      {/* Candidates Section - now full width below the grid */}
+      <div className="mt-8">
+        <Card className="w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">Candidates ({candidates.length})</h3>
+              {user?.role === 'HR' && (
+                <Button
+                  text="Load More Files"
+                  className="btn-outline-primary btn-sm w-32"
+                  onClick={() => setUploadModalOpen(true)}
+                />
+              )}
+            </div>
+            {candidates.length === 0 ? (
+              <div className="text-center py-8">
+                <Icon icon="ph:users" className="text-gray-400 text-4xl mx-auto mb-4" />
+                <p className="text-gray-500 mb-4">
+                  {candidatesLoading ? 
+                    "Loading candidates..." : 
+                      "Click 'Load Candidates' to check for uploaded candidates."
+                  }
+                </p>
+                <div className="space-x-3">
+                  {user?.role === 'HR' && (
+                    <>
+                      <Button
+                        text={candidatesLoading ? "Loading..." : "Load Candidates"}
+                        className="btn-outline-primary"
+                        onClick={() => {
+                          setShouldAutoSelect(true);
+                          fetchJobCandidates(true);
+                        }}
+                        disabled={candidatesLoading}
+                      />
+                      <Button
+                        text="Upload Candidates"
+                        className="btn-primary"
+                        onClick={() => setUploadModalOpen(true)}
+                      />
+                    </>
+                  )}
                 </div>
-                <Button
-                  text="View Applications"
-                  className="btn-outline-primary w-full"
-                  onClick={() => navigate(`/applications?jobId=${jobId}`)}
-                />
-                <Button
-                  text="Close Job"
-                  className="btn-outline-danger w-full"
-                  onClick={() => {
-                    // Implement close job functionality
-                    toast.info("Close job functionality coming soon");
-                  }}
-                />
               </div>
             ) : (
-              <div className="text-center py-4">
-                <p className="text-gray-500 text-sm">View-only access for admin users</p>
+            <div className="w-full overflow-x-auto">
+              <table className="w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Name
+                      </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Email
+                      </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Phone
+                      </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Designation
+                      </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Location
+                      </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                      </th>
+                    {user?.role === 'HR' && (
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    )}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {candidates.map((candidate, index) => (
+                      <tr key={candidate.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{candidate.name}</div>
+                        {/* {index < 5 && (
+                          <Badge className="badge-success badge-sm mt-1">New</Badge>
+                        )} */}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{candidate.email}</div>
+                        </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{candidate.phone || "Not provided"}</div>
+                        </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{candidate.designation || "Not specified"}</div>
+                        </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{candidate.location || "Not specified"}</div>
+                        </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-center">
+                          {candidate.invite_sent ? (
+                            <Badge className={`badge-${candidate.invite_status === 'submitted' ? 'success' : candidate.invite_status === 'opened' ? 'warning' : 'info'}`}>
+                              {candidate.invite_status === 'submitted' ? 'Submitted' : 
+                               candidate.invite_status === 'opened' ? 'Opened' : 'Sent'}
+                            </Badge>
+                          ) : (
+                            <Badge className="badge-secondary">Not Sent</Badge>
+                          )}
+                        </td>
+                      {user?.role === 'HR' && (
+                        <td className="px-4 py-4 whitespace-nowrap text-center">
+                          <div className={candidate.invite_sent ? "group relative flex items-center justify-center" : undefined}>
+                            {candidate.invite_sent && (
+                              <div className="absolute right-full mr-1 z-10 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap shadow-lg">
+                                Invite already sent to this candidate
+                              </div>
+                            )}
+                            <Button
+                              text="Send Invite"
+                              className="btn-primary btn-sm"
+                              onClick={() => handleIndividualInvite(candidate)}
+                              disabled={candidate.invite_sent}
+                            />
+                          </div>
+                        </td>
+                      )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </Card>
-        </div>
       </div>
 
       {/* Upload Candidates Modal */}
@@ -773,13 +618,13 @@ const JobDetail = () => {
         </Modal>
       )}
 
-      {/* Send Invite Modal */}
+      {/* Individual Invite Modal */}
       {user?.role === 'HR' && (
-        <SendInviteModal
-          open={sendInviteModalOpen}
-          onClose={() => setSendInviteModalOpen(false)}
-          selectedCandidates={selectedCandidates}
-          onSendSuccess={handleInviteSuccess}
+        <IndividualInviteModal
+          open={individualInviteModalOpen}
+          onClose={() => setIndividualInviteModalOpen(false)}
+          candidate={selectedCandidate}
+          onSendSuccess={handleIndividualInviteSuccess}
           jobId={jobId}
         />
       )}

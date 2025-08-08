@@ -22,7 +22,6 @@ import { Icon } from "@iconify/react";
 
 // Template Form Component for Create/Edit
 function TemplateForm({ template, jobs, onSave, onCancel, submitting, mode }) {
-  console.log("TemplateForm rendered with:", { template, mode, jobsLength: jobs?.length });
   
   // Extract unique departments from jobs
   const departments = Array.from(new Set(jobs.map(job => job.department).filter(Boolean)));
@@ -206,7 +205,7 @@ function TemplateForm({ template, jobs, onSave, onCancel, submitting, mode }) {
         </div>
             {formData.main_questions.map((question, index) => (
               <Card key={index} className="p-4">
-                <div className="flex flex-row items-center gap-4">
+                <div className="flex items-end gap-4">
                   <div className="flex-1">
                     <Textinput
                       label={`Question ${index + 1}`}
@@ -214,15 +213,18 @@ function TemplateForm({ template, jobs, onSave, onCancel, submitting, mode }) {
                       value={question}
                       onChange={(e) => handleQuestionChange("main_questions", index, e.target.value)}
                       className="flex-1"
-          />
-        </div>
-                  <Button
-                    text="Remove"
-                    onClick={() => removeQuestion(index)}
-                    className="btn-danger min-w-[90px]"
-                    size="sm"
-          />
-        </div>
+                    />
+                  </div>
+                  <div className="flex items-center justify-center mb-1">
+                    <button
+                      onClick={() => removeQuestion(index)}
+                      className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors duration-200 flex items-center justify-center"
+                      title="Delete question"
+                    >
+                      <FontAwesomeIcon icon={faTrash} className="text-lg" />
+                    </button>
+                  </div>
+                </div>
               </Card>
             ))}
             <div className="flex justify-center pt-4">
@@ -231,24 +233,33 @@ function TemplateForm({ template, jobs, onSave, onCancel, submitting, mode }) {
                 onClick={addQuestion}
                 className="btn-secondary" 
                 size="sm" 
-          />
-        </div>
+              />
+            </div>
       </div>
 
           {/* Active Status */}
-          <div className="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              id="is_active"
-              name="is_active"
-              checked={formData.is_active}
-              onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="is_active" className="text-sm font-medium text-gray-700">
-              Active Template
-            </label>
-      </div>
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="is_active"
+                name="is_active"
+                checked={formData.is_active}
+                onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
+                className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="is_active" className="text-sm font-medium text-gray-700">
+                Active Template
+              </label>
+            </div>
+            <div className="text-sm text-gray-500">
+              {formData.is_active ? (
+                <span className="text-green-600">✅ Interviewers can use this template</span>
+              ) : (
+                <span className="text-red-600">❌ Interviewers cannot use this template</span>
+              )}
+            </div>
+          </div>
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
@@ -381,7 +392,6 @@ function TemplatePreview({ template, jobs, onBack }) {
 }
 
 const EvaluationTemplateManagement = () => {
-  console.log("=== EvaluationTemplateManagement component rendering... ===");
   
   const navigate = useNavigate();
   
@@ -394,10 +404,6 @@ const EvaluationTemplateManagement = () => {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "null");
   
-  console.log("User:", user);
-  console.log("Token:", token ? "Present" : "Missing");
-  console.log("User role:", user?.role);
-
   // State management
   const [templates, setTemplates] = useState([]);
   const [filteredTemplates, setFilteredTemplates] = useState([]);
@@ -413,6 +419,7 @@ const EvaluationTemplateManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("all");
   const [sortBy, setSortBy] = useState("created_at");
 
   // Load templates and jobs on mount
@@ -467,6 +474,13 @@ const EvaluationTemplateManagement = () => {
       });
     }
 
+    // Active filter
+    if (activeFilter !== "all") {
+      filtered = filtered.filter(template => 
+        activeFilter === "active" ? template.is_active : !template.is_active
+      );
+    }
+
     // Sort
     filtered.sort((a, b) => {
       let aValue, bValue;
@@ -490,7 +504,7 @@ const EvaluationTemplateManagement = () => {
     });
 
     setFilteredTemplates(filtered);
-  }, [templates, searchTerm, statusFilter, departmentFilter, sortBy, jobs]);
+  }, [templates, searchTerm, statusFilter, departmentFilter, activeFilter, sortBy, jobs]);
 
   const handleCreateTemplate = () => {
     setSelectedTemplate(null);
@@ -498,7 +512,6 @@ const EvaluationTemplateManagement = () => {
   };
 
   const handleEditTemplate = (template) => {
-    console.log("handleEditTemplate called with template:", template);
     setSelectedTemplate(template);
     setCurrentView('edit');
   };
@@ -696,6 +709,18 @@ const EvaluationTemplateManagement = () => {
             ]}
           />
 
+          <Select
+            label="Active Status"
+            name="activeFilter"
+            value={activeFilter}
+            onChange={(e) => setActiveFilter(e.target.value)}
+            options={[
+              { value: "all", label: "All Templates" },
+              { value: "active", label: "Active Only" },
+              { value: "inactive", label: "Inactive Only" }
+            ]}
+          />
+
         </div>
       </Card>
 
@@ -744,7 +769,12 @@ const EvaluationTemplateManagement = () => {
                     <Badge className={template.is_active ? "badge-success" : "badge-danger"}>
                       {template.is_active ? "Active" : "Inactive"}
                     </Badge>
-              </div>
+                    {template.is_active && (
+                      <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                        Available to Interviewers
+                      </span>
+                    )}
+                  </div>
                   <p className="text-gray-600 mb-2">{template.description || "No description"}</p>
                   <div className="flex items-center space-x-4 text-sm text-gray-500">
                     <span className="flex items-center space-x-1">

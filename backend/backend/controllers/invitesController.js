@@ -16,7 +16,7 @@ function resolveExpiry({ expiryDays, expiryDate }) {
 }
 
 export const bulkSendInvites = async (req, res) => {
-  const { candidateIds, jobId, expiryDays, expiryDate, message } = req.body;
+  const { candidateIds, jobId, expiryDays, expiryDate, message, interviewDateTime } = req.body;
 
   if (!Array.isArray(candidateIds) || candidateIds.length === 0) {
     return res.status(400).json({ error: "candidateIds required" });
@@ -50,6 +50,7 @@ export const bulkSendInvites = async (req, res) => {
         sent_at: now,
         metadata: JSON.stringify({
           message: message || null,
+          interviewDateTime: interviewDateTime || null,
           sentVia: "bulk_invite",
           jobId: jobId
         }),
@@ -64,6 +65,7 @@ export const bulkSendInvites = async (req, res) => {
         message,
         link,
         expiresAt,
+        interviewDateTime,
       });
 
       results.push({
@@ -80,7 +82,7 @@ export const bulkSendInvites = async (req, res) => {
 
     res.json({ success: failed === 0, sent, failed, results });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Failed to send invites" });
   }
 };
 

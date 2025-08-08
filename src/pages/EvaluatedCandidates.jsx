@@ -21,10 +21,7 @@ const EvaluatedCandidates = () => {
     // Debug: Check if user is logged in
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
-    console.log("Debug - Token exists:", !!token);
-    console.log("Debug - User exists:", !!user);
     if (user) {
-      console.log("Debug - User data:", JSON.parse(user));
     }
     
     fetchEvaluations();
@@ -36,14 +33,11 @@ const EvaluatedCandidates = () => {
       const token = localStorage.getItem("token");
       
       if (!token) {
-        console.error("No authentication token found. Please log in.");
         setEvaluations([]);
         setLoading(false);
         return;
       }
 
-      console.log("Making request to /api/evaluation with token:", token.substring(0, 20) + "...");
-      
       const res = await fetch("/api/evaluation", {
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -51,22 +45,16 @@ const EvaluatedCandidates = () => {
         }
       });
 
-      console.log("Response status:", res.status);
-      console.log("Response headers:", res.headers);
-
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({ error: "Failed to parse error response" }));
-        console.error("Failed to fetch evaluations:", res.status, errorData);
         setEvaluations([]);
         setLoading(false);
         return;
       }
 
       const data = await res.json();
-      console.log("Fetched evaluations:", data);
       setEvaluations(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching evaluations:", error);
       setEvaluations([]);
     } finally {
       setLoading(false);
@@ -139,11 +127,11 @@ const EvaluatedCandidates = () => {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:check-circle" className="text-blue-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{totalEvaluations}</div>
               <div className="text-sm text-gray-600">Total Evaluations</div>
             </div>
@@ -151,11 +139,11 @@ const EvaluatedCandidates = () => {
         </Card>
 
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:star" className="text-green-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{averageScore}</div>
               <div className="text-sm text-gray-600">Average Score</div>
             </div>
@@ -163,11 +151,11 @@ const EvaluatedCandidates = () => {
         </Card>
 
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:briefcase" className="text-purple-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{uniqueJobs}</div>
               <div className="text-sm text-gray-600">Open Positions</div>
             </div>
@@ -175,11 +163,11 @@ const EvaluatedCandidates = () => {
         </Card>
 
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:calendar" className="text-yellow-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{thisMonth}</div>
               <div className="text-sm text-gray-600">This Month</div>
             </div>

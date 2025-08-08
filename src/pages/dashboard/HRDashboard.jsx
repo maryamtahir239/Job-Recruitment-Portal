@@ -28,7 +28,6 @@ const HRDashboard = () => {
   const [applications, setApplications] = useState([]);
   
   mountCountRef.current += 1;
-  console.log("HRDashboard component rendered at:", new Date().toISOString(), "Mount count:", mountCountRef.current, "Loading state:", loading);
   
   // Use useMemo to ensure stable references
   const user = useMemo(() => {
@@ -40,47 +39,32 @@ const HRDashboard = () => {
   
   // Check if user is authenticated and fetch data
   useEffect(() => {
-    console.log("HRDashboard useEffect called at:", new Date().toISOString());
-    console.log("hasFetched:", hasFetched);
-    
-    if (!token || !user) {
-      console.error("User not authenticated. Token:", !!token, "User:", !!user);
-      navigate("/login");
-      return;
-    }
-    
-    if (user.role !== "HR") {
-      console.error("User role is not HR:", user.role);
-      navigate("/login");
-      return;
-    }
-    
-    if (!hasFetched) {
-      console.log("Setting hasFetched to true and calling fetchDashboardData");
-      setHasFetched(true);
-      fetchDashboardData();
-    } else {
-      console.log("Data already fetched, skipping fetchDashboardData");
-    }
-    
-    // Cleanup function
-    return () => {
-      console.log("HRDashboard useEffect cleanup called");
-      setHasFetched(false);
-    };
-  }, []); // Only run once on mount
+        if (!token || !user) {
+            navigate("/login");
+            return;
+        }
+        if (user.role !== "HR") {
+            navigate("/login");
+            return;
+        }
+        if (!hasFetched) {
+            setHasFetched(true);
+            fetchDashboardData();
+        }
+        // Cleanup function
+        return () => {
+            setHasFetched(false);
+        };
+    }, []); // Only run once on mount
 
   const fetchDashboardData = async () => {
-    console.log("fetchDashboardData called at:", new Date().toISOString());
     
     // Prevent multiple simultaneous calls
     if (loading) {
-      console.log("fetchDashboardData: Already loading, skipping call. Loading state:", loading);
       return;
     }
     
     // Set loading to true immediately to prevent multiple calls
-    console.log("Setting loading to true");
     setLoading(true);
     setError(null);
     
@@ -94,25 +78,18 @@ const HRDashboard = () => {
         timeout: 10000 // 10 second timeout
       };
       
-      console.log("Fetching dashboard data with token:", token ? "Present" : "Missing");
       
       // Fetch jobs
-      console.log("Fetching jobs...");
       const jobsResponse = await axios.get("/api/jobs", config);
       const jobs = jobsResponse.data;
-      console.log("Jobs fetched successfully:", jobs.length);
       
       // Fetch candidates
-      console.log("Fetching candidates...");
       const candidatesResponse = await axios.get("/api/candidates", config);
       const candidates = candidatesResponse.data;
-      console.log("Candidates fetched successfully:", candidates.length);
       
       // Fetch applications
-      console.log("Fetching applications...");
       const applicationsResponse = await axios.get("/api/applications", config);
       const applications = applicationsResponse.data;
-      console.log("Applications fetched successfully:", applications.length);
       
       // Calculate stats
       const activeJobs = jobs.filter(job => job.status === "Active").length;
@@ -138,10 +115,6 @@ const HRDashboard = () => {
       // Get recent jobs (last 5)
       setRecentJobs(jobs.slice(0, 5));
     } catch (error) {
-      console.error("Dashboard data fetch error:", error);
-      console.error("Error response:", error.response);
-      console.error("Error status:", error.response?.status);
-      console.error("Error data:", error.response?.data);
       
       let errorMessage = "Failed to load dashboard data";
       
@@ -174,7 +147,6 @@ const HRDashboard = () => {
         safeToastError(errorMessage);
       }
     } finally {
-      console.log("Setting loading to false");
       setLoading(false);
     }
   };
@@ -270,55 +242,55 @@ const HRDashboard = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:briefcase" className="text-blue-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalJobs}</div>
               <div className="text-sm text-gray-600">Jobs</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:check-circle" className="text-green-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.activeJobs}</div>
               <div className="text-sm text-gray-600">Active Jobs</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:users" className="text-purple-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalCandidates}</div>
               <div className="text-sm text-gray-600">Candidates</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:file-text" className="text-yellow-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.totalApplications}</div>
               <div className="text-sm text-gray-600">Applications</div>
             </div>
           </div>
         </Card>
         <Card className="bg-white shadow border">
-          <div className="flex items-center">
+          <div className="flex flex-row-reverse items-center justify-between">
             <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
               <Icon icon="ph:clock" className="text-red-600 text-2xl" />
             </div>
-            <div className="ml-4">
+            <div className="flex flex-col items-start">
               <div className="text-2xl font-bold text-gray-900">{stats.recentApplications}</div>
               <div className="text-sm text-gray-600">This Week</div>
             </div>

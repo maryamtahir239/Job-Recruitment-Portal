@@ -3,6 +3,9 @@ import axios from "axios";
 import Button from "@/components/ui/Button";
 import { toast } from "react-toastify";
 import { safeToastError } from "@/utility/safeToast";
+import DatePicker from "@/components/ui/DatePicker";
+import Modal from "@/components/ui/Modal";
+import Flatpickr from "react-flatpickr";
 
 // Add onSendSuccess to the props
 const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, jobId }) => {
@@ -16,9 +19,9 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, job
     return date.toISOString().split('T')[0];
   };
 
-  // Default expiry time (11:59 PM)
+  // Default expiry time (12:00 AM)
   const getDefaultExpiryTime = () => {
-    return "23:59";
+    return "12:00 AM";
   };
 
   const [expiryDate, setExpiryDate] = useState(getDefaultExpiryDate());
@@ -33,7 +36,16 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, job
     }
   }, [open]);
 
-  if (!open) return null;
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   const getCandidateIds = () => {
     return selectedCandidates
@@ -95,87 +107,107 @@ const SendInviteModal = ({ open, onClose, selectedCandidates, onSendSuccess, job
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg max-h-[90vh] flex flex-col">
+    <Modal
+      activeModal={open}
+      onClose={onClose}
+      enterFrom="scale-90 translate-y-5"
+      leaveFrom="scale-100 translate-y-0"
+    >
+      <div className="w-full max-w-lg mx-auto">
         <h2 className="text-xl font-bold mb-4 text-gray-800">Send Application Links</h2>
 
-        <p className="mb-3 text-gray-600">
+        <p className="mb-4 text-gray-600">
           You are about to send application links to{" "}
           <strong className="text-blue-600">{selectedCandidates.length}</strong> candidate(s).
         </p>
 
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">Selected Candidates:</label>
-          <div className="relative">
-            <div className="w-full border border-gray-300 rounded-md shadow-sm bg-white overflow-hidden">
-              <div className="max-h-40 overflow-y-auto p-2">
-                {selectedCandidates.length === 0 ? (
-                  <p className="text-gray-500 text-center py-2">No candidates selected.</p>
-                ) : (
-                  <ul className="list-disc list-inside space-y-1">
-                    {selectedCandidates.map((c) => (
-                      <li key={c.id}>
-                        <span className="font-medium">{c.name}</span> (<span className="text-blue-700">{c.email}</span>)
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+          <div className="border border-gray-300 rounded-md bg-white overflow-hidden">
+            <div className="max-h-32 overflow-y-auto p-3">
+              {selectedCandidates.length === 0 ? (
+                <p className="text-gray-500 text-center py-2">No candidates selected.</p>
+              ) : (
+                <ul className="space-y-1">
+                  {selectedCandidates.map((c) => (
+                    <li key={c.id} className="text-sm">
+                      <span className="font-medium">{c.name}</span> 
+                      <span className="text-blue-700 block text-xs">{c.email}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </div>
 
-        <textarea
-          className="w-full border border-gray-300 p-3 rounded-md mb-4 resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-150 ease-in-out"
-          rows="4"
-          placeholder="Custom message to include in the email (optional)..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          disabled={loading}
-        ></textarea>
-
-        {/* Expiry Date and Time */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Application Link Expiry:</label>
-          <div className="grid grid-cols-2 gap-3">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Custom Message (optional):</label>
+          <textarea
+            className="w-full border border-gray-300 p-3 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-150 ease-in-out"
+            rows="3"
+            placeholder="Custom message to include in the email..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            disabled={loading}
+          />
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-3">Application Link Expiry:</label>
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-gray-600 mb-1">Date</label>
-              <input
-                type="date"
+              <DatePicker
                 value={expiryDate}
                 onChange={(e) => setExpiryDate(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                placeholder="Select date"
                 min={new Date().toISOString().split('T')[0]}
                 disabled={loading}
+                className="w-full"
               />
             </div>
             <div>
               <label className="block text-xs text-gray-600 mb-1">Time</label>
-              <input
-                type="time"
-                value={expiryTime}
-                onChange={(e) => setExpiryTime(e.target.value)}
+              <Flatpickr
                 className="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                value={expiryTime}
+                placeholder="Choose Time.."
+                options={{
+                  enableTime: true,
+                  noCalendar: true,
+                  dateFormat: "h:i K",
+                  time_24hr: false,
+                  defaultHour: 12,
+                  defaultMinute: 0,
+                }}
+                onChange={(date) => {
+                  if (date[0]) {
+                    const hours = date[0].getHours().toString().padStart(2, '0');
+                    const minutes = date[0].getMinutes().toString().padStart(2, '0');
+                    setExpiryTime(`${hours}:${minutes}`);
+                  }
+                }}
                 disabled={loading}
               />
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 mt-2">
             Application links will expire on {expiryDate} at {expiryTime}
           </p>
         </div>
 
-        <div className="flex justify-end space-x-3 mt-auto">
-          <Button text="Cancel" onClick={onClose} className="btn-secondary px-5 py-2" disabled={loading} />
+        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <Button text="Cancel" onClick={onClose} className="btn-secondary px-4 py-2" disabled={loading} />
           <Button
             text={loading ? "Sending..." : "Send Invites"}
             onClick={handleSendInvites}
-            className="btn-primary px-5 py-2"
+            className="btn-primary px-4 py-2"
             disabled={loading || selectedCandidates.length === 0}
           />
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 
