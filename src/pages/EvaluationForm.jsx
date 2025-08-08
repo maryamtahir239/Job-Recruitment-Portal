@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { getEvaluationTemplateByJobId } from "@/api/evaluationTemplates";
 import { safeToastError } from "@/utility/safeToast";
 
-const EvaluationForm = ({ candidate, onClose }) => {
+const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
   const [loading, setLoading] = useState(false);
   const [template, setTemplate] = useState(null);
   const [templateError, setTemplateError] = useState(null);
@@ -169,9 +169,8 @@ const EvaluationForm = ({ candidate, onClose }) => {
     }, 0);
   }, [ratings, questions]);
 
-  const getJobTitle = (jobId) => {
-    // Use job title from candidate object if available, otherwise fallback
-    return candidate.job_title || "Software Engineer";
+  const getJobTitle = () => {
+    return jobTitle || candidate.job_title || "Unknown Job";
   };
 
   const formatDate = (dateString) => {
@@ -257,7 +256,7 @@ const EvaluationForm = ({ candidate, onClose }) => {
               </div>
               <div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Position</div>
-                <div className="font-medium text-gray-900 text-sm">{getJobTitle(candidate.job_id)}</div>
+                <div className="font-medium text-gray-900 text-sm">{getJobTitle()}</div>
               </div>
             </div>
 
@@ -267,7 +266,7 @@ const EvaluationForm = ({ candidate, onClose }) => {
               </div>
               <div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Department</div>
-                <div className="font-medium text-gray-900 text-sm">IT Department</div>
+                <div className="font-medium text-gray-900 text-sm">{department || "N/A"}</div>
               </div>
             </div>
 
