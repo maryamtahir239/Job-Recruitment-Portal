@@ -343,28 +343,32 @@ const Evaluations = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                       {formatDate(application.created_at)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <div className="flex justify-center space-x-2 items-center">
-                        <Button
-                          text="Evaluate"
-                          className="btn-outline-primary btn-sm h-8"
-                          onClick={() => handleEvaluate(application)}
-                        />
-                        <div className="relative">
-                          <select
-                            value={application.evaluation_status || 'pending'}
-                            onChange={(e) => updateEvaluationStatus(application.id, e.target.value)}
-                            className="appearance-none bg-white border border-blue-500 text-blue-600 rounded-md px-1 h-8 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:bg-blue-50 transition-colors duration-200 min-w-[80px]"
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="completed">Completed</option>
-                          </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-blue-600">
-                            <Icon icon="ph:caret-down" className="text-xs" />
-                          </div>
-                        </div>
-                      </div>
-                    </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+  <div className="flex justify-center space-x-2 items-center">
+    <div className="relative group">
+      <Button
+        text="Evaluate"
+        className={`btn-outline-primary btn-sm h-8 ${
+          application.evaluation_status === 'completed'
+            ? 'opacity-50 cursor-not-allowed'
+            : ''
+        }`}
+        onClick={() => handleEvaluate(application)}
+        disabled={application.evaluation_status === 'completed'}
+      />
+
+      {/* Tooltip on the left side */}
+      {application.evaluation_status === 'completed' && (
+        <div className="absolute left-[-110%] top-1/2 transform -translate-y-1/2 bg-black text-white text-xs rounded py-1 px-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+          Evaluation already completed
+        </div>
+      )}
+    </div>
+  </div>
+</td>
+
+
+
                   </tr>
                 ))
               )}
@@ -379,6 +383,8 @@ const Evaluations = () => {
            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] overflow-hidden transform transition-all duration-300 ease-in-out scale-100">
              <EvaluationForm 
                candidate={selectedCandidate} 
+               jobTitle={(jobs.find(j => j.id === selectedCandidate.job_id)?.title) || "Unknown Job"}
+               department={(jobs.find(j => j.id === selectedCandidate.job_id)?.department) || "N/A"}
                onClose={handleEvaluationClose}
              />
            </div>
