@@ -486,9 +486,9 @@ const JobDetail = () => {
                       <tr key={candidate.id} className="hover:bg-gray-50">
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{candidate.name}</div>
-                        {index < 5 && (
+                        {/* {index < 5 && (
                           <Badge className="badge-success badge-sm mt-1">New</Badge>
-                        )}
+                        )} */}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{candidate.email}</div>
