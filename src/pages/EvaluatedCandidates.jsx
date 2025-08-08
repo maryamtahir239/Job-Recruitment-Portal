@@ -21,10 +21,7 @@ const EvaluatedCandidates = () => {
     // Debug: Check if user is logged in
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
-    console.log("Debug - Token exists:", !!token);
-    console.log("Debug - User exists:", !!user);
     if (user) {
-      console.log("Debug - User data:", JSON.parse(user));
     }
     
     fetchEvaluations();
@@ -36,14 +33,11 @@ const EvaluatedCandidates = () => {
       const token = localStorage.getItem("token");
       
       if (!token) {
-        console.error("No authentication token found. Please log in.");
         setEvaluations([]);
         setLoading(false);
         return;
       }
 
-      console.log("Making request to /api/evaluation with token:", token.substring(0, 20) + "...");
-      
       const res = await fetch("/api/evaluation", {
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -51,22 +45,16 @@ const EvaluatedCandidates = () => {
         }
       });
 
-      console.log("Response status:", res.status);
-      console.log("Response headers:", res.headers);
-
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({ error: "Failed to parse error response" }));
-        console.error("Failed to fetch evaluations:", res.status, errorData);
         setEvaluations([]);
         setLoading(false);
         return;
       }
 
       const data = await res.json();
-      console.log("Fetched evaluations:", data);
       setEvaluations(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching evaluations:", error);
       setEvaluations([]);
     } finally {
       setLoading(false);

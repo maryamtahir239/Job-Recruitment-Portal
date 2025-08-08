@@ -28,7 +28,6 @@ const HRDashboard = () => {
   const [applications, setApplications] = useState([]);
   
   mountCountRef.current += 1;
-  console.log("HRDashboard component rendered at:", new Date().toISOString(), "Mount count:", mountCountRef.current, "Loading state:", loading);
   
   // Use useMemo to ensure stable references
   const user = useMemo(() => {
@@ -40,47 +39,32 @@ const HRDashboard = () => {
   
   // Check if user is authenticated and fetch data
   useEffect(() => {
-    console.log("HRDashboard useEffect called at:", new Date().toISOString());
-    console.log("hasFetched:", hasFetched);
-    
-    if (!token || !user) {
-      console.error("User not authenticated. Token:", !!token, "User:", !!user);
-      navigate("/login");
-      return;
-    }
-    
-    if (user.role !== "HR") {
-      console.error("User role is not HR:", user.role);
-      navigate("/login");
-      return;
-    }
-    
-    if (!hasFetched) {
-      console.log("Setting hasFetched to true and calling fetchDashboardData");
-      setHasFetched(true);
-      fetchDashboardData();
-    } else {
-      console.log("Data already fetched, skipping fetchDashboardData");
-    }
-    
-    // Cleanup function
-    return () => {
-      console.log("HRDashboard useEffect cleanup called");
-      setHasFetched(false);
-    };
-  }, []); // Only run once on mount
+        if (!token || !user) {
+            navigate("/login");
+            return;
+        }
+        if (user.role !== "HR") {
+            navigate("/login");
+            return;
+        }
+        if (!hasFetched) {
+            setHasFetched(true);
+            fetchDashboardData();
+        }
+        // Cleanup function
+        return () => {
+            setHasFetched(false);
+        };
+    }, []); // Only run once on mount
 
   const fetchDashboardData = async () => {
-    console.log("fetchDashboardData called at:", new Date().toISOString());
     
     // Prevent multiple simultaneous calls
     if (loading) {
-      console.log("fetchDashboardData: Already loading, skipping call. Loading state:", loading);
       return;
     }
     
     // Set loading to true immediately to prevent multiple calls
-    console.log("Setting loading to true");
     setLoading(true);
     setError(null);
     
@@ -94,25 +78,18 @@ const HRDashboard = () => {
         timeout: 10000 // 10 second timeout
       };
       
-      console.log("Fetching dashboard data with token:", token ? "Present" : "Missing");
       
       // Fetch jobs
-      console.log("Fetching jobs...");
       const jobsResponse = await axios.get("/api/jobs", config);
       const jobs = jobsResponse.data;
-      console.log("Jobs fetched successfully:", jobs.length);
       
       // Fetch candidates
-      console.log("Fetching candidates...");
       const candidatesResponse = await axios.get("/api/candidates", config);
       const candidates = candidatesResponse.data;
-      console.log("Candidates fetched successfully:", candidates.length);
       
       // Fetch applications
-      console.log("Fetching applications...");
       const applicationsResponse = await axios.get("/api/applications", config);
       const applications = applicationsResponse.data;
-      console.log("Applications fetched successfully:", applications.length);
       
       // Calculate stats
       const activeJobs = jobs.filter(job => job.status === "Active").length;
@@ -138,10 +115,6 @@ const HRDashboard = () => {
       // Get recent jobs (last 5)
       setRecentJobs(jobs.slice(0, 5));
     } catch (error) {
-      console.error("Dashboard data fetch error:", error);
-      console.error("Error response:", error.response);
-      console.error("Error status:", error.response?.status);
-      console.error("Error data:", error.response?.data);
       
       let errorMessage = "Failed to load dashboard data";
       
@@ -174,7 +147,6 @@ const HRDashboard = () => {
         safeToastError(errorMessage);
       }
     } finally {
-      console.log("Setting loading to false");
       setLoading(false);
     }
   };

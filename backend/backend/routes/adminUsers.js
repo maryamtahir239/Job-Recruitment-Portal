@@ -10,6 +10,23 @@ const router = express.Router();
 // All routes require SuperAdmin auth
 router.use(verifyToken, requireRole("SuperAdmin"));
 
+// Test endpoint to verify backend is working
+router.get("/test", async (req, res) => {
+  try {
+    const testUser = await knex("users")
+      .select("id", "name", "email", "role", "profile_image")
+      .whereIn("role", ["HR", "Interviewer"])
+      .first();
+    res.json({ 
+      message: "Backend is working", 
+      testUser,
+      hasProfileImage: !!testUser?.profile_image 
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Test failed", details: err.message });
+  }
+});
+
 /**
  * GET /api/admin/users
  * List all HR + Interviewer users.
@@ -18,7 +35,7 @@ router.get("/", async (req, res) => {
   console.log("GET /api/admin/users called");
   try {
     const users = await knex("users")
-      .select("id", "name", "email", "role")
+      .select("id", "name", "email", "role", "profile_image")
       .whereIn("role", ["HR", "Interviewer"])
       .orderBy("id", "desc");
     console.log("Found users:", users);
@@ -53,7 +70,7 @@ router.post("/", async (req, res) => {
     });
 
     const user = await knex("users")
-      .select("id", "name", "email", "role")
+      .select("id", "name", "email", "role", "profile_image")
       .where({ id })
       .first();
 
@@ -96,7 +113,7 @@ router.put("/:id", async (req, res) => {
     }
 
     const user = await knex("users")
-      .select("id", "name", "email", "role")
+      .select("id", "name", "email", "role", "profile_image")
       .where({ id })
       .first();
 

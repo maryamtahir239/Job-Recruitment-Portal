@@ -24,21 +24,15 @@ const SuperAdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("SuperAdminDashboard useEffect called at:", new Date().toISOString());
     fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async () => {
-    console.log("SuperAdminDashboard fetchDashboardData called at:", new Date().toISOString());
-    
     try {
       setLoading(true);
       
       const token = localStorage.getItem("token");
       const user = JSON.parse(localStorage.getItem("user") || "null");
-      
-      console.log("Current user:", user);
-      console.log("Token:", token ? "Present" : "Missing");
       
       const headers = {
         'Authorization': `Bearer ${token}`,
@@ -58,16 +52,6 @@ const SuperAdminDashboard = () => {
       const applications = applicationsRes.data || [];
       const users = usersRes.data || [];
       
-      console.log("Fetched data:", {
-        jobs: jobs.length,
-        candidates: candidates.length,
-        applications: applications.length,
-        users: users.length
-      });
-      
-      console.log("Users data:", users);
-      console.log("User roles found:", users.map(u => u.role));
-
       // Calculate statistics
       const activeJobs = jobs.filter(job => job.status === "Active").length;
       const hrUsers = users.filter(user => user.role === "HR").length;
@@ -108,10 +92,8 @@ const SuperAdminDashboard = () => {
         applicationStatusDistribution
       };
       
-      console.log("Calculated statistics:", finalStats);
       setStats(finalStats);
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
       // Only show error for non-authentication issues
       if (
         error.response?.status !== 401 &&

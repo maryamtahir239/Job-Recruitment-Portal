@@ -36,6 +36,25 @@ app.get("/api/test", (req, res) => {
   res.json({ message: "Backend server is running!" });
 });
 
+// Debug endpoint to test database and profile_image field
+app.get("/api/debug/users", async (req, res) => {
+  try {
+    const knex = (await import('./db/knex.js')).default;
+    const users = await knex("users")
+      .select("id", "name", "email", "role", "profile_image")
+      .whereIn("role", ["HR", "Interviewer"])
+      .orderBy("id", "desc");
+    res.json({ 
+      message: "Debug endpoint working", 
+      users,
+      userCount: users.length,
+      usersWithProfileImage: users.filter(u => u.profile_image).length
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Debug failed", details: err.message });
+  }
+});
+
 // Use routes with base paths
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userProfileRoutes);

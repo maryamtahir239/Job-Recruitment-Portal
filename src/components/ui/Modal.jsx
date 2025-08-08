@@ -4,6 +4,7 @@ import Icon from "@/components/ui/Icon";
 
 const Modal = ({
   open, // <-- controlled open prop
+  activeModal, // <-- alternative controlled prop name
   onClose,
   enterFrom,
   leaveFrom,
@@ -29,9 +30,13 @@ const Modal = ({
   const openModal = () => {
     setShowModal(!showModal);
   };
+  
   const returnNull = () => {
     return null;
   };
+
+  // Determine which open state to use - support both open and activeModal props
+  const isOpen = open !== undefined ? open : (activeModal !== undefined ? activeModal : showModal);
 
   return (
     <>
@@ -120,8 +125,8 @@ const Modal = ({
           </Transition>
         </>
       ) : (
-        <Transition appear show={open} as={Fragment}>
-          <Dialog as="div" className="relative z-[99999]" open={open} onClose={onClose}>
+        <Transition appear show={isOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-[99999]" open={isOpen} onClose={onClose}>
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
