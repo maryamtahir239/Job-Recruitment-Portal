@@ -2,7 +2,8 @@ import express from "express";
 import { verifyToken } from "../middleware/authMiddleware.js";
 import {
   getInterviewerDashboardStats,
-  getHRDashboardStats
+  getHRDashboardStats,
+ 
 } from "../controllers/dashboardController.js";
 
 const router = express.Router();
@@ -15,5 +16,8 @@ router.get("/interviewer-stats", getInterviewerDashboardStats);
 
 // GET /api/dashboard/hr-stats - Get HR dashboard statistics
 router.get("/hr-stats", getHRDashboardStats);
+
+// GET /api/dashboard/interviewer - Get interviewer dashboard
+
 
 export default router; 
