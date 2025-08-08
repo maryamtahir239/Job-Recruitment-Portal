@@ -366,9 +366,6 @@ const Evaluations = () => {
     </div>
   </div>
 </td>
-
-
-
                   </tr>
                 ))
               )}
