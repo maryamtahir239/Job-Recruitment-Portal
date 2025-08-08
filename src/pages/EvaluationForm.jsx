@@ -21,7 +21,7 @@ const EvaluationForm = ({ candidate, onClose }) => {
 
   const [ratings, setRatings] = useState({});
   const [errors, setErrors] = useState({});
-  
+
   // Simplified rating options
   const ratingOptions = [
     { value: "excellent", label: "Excellent" },
@@ -58,21 +58,21 @@ const EvaluationForm = ({ candidate, onClose }) => {
 
         const templateData = await getEvaluationTemplateByJobId(token, candidate.job_id);
         setTemplate(templateData);
-        
+
         // Combine main and extra questions
         const mainQuestions = JSON.parse(templateData.main_questions || "[]");
         const extraQuestions = JSON.parse(templateData.extra_questions || "[]");
         setQuestions([...mainQuestions, ...extraQuestions]);
       } catch (error) {
         console.error("Failed to load evaluation template:", error);
-        
+
         // Check if it's a 404 error (no active template)
         if (error.message && error.message.includes("No active evaluation template found")) {
           setTemplateError("No active evaluation template found for this job position. Please contact the administrator to create an active template.");
         } else {
           setTemplateError("Failed to load evaluation template. Please try again or contact support.");
         }
-        
+
         // Fallback to default questions
         setQuestions([
           "Educational Qualifications",
@@ -156,7 +156,7 @@ const EvaluationForm = ({ candidate, onClose }) => {
     return questions.reduce((sum, q) => {
       const rating = ratings[q];
       if (!rating) return sum;
-      
+
       // Convert text ratings to numeric scores for calculation
       const scoreMap = {
         "excellent": 5,
@@ -188,6 +188,31 @@ const EvaluationForm = ({ candidate, onClose }) => {
     );
   }
 
+  // New conditional rendering for full-screen error message
+  if (templateError) {
+    return (
+      <div className="flex items-center justify-center h-screen w-full p-6 text-center bg-gray-100">
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-8 rounded-lg shadow-xl max-w-xl mx-auto">
+          <div className="flex items-center justify-center mb-4">
+            <Icon icon="heroicons:exclamation-triangle" className="w-12 h-12 text-yellow-500 mr-4" />
+            <p className="text-2xl font-bold">{templateError}</p>
+          </div>
+          <p className="mt-4 text-base text-yellow-800">
+            You cannot evaluate this candidate until an evaluation form is made available for this position.
+          </p>
+          <div className="mt-8">
+            <Button
+              text="Go Back"
+              onClick={onClose}
+              className="btn-outline-warning"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // The rest of the component (the form itself) will only render if there is no templateError
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
@@ -213,24 +238,6 @@ const EvaluationForm = ({ candidate, onClose }) => {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
-        {/* Template Status Alert */}
-        {templateError && (
-          <div className="p-6 border-b border-gray-200">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <Icon icon="ph:warning" className="text-yellow-600 text-xl mr-3" />
-                <div>
-                  <h3 className="text-sm font-medium text-yellow-800">Template Not Available</h3>
-                  <p className="text-sm text-yellow-700 mt-1">{templateError}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Template Info (if template exists) */}
-        {/* Removed Active Template Found section */}
-
         {/* Candidate Information */}
         <div className="p-6 border-b border-gray-200 bg-gray-50">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -280,9 +287,6 @@ const EvaluationForm = ({ candidate, onClose }) => {
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-medium text-gray-800">Evaluation Criteria</h3>
-            {templateError && (
-              <Badge className="badge-warning">Using Default Questions</Badge>
-            )}
           </div>
           {errors._questions && (
             <div className="text-red-600 text-sm mb-2">{errors._questions}</div>

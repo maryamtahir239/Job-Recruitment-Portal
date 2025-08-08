@@ -709,18 +709,6 @@ const EvaluationTemplateManagement = () => {
             ]}
           />
 
-          <Select
-            label="Active Status"
-            name="activeFilter"
-            value={activeFilter}
-            onChange={(e) => setActiveFilter(e.target.value)}
-            options={[
-              { value: "all", label: "All Templates" },
-              { value: "active", label: "Active Only" },
-              { value: "inactive", label: "Inactive Only" }
-            ]}
-          />
-
         </div>
       </Card>
 

@@ -74,12 +74,12 @@ const Evaluations = () => {
 
   const filteredApplications = applications.filter(application => {
     const matchesSearch = application.full_name?.toLowerCase().includes(filters.search.toLowerCase()) ||
-                         application.email?.toLowerCase().includes(filters.search.toLowerCase());
+      application.email?.toLowerCase().includes(filters.search.toLowerCase());
     const matchesJob = !filters.jobId || application.job_id === parseInt(filters.jobId);
-    const matchesEvaluationStatus = !filters.evaluationStatus || 
+    const matchesEvaluationStatus = !filters.evaluationStatus ||
       (filters.evaluationStatus === 'pending' && (application.evaluation_status === 'pending' || !application.evaluation_status)) ||
       (filters.evaluationStatus === 'completed' && application.evaluation_status === 'completed');
-    
+
     return matchesSearch && matchesJob && matchesEvaluationStatus;
   });
 
@@ -115,27 +115,26 @@ const Evaluations = () => {
     fetchApplications(); // Refresh applications after evaluation
   };
 
-  const updateEvaluationStatus = async (applicationId, newStatus) => {
-    try {
-      const token = localStorage.getItem("token");
-      
-      const response = await axios.put(`/api/applications/${applicationId}/evaluation-status`, 
-        { evaluation_status: newStatus },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      
-      toast.success("Evaluation status updated successfully");
-      fetchApplications();
-    } catch (error) {
-      console.error("Error updating evaluation status:", error);
-      safeToastError("Failed to update evaluation status");
-    }
-  };
+  // This function is no longer needed as the dropdown button is removed
+  // const updateEvaluationStatus = async (applicationId, newStatus) => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const response = await axios.put(`/api/applications/${applicationId}/evaluation-status`,
+  //       { evaluation_status: newStatus },
+  //       {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Content-Type': 'application/json'
+  //         }
+  //       }
+  //     );
+  //     toast.success("Evaluation status updated successfully");
+  //     fetchApplications();
+  //   } catch (error) {
+  //     console.error("Error updating evaluation status:", error);
+  //     safeToastError("Failed to update evaluation status");
+  //   }
+  // };
 
   if (error) {
     return (
@@ -167,15 +166,15 @@ const Evaluations = () => {
 
   return (
     <div className="space-y-6">
-             {/* Header */}
-       <Card className="bg-white shadow border">
-         <div className="flex justify-between items-center">
-           <div>
-             <h1 className="text-3xl font-bold text-gray-900">Candidates Assessment</h1>
-             <p className="text-gray-600 mt-2">Evaluate and manage candidate assessments</p>
-           </div>
-         </div>
-       </Card>
+      {/* Header */}
+      <Card className="bg-white shadow border">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Candidates Assessment</h1>
+            <p className="text-gray-600 mt-2">Evaluate and manage candidate assessments</p>
+          </div>
+        </div>
+      </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -225,7 +224,7 @@ const Evaluations = () => {
             onChange={handleFilterChange}
             placeholder="Search by name or email"
           />
-          
+
           <Select
             label="Filter by Job"
             name="jobId"
@@ -303,10 +302,10 @@ const Evaluations = () => {
                       <div className="flex items-center justify-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           {application.photo_url ? (
-                            <img 
-                              className="h-10 w-10 rounded-full object-cover" 
-                              src={`/${application.photo_url}`} 
-                              alt="Profile" 
+                            <img
+                              className="h-10 w-10 rounded-full object-cover"
+                              src={`/${application.photo_url}`}
+                              alt="Profile"
                               onError={(e) => {
                                 e.target.style.display = 'none';
                                 e.target.nextSibling.style.display = 'flex';
@@ -345,24 +344,17 @@ const Evaluations = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex justify-center space-x-2 items-center">
-                        <Button
-                          text="Evaluate"
-                          className="btn-outline-primary btn-sm h-8"
-                          onClick={() => handleEvaluate(application)}
-                        />
-                        <div className="relative">
-                          <select
-                            value={application.evaluation_status || 'pending'}
-                            onChange={(e) => updateEvaluationStatus(application.id, e.target.value)}
-                            className="appearance-none bg-white border border-blue-500 text-blue-600 rounded-md px-1 h-8 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:bg-blue-50 transition-colors duration-200 min-w-[80px]"
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="completed">Completed</option>
-                          </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-blue-600">
-                            <Icon icon="ph:caret-down" className="text-xs" />
-                          </div>
-                        </div>
+                        {application.evaluation_status === 'completed' ? (
+                          <Badge className="badge-success bg-green-100 text-green-800 border-green-200">
+                            Evaluation Completed
+                          </Badge>
+                        ) : (
+                          <Button
+                            text="EVALUATE"
+                            className="btn-outline-primary btn-sm h-8"
+                            onClick={() => handleEvaluate(application)}
+                          />
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -373,19 +365,19 @@ const Evaluations = () => {
         </div>
       </Card>
 
-             {/* Evaluation Form Modal */}
-       {showEvaluationForm && selectedCandidate && (
-         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 transition-all duration-300 ease-in-out">
-           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] overflow-hidden transform transition-all duration-300 ease-in-out scale-100">
-             <EvaluationForm 
-               candidate={selectedCandidate} 
-               onClose={handleEvaluationClose}
-             />
-           </div>
-         </div>
-       )}
+      {/* Evaluation Form Modal */}
+      {showEvaluationForm && selectedCandidate && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 transition-all duration-300 ease-in-out">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] overflow-hidden transform transition-all duration-300 ease-in-out scale-100">
+            <EvaluationForm
+              candidate={selectedCandidate}
+              onClose={handleEvaluationClose}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Evaluations; 
+export default Evaluations;
