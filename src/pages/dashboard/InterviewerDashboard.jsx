@@ -299,52 +299,60 @@ const InterviewerDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-6xl px-2 mb-8">
         {/* Performance Insights */}
         <Card>
-          <div className="p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <Icon icon="ph:chart-line" className="text-blue-600" />
-              Performance Insights
-            </h3>
-            
- <div className="space-y-4">
-   <div className="flex justify-between items-center">
-    <span className="text-gray-600">Total Evaluations</span>
-    <span className="font-semibold text-blue-600">
-      {performanceData.totalEvaluations}
-    </span>
-  </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Average Score</span>
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-green-600">
-              {performanceData.averageScore.toFixed(1)}%
-            </span>
-            <div className="w-24 bg-gray-200 rounded-full h-2.5">
-              <div 
-                className="bg-green-600 h-2.5 rounded-full" 
-                style={{ width: `${performanceData.averageScore}%` }}
-              ></div>
-            </div>
+  <div className="p-6">
+    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+      <Icon icon="ph:chart-line" className="text-blue-600" />
+      Performance Insights
+    </h3>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <span className="text-gray-600">Total Evaluations</span>
+        <div className="flex items-center gap-2">
+          {/* This is the new line */}
+          <span className="font-semibold text-blue-600">
+            {performanceData.totalEvaluations}
+          </span>
+          <div className="w-24 bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-blue-600 h-2.5 rounded-full"
+              style={{ width: `${performanceData.totalEvaluations > 100 ? 100 : performanceData.totalEvaluations}%` }}
+            ></div>
           </div>
         </div>
- 
-  <div className="flex justify-between items-center">
-    <span className="text-gray-600">Completion Rate</span>
-    <div className="flex items-center gap-2">
-      <span className="font-semibold text-purple-600">
-        {performanceData.completionRate}%
-      </span>
-      <div className="w-24 bg-gray-200 rounded-full h-2.5">
-        <div 
-          className="bg-purple-600 h-2.5 rounded-full" 
-          style={{ width: `${performanceData.completionRate}%` }}
-        ></div>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <span className="text-gray-600">Average Score</span>
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-green-600">
+            {performanceData.averageScore.toFixed(1)}%
+          </span>
+          <div className="w-24 bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-green-600 h-2.5 rounded-full"
+              style={{ width: `${performanceData.averageScore}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <span className="text-gray-600">Completion Rate</span>
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-purple-600">
+            {performanceData.completionRate}%
+          </span>
+          <div className="w-24 bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-purple-600 h-2.5 rounded-full"
+              style={{ width: `${performanceData.completionRate}%` }}
+            ></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-</div>
-        </Card>
-
+</Card>
         {/* Recent Activity */}
         <Card className="lg:col-span-2">
           <div className="p-6">

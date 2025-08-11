@@ -12,7 +12,7 @@ export const getInterviewerDashboardStats = async (req, res) => {
       totalApplications,
       pendingEvaluations,
       completedEvaluations,
-      upcomingInterviews,
+     upcomingInterviews,
       lastUpdated
     ] = await Promise.all([
       knex("candidate_applications").count("* as count").first(),
@@ -29,7 +29,7 @@ export const getInterviewerDashboardStats = async (req, res) => {
         .count("* as count")
         .first(),
       knex("candidate_applications")
-        .whereIn("status", ["Shortlisted", "Under Review"])
+        .where("status", "Applied")
         .count("* as count")
         .first(),
       knex("candidate_applications")
@@ -64,32 +64,23 @@ export const getInterviewerDashboardStats = async (req, res) => {
         .first()
     ]);
 
-    const recentActivityData = await knex("evaluation")
-  .join("candidate_applications", "evaluation.application_id", "candidate_applications.id")
-  .join("candidates", "candidate_applications.candidate_id", "candidates.id")
-  .join("jobs", "candidate_applications.job_id", "jobs.id")
-  .select(
-    "evaluation.id",
-    "evaluation.rating as score",
-    "evaluation.created_at as time",
-    "candidates.name as candidate_name",
-    "candidates.id as candidate_id",
-    "jobs.title as position",
-    "jobs.id as job_id",
-    "candidate_applications.id as application_id"
-  )
-  .orderBy("evaluation.created_at", "desc");
+   const recentActivityData = await knex("evaluation")
+    .join("candidate_applications as ca", "evaluation.application_id", "ca.id")
+    .join("candidates", "ca.candidate_id", "candidates.id")
+     .join("jobs", "ca.job_id", "jobs.id")
+    .join("users", "evaluation.evaluator_id", "users.id") 
+    .select(
+        "evaluation.id",
+        "evaluation.rating as score",
+        "evaluation.created_at as time",
+        knex.raw("JSON_UNQUOTE(JSON_EXTRACT(ca.payload, '$.personal.full_name')) as candidate_name"),   // Explicitly get the interviewer's name
+        "jobs.title as position",
+        "jobs.id as job_id",
+        "ca.id as application_id"
+    )
+    .orderBy("evaluation.created_at", "desc");
 
-
-    // Log for debugging
-    console.log("Recent Activity Raw Data:", {
-      count: recentActivityData.length,
-      sample: recentActivityData[0],
-      allCandidates: recentActivityData.map(a => a.candidate_name),
-      allPositions: recentActivityData.map(a => a.position)
-    });
-
-    // 5. Final Response
+    
     const response = {
       stats: {
         totalApplications: parseInt(totalApplications?.count || 0),
