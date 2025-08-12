@@ -28,6 +28,7 @@ const SimpleEvaluationTemplate = lazy(() => import("./pages/SimpleEvaluationTemp
 
 // **New Public Application Page**
 const PublicApplicationWrapper = lazy(() => import("./pages/hr/PublicApplicationWrapper"));
+const CheckInPage = lazy(() => import("./pages/CheckInPage"));
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
 
           {/* Public route for candidate form */}
           <Route path="/apply/:token" element={<PublicApplicationWrapper />} />
+          <Route path="/checkin/:token" element={<CheckInPage />} />
+
 
           {/* Test route without Layout */}
           <Route path="test-eval-direct" element={<EvaluationTemplateManagement />} />

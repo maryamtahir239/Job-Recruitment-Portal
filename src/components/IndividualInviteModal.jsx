@@ -229,6 +229,7 @@ const IndividualInviteModal = ({ open, onClose, candidate, onSendSuccess, jobId 
         
         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
           <Button text="Cancel" onClick={onClose} className="btn-secondary px-4 py-2" disabled={loading} />
+          
           <Button
             text={loading ? "Sending..." : "Send Invite"}
             onClick={handleSendInvite}

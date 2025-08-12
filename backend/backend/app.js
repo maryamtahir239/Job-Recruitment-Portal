@@ -30,6 +30,7 @@ import evaluationRoutes from "./routes/evaluation.js";
 import evaluationTemplateRoutes from "./routes/evaluationTemplates.js";
 import applicationRoutes from "./routes/applications.js";
 import jobRoutes from "./routes/jobRoutes.js";
+import checkinRoutes from "./routes/checkinRoutes.js";
 
 // Test endpoint
 app.get("/api/test", (req, res) => {
@@ -68,6 +69,7 @@ app.use("/api/evaluation", evaluationRoutes);
 app.use("/api/evaluation-templates", evaluationTemplateRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/checkin", checkinRoutes);
 
 // 404 handler for undefined routes
 app.use((req, res) => {

@@ -27,6 +27,9 @@ const JobDetail = () => {
   const [individualInviteModalOpen, setIndividualInviteModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
+const [checkInLoadingId, setCheckInLoadingId] = useState(null);
+const [checkInSentIds, setCheckInSentIds] = useState([]);
+
   const [editFormData, setEditFormData] = useState({
     title: "",
     department: "",
@@ -288,6 +291,20 @@ const JobDetail = () => {
     setEditFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+const handleSendCheckInMail = async (candidate) => {
+  setCheckInLoadingId(candidate.id);
+  try {
+    const { data } = await axios.post(`/api/checkin/send-checkin/${candidate.id}`);
+    toast.success(`Check-in mail sent to ${candidate.name}`);
+    setCheckInSentIds((prev) => [...prev, candidate.id]); // mark as sent
+  } catch (err) {
+    safeToastError(err.response?.data?.error || "Error sending check-in mail");
+  } finally {
+    setCheckInLoadingId(null);
+  }
+};
+
+
   // Handle edit form submit
   const handleEditSubmit = async (e) => {
     e.preventDefault();
@@ -526,6 +543,19 @@ const JobDetail = () => {
                               onClick={() => handleIndividualInvite(candidate)}
                               disabled={candidate.invite_sent}
                             />
+                             <Button
+  text={
+    checkInLoadingId === candidate.id
+      ? "Sending..."
+      : checkInSentIds.includes(candidate.id)
+        ? "Check-in Sent"
+        : "Send Check-in"
+  }
+  onClick={() => handleSendCheckInMail(candidate)}
+  className="btn-outline-primary btn-sm ml-2"
+  disabled={checkInSentIds.includes(candidate.id) || checkInLoadingId === candidate.id}
+/>
+
                           </div>
                         </td>
                       )}
