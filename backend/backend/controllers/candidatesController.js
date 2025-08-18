@@ -8,9 +8,22 @@ import db from "../db/knex.js";
 export const getAllCandidates = async (req, res) => {
   console.log("getAllCandidates called");
   try {
-    const candidates = await db("candidates")
-      .select("id", "name", "email", "phone", "designation", "location", "job_id", "created_at", "updated_at")
-      .orderBy("created_at", "desc"); // Newest candidates first
+    const candidates = await db("candidates as c")
+  .leftJoin("application_invites as ai", "c.id", "ai.candidate_id")
+  .select(
+    "c.id",
+    "c.name",
+    "c.email",
+    "c.phone",
+    "c.designation",
+    "c.location",
+    "c.job_id",
+    "c.created_at",
+    "c.updated_at",
+    "ai.checkin_status" // ✅ Add this
+  )
+  .orderBy("c.created_at", "desc");
+// Newest candidates first
 
     console.log("Raw candidates from database:", candidates);
 
@@ -44,7 +57,8 @@ export const getAllCandidates = async (req, res) => {
           invite_status: invite ? invite.status : null,
           application_id: application_id,
           evaluation_status: evaluation_status,
-          status: invite ? (invite.status === 'submitted' ? 'Applied' : 'Under Review') : 'Not Invited'
+          status: invite ? (invite.status === 'submitted' ? 'Applied' : 'Under Review') : 'Not Invited',
+           checkin_status: candidate.checkin_status || 'pending'
         };
       })
     );

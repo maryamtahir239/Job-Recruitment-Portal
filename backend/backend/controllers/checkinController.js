@@ -5,9 +5,11 @@ import nodemailer from "nodemailer";
 
 // Constants
 const OFFICE_LAT = 31.47212;
-const OFFICE_LNG = 74.26315;
-const OFFICE_RADIUS_METERS = 100;
+const OFFICE_LNG = 74.26388;
+const OFFICE_RADIUS_METERS = 500;
 const CHECKIN_WINDOW_MINUTES = 10;
+
+
 
 // --- Send Check-in Email ---
 // --- Send Check-in Email ---
@@ -49,11 +51,12 @@ export const sendCheckinEmail = async (req, res) => {
     const token = crypto.randomBytes(20).toString("hex");
 
     // Update DB
-    await knex("application_invites")
+     await knex("application_invites")
       .where({ id: invite.id })
       .update({
         checkin_token: token,
         checkin_sent_at: new Date(),
+        checkin_mail_status: "sent", // THIS IS CRUCIAL
         interview_start_time: interviewDateTime,
         updated_at: knex.fn.now(),
       });
@@ -122,6 +125,8 @@ export const sendCheckinEmail = async (req, res) => {
       `,
     });
 
+    
+
     res.json({ success: true, message: "Check-in mail sent" });
   } catch (err) {
     console.error(err);
@@ -131,17 +136,28 @@ export const sendCheckinEmail = async (req, res) => {
 
 
 // --- Confirm Check-in ---
+// --- Confirm Check-in ---
 export const confirmCheckin = async (req, res) => {
   const { token } = req.params;
   const { lat, lng } = req.query;
 
   try {
-    const invite = await knex("application_invites")
-      .where({ checkin_token: token })
+    const invite = await knex("application_invites as ai")
+      .join("candidates as c", "ai.candidate_id", "c.id")
+      .where("checkin_token", token)
+      .select("ai.*", "c.name as candidate_name")
       .first();
 
     if (!invite) {
       return res.status(404).json({ statusCode: "invalid_link", error: "Invalid check-in link" });
+    }
+
+    // ✅ New: Already checked in check
+    if (invite.checkin_status === "arrived" && invite.checked_in_at) {
+      return res.status(400).json({
+        statusCode: "already_checked_in",
+        error: "You have already checked in."
+      });
     }
 
     const now = new Date();
@@ -171,7 +187,12 @@ export const confirmCheckin = async (req, res) => {
       });
     }
 
-    const distance = getDistanceFromLatLonInM(OFFICE_LAT, OFFICE_LNG, parseFloat(lat), parseFloat(lng));
+    const distance = getDistanceFromLatLonInM(
+      OFFICE_LAT,
+      OFFICE_LNG,
+      parseFloat(lat),
+      parseFloat(lng)
+    );
     if (distance > OFFICE_RADIUS_METERS) {
       return res.status(400).json({
         statusCode: "wrong_location",
@@ -179,12 +200,22 @@ export const confirmCheckin = async (req, res) => {
       });
     }
 
-    await knex("application_invites")
+    
+
+     // In confirmCheckin function
+ await knex("application_invites")
       .where({ id: invite.id })
       .update({
         checkin_status: "arrived",
-        checked_in_at: now
+        checked_in_at: new Date(),
+        updated_at: knex.fn.now(),
       });
+    const io = req.app.get("io");
+    io.emit("candidate-arrived", {
+      candidateId: invite.candidate_id,
+      candidateName: invite.candidate_name || "Candidate",
+      time: new Date().toISOString()
+    });
 
     res.json({
       statusCode: "success",
@@ -197,7 +228,6 @@ export const confirmCheckin = async (req, res) => {
     res.status(500).json({ statusCode: "server_error", error: "Failed to process check-in" });
   }
 };
-
 
 // Helper function: distance calculation
 function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {

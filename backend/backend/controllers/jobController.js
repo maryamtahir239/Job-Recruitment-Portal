@@ -111,29 +111,35 @@ export const getCandidatesByJobId = async (req, res) => {
       return res.status(400).json({ error: "Job ID is required" });
     }
 
-    const candidates = await db("candidates")
-      .where("job_id", jobId)
-      .select("id", "name", "email", "phone", "designation", "location", "created_at")
-      .orderBy("created_at", "desc"); // Newest candidates first
-
-    // Get invite status for each candidate
-    const candidatesWithInviteStatus = await Promise.all(
-      candidates.map(async (candidate) => {
-        const invite = await db("application_invites")
-          .where({ candidate_id: candidate.id, job_id: jobId })
-          .whereIn("status", ["sent", "opened", "submitted"])
-          .first();
-        
-        return {
-          ...candidate,
-          invite_sent: !!invite,
-          invite_status: invite ? invite.status : null
-        };
+    // Get candidates with all invite and check-in information
+    const candidates = await db("candidates as c")
+      .leftJoin("application_invites as ai", function() {
+        this.on("c.id", "=", "ai.candidate_id")
+          .andOn("ai.job_id", "=", db.raw("?", [jobId])); // Replaced knex with db
       })
-    );
+      .where("c.job_id", jobId)
+      .select(
+        "c.id",
+        "c.name",
+        "c.email",
+        "c.phone",
+        "c.designation",
+        "c.location",
+        "c.created_at",
+        "ai.status as invite_status",
+        "ai.checkin_mail_status",
+        "ai.checkin_status",
+        "ai.checkin_token",
+        "ai.checkin_sent_at",
+        "ai.checked_in_at",
+        "ai.sent_at as invite_sent_at",
+        db.raw("CASE WHEN ai.id IS NOT NULL THEN true ELSE false END as invite_sent")
+      )
+      .orderBy("c.created_at", "desc");
 
-    res.status(200).json(candidatesWithInviteStatus);
+    res.status(200).json(candidates);
   } catch (err) {
+    console.error("Error fetching candidates:", err);
     res.status(500).json({ error: "Failed to fetch candidates" });
   }
 };

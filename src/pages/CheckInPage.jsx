@@ -48,7 +48,14 @@ export default function CheckInPage() {
       icon: "⚠️",
       title: "Server Error",
       textColor: "text-red-700"
-    }
+    },
+    already_checked_in: {
+  bg: "bg-blue-100",
+  icon: "ℹ️",
+  title: "Already Checked In",
+  textColor: "text-blue-700"
+}
+
   };
 
   useEffect(() => {

@@ -274,6 +274,10 @@ const Candidates = () => {
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Invite Status
                 </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+  Check-in Status
+</th>
+
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Application
                 </th>
@@ -317,7 +321,21 @@ const Candidates = () => {
                         <Badge className="badge-secondary">Not Sent</Badge>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                   <td className="px-6 py-4 whitespace-nowrap text-center">
+{candidate.checkin_status === "arrived" ? (
+  <Badge className="badge-success bg-green-100 text-green-700 text-sm border-green-200 flex items-center">
+    <Icon icon="ph:check-circle" className="w-4 h-4 mr-1 text-green-600" />
+    Present
+  </Badge>
+) : (
+  <span className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 text-center">Pending</span>
+)}
+
+</td>
+
+
+<td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+
                       <div className="flex justify-center space-x-2">
                         <div className="relative group">
                                                   <Button

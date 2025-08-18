@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
-  "scripts": {
+ "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "create-db": "node createDatabase.js",
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run",
     "setup": "node setup-uploads.js",
-    "dev": "node app.js"
-  },
+    "dev": "nodemon app.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -27,6 +27,7 @@
     "multer": "^2.0.2",
     "mysql2": "^3.14.2",
     "nodemailer": "^7.0.5",
+    "socket.io": "^4.8.1",
     "zod": "^4.0.10"
   },
   "devDependencies": {

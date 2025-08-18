@@ -37,6 +37,10 @@ export function up(knex) {
     table.timestamp("checkin_sent_at").nullable();
     table.timestamp("checked_in_at").nullable();
     table.string("checkin_status").defaultTo("pending"); // pending, arrived, late, invalid
+    table
+      .enu("checkin_mail_status", ["pending", "sent"]) // ✅ new column
+      .defaultTo("pending")
+      .notNullable();
     table.timestamp("interview_start_time").nullable(); // from metadata.interviewDateTime for quick lookup
 
     table.timestamp("created_at").defaultTo(knex.fn.now());

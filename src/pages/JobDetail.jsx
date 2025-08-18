@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -27,8 +28,7 @@ const JobDetail = () => {
   const [individualInviteModalOpen, setIndividualInviteModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
-const [checkInLoadingId, setCheckInLoadingId] = useState(null);
-const [checkInSentIds, setCheckInSentIds] = useState([]);
+  const [checkInLoadingId, setCheckInLoadingId] = useState(null);
 
   const [editFormData, setEditFormData] = useState({
     title: "",
@@ -40,7 +40,7 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
     requirements: "",
     salary_range: "",
     location: "",
-    job_type: "Full-time"
+    job_type: "Full-time",
   });
   const [shouldAutoSelect, setShouldAutoSelect] = useState(false);
   const [tooltipText, setTooltipText] = useState("");
@@ -56,36 +56,30 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
 
   useEffect(() => {
     fetchJobDetails();
-    // Remove automatic candidate fetching - only fetch when needed
+    // Candidate fetching is intentionally not automatic to allow manual load
   }, [jobId]);
-
-  // Handle individual candidate selection - REMOVED since we're using individual buttons
-
-  // Handle select all candidates - REMOVED since we're using individual buttons
 
   // Tooltip functions
   const showTooltipMessage = (text, event) => {
-    console.log("Showing tooltip:", text); // Debug log
     setTooltipText(text);
-    
+
     // Calculate if there's enough space on the right side
     const tooltipWidth = 250; // Approximate tooltip width
     const windowWidth = window.innerWidth;
     const cursorX = event.clientX;
-    
+
     // If there's not enough space on the right, show tooltip on the left
     const showOnLeft = cursorX + tooltipWidth + 20 > windowWidth;
-    
-    setTooltipPosition({ 
-      x: event.clientX, 
+
+    setTooltipPosition({
+      x: event.clientX,
       y: event.clientY,
-      showOnLeft: showOnLeft
+      showOnLeft: showOnLeft,
     });
     setShowTooltip(true);
   };
 
   const hideTooltip = () => {
-    console.log("Hiding tooltip"); // Debug log
     setShowTooltip(false);
   };
 
@@ -100,22 +94,16 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
     }
   };
 
-  const fetchJobCandidates = async (showErrorOnFail = true, autoSelectAll = false) => {
+  const fetchJobCandidates = async (showErrorOnFail = true) => {
     setCandidatesLoading(true);
     try {
       const response = await axios.get(`/api/jobs/${jobId}/candidates`);
       if (Array.isArray(response.data)) {
         setCandidates(response.data);
-        
-        // Set flag to auto-select if requested
-        if (autoSelectAll) {
-          setShouldAutoSelect(true);
-        }
       } else {
         setCandidates([]);
       }
     } catch (error) {
-      // Only show error toast if explicitly requested (manual load or after upload)
       if (showErrorOnFail) {
         safeToastError("Failed to fetch candidates");
       }
@@ -139,7 +127,7 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
     }
 
     setUploading(true);
-    
+
     try {
       // Parse the file
       const fileExtension = selectedFile.name.split(".").pop().toLowerCase();
@@ -154,21 +142,34 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
             const wb = XLSX.read(e.target.result, { type: "binary" });
             const ws = wb.Sheets[wb.SheetNames[0]];
             const raw = XLSX.utils.sheet_to_json(ws);
-            
+
             candidates = raw.map((row, index) => ({
-              full_name: row.name || row.full_name || row["Full Name"] || `Candidate ${index + 1}`,
+              full_name:
+                row.name ||
+                row.full_name ||
+                row["Full Name"] ||
+                `Candidate ${index + 1}`,
               email: row.email || row["Email"] || "",
               phone: row.phone || row.phone_number || row["Phone"] || "",
-              designation: row.designation || row.title || row["Current Position"] || row["Designation"] || "",
-              location: row.location || row["Location"] || row["City"] || row["Address"] || ""
+              designation:
+                row.designation ||
+                row.title ||
+                row["Current Position"] ||
+                row["Designation"] ||
+                "",
+              location:
+                row.location ||
+                row["Location"] ||
+                row["City"] ||
+                row["Address"] ||
+                "",
             }));
-            
           } catch (error) {
             safeToastError("Failed to parse Excel file");
             setUploading(false);
             return;
           }
-          
+
           // Send candidates to server
           await sendCandidatesToServer(candidates);
         };
@@ -181,22 +182,38 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
           skipEmptyLines: true,
           complete: async (result) => {
             candidates = result.data.map((row, index) => ({
-              full_name: row.name || row.full_name || row["Full Name"] || `Candidate ${index + 1}`,
+              full_name:
+                row.name ||
+                row.full_name ||
+                row["Full Name"] ||
+                `Candidate ${index + 1}`,
               email: row.email || row["Email"] || "",
               phone: row.phone || row.phone_number || row["Phone"] || "",
-              designation: row.designation || row.title || row["Current Position"] || row["Designation"] || "",
-              location: row.location || row["Location"] || row["City"] || row["Address"] || ""
+              designation:
+                row.designation ||
+                row.title ||
+                row["Current Position"] ||
+                row["Designation"] ||
+                "",
+              location:
+                row.location ||
+                row["Location"] ||
+                row["City"] ||
+                row["Address"] ||
+                "",
             }));
-            
+
             await sendCandidatesToServer(candidates);
           },
           error: (error) => {
             safeToastError("Failed to parse CSV file");
             setUploading(false);
-          }
+          },
         });
       } else {
-        safeToastError("Unsupported file type. Please upload Excel (.xlsx, .xls) or CSV (.csv) file.");
+        safeToastError(
+          "Unsupported file type. Please upload Excel (.xlsx, .xls) or CSV (.csv) file."
+        );
         setUploading(false);
       }
     } catch (error) {
@@ -207,25 +224,31 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
 
   const sendCandidatesToServer = async (candidates) => {
     try {
-      const response = await axios.post(`/api/jobs/${jobId}/upload-candidates`, { candidates });
-      
+      const response = await axios.post(
+        `/api/jobs/${jobId}/upload-candidates`,
+        { candidates }
+      );
+
       // Show different toast messages based on the response
       const { stats } = response.data;
       if (stats.newlyInserted > 0 && stats.alreadyExists > 0) {
-        toast.success(`${stats.newlyInserted} new candidates added! ${stats.alreadyExists} already exist.`);
+        toast.success(
+          `${stats.newlyInserted} new candidates added! ${stats.alreadyExists} already exist.`
+        );
       } else if (stats.newlyInserted > 0) {
         toast.success(`Successfully uploaded ${stats.newlyInserted} candidates!`);
       } else if (stats.alreadyExists > 0) {
-        toast.info(`All ${stats.alreadyExists} candidates already exist for this job.`);
+        toast.info(
+          `All ${stats.alreadyExists} candidates already exist for this job.`
+        );
       }
-      
+
       setUploadModalOpen(false);
       setSelectedFile(null);
       setShouldAutoSelect(true); // Set flag to auto-select after upload
-      
+
       // Fetch updated candidates
       await fetchJobCandidates(true);
-      
     } catch (error) {
       safeToastError(error.response?.data?.message || "Failed to upload candidates");
     } finally {
@@ -235,12 +258,39 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      "Active": { color: "success", text: "Active" },
-      "Closed": { color: "danger", text: "Closed" },
-      "Draft": { color: "warning", text: "Draft" }
+      Active: { color: "success", text: "Active" },
+      Closed: { color: "danger", text: "Closed" },
+      Draft: { color: "warning", text: "Draft" },
     };
-    
+
     const config = statusConfig[status] || { color: "secondary", text: status };
+    return <Badge className={`badge-${config.color}`}>{config.text}</Badge>;
+  };
+
+  const getInviteStatusBadge = (status) => {
+    let color = "secondary";
+    let text = "Not Sent";
+    if (status === "sent") {
+      color = "info";
+      text = "Sent";
+    } else if (status === "opened") {
+      color = "warning";
+      text = "Opened";
+    } else if (status === "submitted") {
+      color = "success";
+      text = "Submitted";
+    }
+    return <Badge className={`badge-${color}`}>{text}</Badge>;
+  };
+
+  const getCheckInStatusBadge = (status) => {
+    const statusConfig = {
+      sent: { color: "success", text: "Sent" },
+      failed: { color: "danger", text: "Failed" },
+      pending: { color: "info", text: "Pending" },
+    };
+
+    const config = statusConfig[status] || { color: "secondary", text: "Not Sent" };
     return <Badge className={`badge-${config.color}`}>{config.text}</Badge>;
   };
 
@@ -250,7 +300,7 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
 
   // Get candidates who haven't been sent invites yet
   const getCandidatesWithoutInvites = () => {
-    return candidates.filter(candidate => !candidate.invite_sent);
+    return candidates.filter((candidate) => !candidate.invite_sent);
   };
 
   // Handle individual invite sending
@@ -274,12 +324,12 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
         department: job.department || "",
         openings: job.openings || 1,
         status: job.status || "Active",
-        deadline: job.deadline ? job.deadline.split('T')[0] : "",
+        deadline: job.deadline ? job.deadline.split("T")[0] : "",
         description: job.description || "",
         requirements: job.requirements || "",
         salary_range: job.salary_range || "",
         location: job.location || "",
-        job_type: job.job_type || "Full-time"
+        job_type: job.job_type || "Full-time",
       });
       setEditModalOpen(true);
     }
@@ -291,19 +341,24 @@ const [checkInSentIds, setCheckInSentIds] = useState([]);
     setEditFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-const handleSendCheckInMail = async (candidate) => {
-  setCheckInLoadingId(candidate.id);
-  try {
-    const { data } = await axios.post(`/api/checkin/send-checkin/${candidate.id}`);
-    toast.success(`Check-in mail sent to ${candidate.name}`);
-    setCheckInSentIds((prev) => [...prev, candidate.id]); // mark as sent
-  } catch (err) {
-    safeToastError(err.response?.data?.error || "Error sending check-in mail");
-  } finally {
-    setCheckInLoadingId(null);
-  }
-};
+  const handleSendCheckInMail = async (candidate) => {
+    setCheckInLoadingId(candidate.id);
+    try {
+      const { data } = await axios.post(`/api/checkin/send-checkin/${candidate.id}`);
+      toast.success(`Check-in mail sent to ${candidate.name}`);
 
+      // Update the local candidates state to reflect the change
+      setCandidates((prevCandidates) =>
+        prevCandidates.map((c) =>
+          c.id === candidate.id ? { ...c, checkin_mail_status: "sent" } : c
+        )
+      );
+    } catch (err) {
+      safeToastError(err.response?.data?.error || "Error sending check-in mail");
+    } finally {
+      setCheckInLoadingId(null);
+    }
+  };
 
   // Handle edit form submit
   const handleEditSubmit = async (e) => {
@@ -347,23 +402,25 @@ const handleSendCheckInMail = async (candidate) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white shadow border rounded p-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <div className="mb-2">
-            <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
+        <div className="flex justify-between items-center">
+          <div>
+            <div className="mb-2">
+              <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
+            </div>
+            <p className="text-gray-600">
+              {job.department} • {job.location}
+            </p>
           </div>
-          <p className="text-gray-600">{job.department} • {job.location}</p>
+          <div className="flex space-x-3">
+            {user?.role === "HR" && (
+              <Button
+                text="Edit Job"
+                className="btn-outline-primary"
+                onClick={openEditModal}
+              />
+            )}
+          </div>
         </div>
-        <div className="flex space-x-3">
-          {user?.role === 'HR' && (
-            <Button
-              text="Edit Job"
-              className="btn-outline-primary"
-              onClick={openEditModal}
-            />
-          )}
-        </div>
-      </div>
       </div>
 
       {/* Job Details */}
@@ -373,7 +430,9 @@ const handleSendCheckInMail = async (candidate) => {
           <Card className="h-full min-h-[100px]">
             <div className="flex flex-col h-full justify-between">
               <div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-3">Description</h4>
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  Description
+                </h4>
                 <div className="min-h-[100px] bg-gray-50 p-5 rounded-lg">
                   <p className="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
                     {job.description}
@@ -381,7 +440,9 @@ const handleSendCheckInMail = async (candidate) => {
                 </div>
               </div>
               <div className="mt-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-3">Requirements</h4>
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  Requirements
+                </h4>
                 <div className="min-h-[100px] bg-gray-50 p-5 rounded-lg">
                   <p className="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
                     {job.requirements}
@@ -410,7 +471,9 @@ const handleSendCheckInMail = async (candidate) => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Salary Range:</span>
-                <span className="font-medium">{job.salary_range || "Not specified"}</span>
+                <span className="font-medium">
+                  {job.salary_range || "Not specified"}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Deadline:</span>
@@ -418,7 +481,9 @@ const handleSendCheckInMail = async (candidate) => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Created:</span>
-                <span className="font-medium">{formatDate(job.created_at)}</span>
+                <span className="font-medium">
+                  {formatDate(job.created_at)}
+                </span>
               </div>
             </div>
           </Card>
@@ -428,148 +493,149 @@ const handleSendCheckInMail = async (candidate) => {
       {/* Candidates Section - now full width below the grid */}
       <div className="mt-8">
         <Card className="w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Candidates ({candidates.length})</h3>
-              {user?.role === 'HR' && (
-                <Button
-                  text="Load More Files"
-                  className="btn-outline-primary btn-sm w-32"
-                  onClick={() => setUploadModalOpen(true)}
-                />
-              )}
-            </div>
-            {candidates.length === 0 ? (
-              <div className="text-center py-8">
-                <Icon icon="ph:users" className="text-gray-400 text-4xl mx-auto mb-4" />
-                <p className="text-gray-500 mb-4">
-                  {candidatesLoading ? 
-                    "Loading candidates..." : 
-                      "Click 'Load Candidates' to check for uploaded candidates."
-                  }
-                </p>
-                <div className="space-x-3">
-                  {user?.role === 'HR' && (
-                    <>
-                      <Button
-                        text={candidatesLoading ? "Loading..." : "Load Candidates"}
-                        className="btn-outline-primary"
-                        onClick={() => {
-                          setShouldAutoSelect(true);
-                          fetchJobCandidates(true);
-                        }}
-                        disabled={candidatesLoading}
-                      />
-                      <Button
-                        text="Upload Candidates"
-                        className="btn-primary"
-                        onClick={() => setUploadModalOpen(true)}
-                      />
-                    </>
-                  )}
-                </div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">
+              Candidates ({candidates.length})
+            </h3>
+            {user?.role === "HR" && (
+              <Button
+                text="Upload Candidates"
+                className="btn-outline-primary btn-sm w-44"
+                onClick={() => setUploadModalOpen(true)}
+              />
+            )}
+          </div>
+          {candidates.length === 0 ? (
+            <div className="text-center py-8">
+              <Icon icon="ph:users" className="text-gray-400 text-4xl mx-auto mb-4" />
+              <p className="text-gray-500 mb-4">
+                {candidatesLoading
+                  ? "Loading candidates..."
+                  : "No candidates found for this job."}
+              </p>
+              <div className="space-x-3">
+                {user?.role === "HR" && (
+                  <>
+                    <Button
+                      text={candidatesLoading ? "Loading..." : "Fetch Candidates"}
+                      className="btn-outline-primary"
+                      onClick={() => fetchJobCandidates(true)}
+                      disabled={candidatesLoading}
+                    />
+                    <Button
+                      text="Upload Candidates"
+                      className="btn-primary"
+                      onClick={() => setUploadModalOpen(true)}
+                    />
+                  </>
+                )}
               </div>
-            ) : (
+            </div>
+          ) : (
             <div className="w-full overflow-x-auto">
               <table className="w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
+                <thead className="bg-gray-50">
+                  <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
-                      </th>
+                      Name
+                    </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                      </th>
+                      Email
+                    </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Phone
-                      </th>
+                      Phone
+                    </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Designation
-                      </th>
+                      Designation
+                    </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Location
-                      </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                      </th>
-                    {user?.role === 'HR' && (
+                      Location
+                    </th>
+                    {user?.role === "HR" && (
                       <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     )}
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {candidates.map((candidate, index) => (
-                      <tr key={candidate.id} className="hover:bg-gray-50">
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {candidates.map((candidate, index) => (
+                    <tr key={candidate.id} className="hover:bg-gray-50">
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{candidate.name}</div>
-                        {/* {index < 5 && (
-                          <Badge className="badge-success badge-sm mt-1">New</Badge>
-                        )} */}
+                        <div className="text-sm font-medium text-gray-900">
+                          {candidate.name}
+                        </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{candidate.email}</div>
-                        </td>
+                        <div className="text-sm text-gray-900">
+                          {candidate.email}
+                        </div>
+                      </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{candidate.phone || "Not provided"}</div>
-                        </td>
+                        <div className="text-sm text-gray-900">
+                          {candidate.phone || "Not provided"}
+                        </div>
+                      </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{candidate.designation || "Not specified"}</div>
-                        </td>
+                        <div className="text-sm text-gray-900">
+                          {candidate.designation || "Not specified"}
+                        </div>
+                      </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{candidate.location || "Not specified"}</div>
-                        </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-center">
-                          {candidate.invite_sent ? (
-                            <Badge className={`badge-${candidate.invite_status === 'submitted' ? 'success' : candidate.invite_status === 'opened' ? 'warning' : 'info'}`}>
-                              {candidate.invite_status === 'submitted' ? 'Submitted' : 
-                               candidate.invite_status === 'opened' ? 'Opened' : 'Sent'}
-                            </Badge>
-                          ) : (
-                            <Badge className="badge-secondary">Not Sent</Badge>
-                          )}
-                        </td>
-                      {user?.role === 'HR' && (
+                        <div className="text-sm text-gray-500">
+                          {candidate.location || "Not specified"}
+                        </div>
+                      </td>
+                      {user?.role === "HR" && (
                         <td className="px-4 py-4 whitespace-nowrap text-center">
-                          <div className={candidate.invite_sent ? "group relative flex items-center justify-center" : undefined}>
-                            {candidate.invite_sent && (
-                              <div className="absolute right-full mr-1 z-10 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap shadow-lg">
-                                Invite already sent to this candidate
-                              </div>
-                            )}
+                          <div className="flex items-center justify-center space-x-2">
+                            {/* Send Invite Button */}
                             <Button
-                              text="Send Invite"
+                              text={candidate.invite_sent ? "Invite Sent" : "Send Invite"}
                               className="btn-primary btn-sm"
-                              onClick={() => handleIndividualInvite(candidate)}
+                              onClick={() => !candidate.invite_sent && handleIndividualInvite(candidate)}
                               disabled={candidate.invite_sent}
+                              onMouseEnter={(e) =>
+                                candidate.invite_sent &&
+                                showTooltipMessage("Invite Email already sent to that candidate", e)
+                              }
+                              onMouseLeave={hideTooltip}
                             />
-                             <Button
-  text={
-    checkInLoadingId === candidate.id
-      ? "Sending..."
-      : checkInSentIds.includes(candidate.id)
-        ? "Check-in Sent"
-        : "Send Check-in"
-  }
-  onClick={() => handleSendCheckInMail(candidate)}
-  className="btn-outline-primary btn-sm ml-2"
-  disabled={checkInSentIds.includes(candidate.id) || checkInLoadingId === candidate.id}
-/>
-
+                            {/* Send Check-in Button */}
+                            <Button
+                              text={
+                                checkInLoadingId === candidate.id
+                                  ? "Sending..."
+                                  : candidate.checkin_mail_status === "sent"
+                                  ? "Check-in Sent"
+                                  : "Send Check-in"
+                              }
+                              onClick={() => handleSendCheckInMail(candidate)}
+                              className="btn-outline-primary btn-sm"
+                              disabled={
+                                candidate.checkin_mail_status === "sent" ||
+                                checkInLoadingId === candidate.id
+                              }
+                              onMouseEnter={(e) =>
+                                (candidate.checkin_mail_status === "sent" || checkInLoadingId === candidate.id) &&
+                                showTooltipMessage("Check-IN already sent to that candidate", e)
+                              }
+                              onMouseLeave={hideTooltip}
+                            />
                           </div>
                         </td>
                       )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Card>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
       </div>
 
       {/* Upload Candidates Modal */}
-      {user?.role === 'HR' && (
+      {user?.role === "HR" && (
         <Modal
           open={uploadModalOpen}
           onClose={() => setUploadModalOpen(false)}
@@ -587,28 +653,35 @@ const handleSendCheckInMail = async (candidate) => {
                   accept=".xlsx,.xls,.csv"
                   onChange={handleFileChange}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer"
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                 />
               </div>
               {selectedFile && (
                 <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg mt-2">
                   <div className="flex items-center">
                     <span className="text-sm text-gray-600">
-                      📎 Selected: <span className="font-medium">{selectedFile.name}</span> ({(selectedFile.size / 1024).toFixed(1)} KB)
+                      📎 Selected:{" "}
+                      <span className="font-medium">{selectedFile.name}</span> (
+                      {(selectedFile.size / 1024).toFixed(1)} KB)
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => {
                       const fileInput = document.querySelector('input[type="file"]');
-                      if (fileInput) fileInput.value = '';
+                      if (fileInput) fileInput.value = "";
                       setSelectedFile(null);
                     }}
                     className="ml-2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200 cursor-pointer"
                     title="Remove file"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      ></path>
                     </svg>
                   </button>
                 </div>
@@ -624,7 +697,11 @@ const handleSendCheckInMail = async (candidate) => {
                 📋 File Requirements:
               </h4>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Must include columns: <strong>name</strong>, <strong>email</strong>, <strong>phone</strong>, <strong>designation</strong>, <strong>location</strong></li>
+                <li>
+                  • Must include columns: <strong>name</strong>, <strong>email</strong>,{" "}
+                  <strong>phone</strong>, <strong>designation</strong>,{" "}
+                  <strong>location</strong>
+                </li>
                 <li>• Email addresses must be unique per job</li>
                 <li>• Same candidates can be uploaded to different jobs</li>
                 <li>• Duplicate candidates within the same job will be skipped</li>
@@ -649,7 +726,7 @@ const handleSendCheckInMail = async (candidate) => {
       )}
 
       {/* Individual Invite Modal */}
-      {user?.role === 'HR' && (
+      {user?.role === "HR" && (
         <IndividualInviteModal
           open={individualInviteModalOpen}
           onClose={() => setIndividualInviteModalOpen(false)}
@@ -660,7 +737,7 @@ const handleSendCheckInMail = async (candidate) => {
       )}
 
       {/* Edit Job Modal */}
-      {user?.role === 'HR' && (
+      {user?.role === "HR" && (
         <Modal
           open={editModalOpen}
           onClose={() => setEditModalOpen(false)}
@@ -704,7 +781,7 @@ const handleSendCheckInMail = async (candidate) => {
                   { value: "Full-time", label: "Full-time" },
                   { value: "Part-time", label: "Part-time" },
                   { value: "Contract", label: "Contract" },
-                  { value: "Internship", label: "Internship" }
+                  { value: "Internship", label: "Internship" },
                 ]}
               />
               <Textinput
@@ -739,7 +816,7 @@ const handleSendCheckInMail = async (candidate) => {
                 options={[
                   { value: "Active", label: "Active" },
                   { value: "Draft", label: "Draft" },
-                  { value: "Closed", label: "Closed" }
+                  { value: "Closed", label: "Closed" },
                 ]}
               />
             </div>
@@ -781,25 +858,27 @@ const handleSendCheckInMail = async (candidate) => {
         <div
           className="fixed z-[9999] px-3 py-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg pointer-events-none border border-gray-700"
           style={{
-            left: tooltipPosition.showOnLeft ? 'auto' : tooltipPosition.x + 10,
-            right: tooltipPosition.showOnLeft ? window.innerWidth - tooltipPosition.x + 10 : 'auto',
+            left: tooltipPosition.showOnLeft ? "auto" : tooltipPosition.x + 10,
+            right: tooltipPosition.showOnLeft
+              ? window.innerWidth - tooltipPosition.x + 10
+              : "auto",
             top: tooltipPosition.y - 50,
-            maxWidth: '300px',
-            minWidth: '200px'
+            maxWidth: "300px",
+            minWidth: "200px",
           }}
         >
           {tooltipText}
           <div
             className={`absolute w-3 h-3 bg-gray-900 transform rotate-45 ${
-              tooltipPosition.showOnLeft 
-                ? 'border-r border-t border-gray-700' 
-                : 'border-l border-b border-gray-700'
+              tooltipPosition.showOnLeft
+                ? "border-r border-t border-gray-700"
+                : "border-l border-b border-gray-700"
             }`}
             style={{
-              left: tooltipPosition.showOnLeft ? 'auto' : '-6px',
-              right: tooltipPosition.showOnLeft ? '-6px' : 'auto',
-              top: '50%',
-              marginTop: '-6px'
+              left: tooltipPosition.showOnLeft ? "auto" : "-6px",
+              right: tooltipPosition.showOnLeft ? "-6px" : "auto",
+              top: "50%",
+              marginTop: "-6px",
             }}
           />
         </div>
