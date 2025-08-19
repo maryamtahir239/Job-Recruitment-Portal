@@ -551,9 +551,6 @@ const JobDetail = () => {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Location
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Invite Status
-                    </th>
                     {user?.role === "HR" && (
                       <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
@@ -588,9 +585,6 @@ const JobDetail = () => {
                         <div className="text-sm text-gray-500">
                           {candidate.location || "Not specified"}
                         </div>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-center">
-                        {getInviteStatusBadge(candidate.invite_status)}
                       </td>
                       {user?.role === "HR" && (
                         <td className="px-4 py-4 whitespace-nowrap text-center">

@@ -82,12 +82,20 @@ const Evaluations = () => {
     return matchesSearch && matchesJob && matchesEvaluationStatus;
   });
 
-  const getEvaluationStatusBadge = (evaluationStatus) => {
-    if (!evaluationStatus || evaluationStatus === 'pending') {
-      return <Badge className="badge-warning">Pending</Badge>;
+  const getCheckinStatusBadge = (checkinStatus) => {
+    if (checkinStatus === "arrived") {
+      return (
+        <Badge className="badge-success bg-green-100 text-green-700 text-sm border-green-200 flex items-center">
+          <Icon icon="ph:check-circle" className="w-4 h-4 mr-1 text-green-600" />
+          Present
+        </Badge>
+      );
     }
-    return <Badge className="badge-success">Completed</Badge>;
+    return (
+      <span className="text-sm text-gray-600">Pending</span>
+    );
   };
+  
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
@@ -272,7 +280,7 @@ const Evaluations = () => {
                   Department
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Evaluation Status
+                  Check-in Status
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Application
@@ -331,8 +339,9 @@ const Evaluations = () => {
                       })()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      {getEvaluationStatusBadge(application.evaluation_status)}
-                    </td>
+                 {getCheckinStatusBadge(application.checkin_status)}
+                  </td>
+
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <Button
                         text="View"
