@@ -2,6 +2,7 @@
 import crypto from "crypto";
 import knex from "../db/knex.js";
 import nodemailer from "nodemailer";
+import { sendCheckinEmailTemplate } from "../utils/email.js";
 
 // Constants
 const OFFICE_LAT = 31.47212;
@@ -61,68 +62,15 @@ export const sendCheckinEmail = async (req, res) => {
         updated_at: knex.fn.now(),
       });
 
-    // Send email
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
+    // Send email (reuse same design language as invite)
     const checkInUrl = `${process.env.FRONTEND_URL}/checkin/${token}`;
-    const interviewTimeFormatted = new Date(interviewDateTime).toLocaleString(
-      "en-US",
-      {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-      }
-    );
-
-    await transporter.sendMail({
-      from: `"HR Team" <${process.env.SMTP_USER}>`,
+    await sendCheckinEmailTemplate({
       to: invite.candidate_email,
-      subject: "Your Interview Check-In Link",
-      html: `
-        <div style="font-family: Arial, sans-serif; background-color: #f7f9fc; padding: 20px;">
-          <div style="max-width: 600px; margin: auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="background-color: #2563eb; color: white; padding: 16px; text-align: center; font-size: 20px; font-weight: bold;">
-              Interview Check-In
-            </div>
-            <div style="padding: 20px; color: #333;">
-              <p>Dear <strong>${invite.candidate_name || "Candidate"}</strong>,</p>
-              <p>Your interview is scheduled for:</p>
-              <p style="font-size: 16px; font-weight: bold; color: #2563eb;">${interviewTimeFormatted}</p>
-              <p>Please use the button below to check in when you arrive at the office:</p>
-              
-              <div style="margin: 25px 0; text-align: center;">
-                <a href="${checkInUrl}" 
-                  style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 6px; display: inline-block;">
-                  Check-In Here
-                </a>
-              </div>
-
-              <p style="font-size: 14px; color: #555; line-height: 1.6;">
-                ⏳ This link will only work <strong>within ${CHECKIN_WINDOW_MINUTES} minutes before and after your scheduled interview time</strong>.
-                <br>
-                📍 You must also be <strong>within ${OFFICE_RADIUS_METERS} meters</strong> of our office location to check in.
-              </p>
-
-              <p style="margin-top: 20px;">We look forward to meeting you!</p>
-              <p style="font-weight: bold;">${process.env.COMPANY_NAME || "Symtera Technologies"}</p>
-            </div>
-          </div>
-          <p style="text-align:center; font-size: 12px; color: #888; margin-top: 10px;">
-            This is an automated email. Please do not reply.
-          </p>
-        </div>
-      `,
+      name: invite.candidate_name,
+      link: checkInUrl,
+      interviewDateTime,
+      windowMinutes: CHECKIN_WINDOW_MINUTES,
+      radiusMeters: OFFICE_RADIUS_METERS,
     });
 
     
@@ -161,22 +109,42 @@ export const confirmCheckin = async (req, res) => {
     }
 
     const now = new Date();
-    if (invite.interview_start_time) {
-      const scheduled = new Date(invite.interview_start_time);
-      const earliest = new Date(scheduled.getTime() - CHECKIN_WINDOW_MINUTES * 60 * 1000);
-      const latest = new Date(scheduled.getTime() + CHECKIN_WINDOW_MINUTES * 60 * 1000);
-
-      if (now < earliest) {
-        return res.status(400).json({
-          statusCode: "too_early",
-          error: `Too early. Please check in within ${CHECKIN_WINDOW_MINUTES} minutes before interview.`
-        });
+    // Prefer the original metadata timestamp (what HR scheduled) to avoid timezone drift
+    let scheduledFromMeta = null;
+    try {
+      if (invite.metadata) {
+        const meta = typeof invite.metadata === "string" ? JSON.parse(invite.metadata) : invite.metadata;
+        if (meta?.interviewDateTime) scheduledFromMeta = meta.interviewDateTime;
       }
-      if (now > latest) {
-        return res.status(400).json({
-          statusCode: "too_late",
-          error: "Your Check-in time has passed."
-        });
+    } catch (_) {}
+
+    if (invite.interview_start_time || scheduledFromMeta) {
+      // Normalize to local time if an ISO UTC string is encountered
+      let raw = scheduledFromMeta || invite.interview_start_time;
+      let scheduled;
+      if (typeof raw === "string") {
+        const normalized = /Z$/.test(raw) ? raw.replace(/Z$/, "") : raw;
+        scheduled = new Date(normalized);
+      } else {
+        scheduled = new Date(raw);
+      }
+      // Compute time difference in the server's local timezone
+      const deltaMs = now.getTime() - scheduled.getTime();
+      const windowMs = CHECKIN_WINDOW_MINUTES * 60 * 1000;
+
+      // Outside the valid window → decide based on whether current time is before or after scheduled
+      if (Math.abs(deltaMs) > windowMs) {
+        if (deltaMs >= 0) {
+          return res.status(400).json({
+            statusCode: "too_late",
+            error: "Your Check-in time has passed."
+          });
+        } else {
+          return res.status(400).json({
+            statusCode: "too_early",
+            error: `Too early. Please check in within ${CHECKIN_WINDOW_MINUTES} minutes before interview.`
+          });
+        }
       }
     }
 

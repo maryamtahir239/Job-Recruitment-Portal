@@ -4,7 +4,7 @@ import Card from "../../components/ui/Card";
 import Icon from "../../components/ui/Icon";
 import { useNavigate } from "react-router-dom";
 import ReactApexChart from "react-apexcharts";
-import { io } from "socket.io-client";
+ 
 
 const InterviewerDashboard = () => {
   const user = JSON.parse(localStorage.getItem("user")) || {};
@@ -147,49 +147,13 @@ const InterviewerDashboard = () => {
       pie: { donut: { size: '60%' } }
     }
   };
-   const [arrivalNotifications, setArrivalNotifications] = useState([]);
-
-
-useEffect(() => {
-
-  const socket = io(import.meta.env.VITE_API_BASE, {
-    transports: ["websocket"],
-  });
-
-
-  socket.on("candidate-arrived", (data) => {
-  const id = Date.now();
-  setArrivalNotifications((prev) => [
-    ...prev,
-    { id, message: `${data.candidateName} has arrived for the interview!` }
-  ]);
-
-  setTimeout(() => {
-    setArrivalNotifications((prev) => prev.filter(n => n.id !== id));
-  }, 7000);
-});
-
-
-  return () => {
-    socket.disconnect();
-  };
-}, []);
+ 
 
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen mt-4 bg-gray-50 px-4">
    
-  {arrivalNotifications.map((n) => (
-    <div
-      key={n.id}
-      className="bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slideDown"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span className="text-sm font-medium">{n.message}</span>
-    </div>
-  ))}
+  
 
 
       <div className="text-center p-1 w-full max-w-4xl">

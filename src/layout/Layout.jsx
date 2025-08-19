@@ -15,6 +15,7 @@ import { ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 import Loading from "@/components/Loading";
 import { motion, AnimatePresence } from "framer-motion";
+import NotificationListener from "@/components/NotificationListener";
 
 const Layout = () => {
   const { width, breakpoints } = useWidth();
@@ -52,6 +53,7 @@ const Layout = () => {
         pauseOnHover
         theme="light"
       />
+      <NotificationListener />
       <Header className={width > breakpoints.xl ? switchHeaderClass() : ""} />
       {menuType === "vertical" && width > breakpoints.xl && !menuHidden && (
         <Sidebar />

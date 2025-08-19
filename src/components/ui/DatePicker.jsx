@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Flatpickr from "react-flatpickr";
 import Icon from "@/components/ui/Icon";
 
+const toLocalYMD = (dateObj) => {
+  if (!dateObj) return '';
+  const year = dateObj.getFullYear();
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+  const day = dateObj.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const DatePicker = ({
   label,
   value,
@@ -18,7 +26,7 @@ const DatePicker = ({
   register,
   ...rest
 }) => {
-  const [picker, setPicker] = useState(value || null);
+  const [picker, setPicker] = useState(value || '');
 
   // Generate unique ID if none provided
   const inputId = id || (name ? `date-${name}` : `date-${Math.random().toString(36).substr(2, 9)}`);
@@ -27,12 +35,12 @@ const DatePicker = ({
   const registeredProps = register ? register(name) : {};
 
   useEffect(() => {
-    setPicker(value || null);
+    setPicker(value || '');
   }, [value]);
 
   const handleDateChange = (date) => {
-    setPicker(date);
-    const dateValue = date[0] ? date[0].toISOString().split('T')[0] : '';
+    const dateValue = date[0] ? toLocalYMD(date[0]) : '';
+    setPicker(dateValue);
     
     console.log('DatePicker onChange called with:', dateValue);
     

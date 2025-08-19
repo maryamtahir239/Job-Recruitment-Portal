@@ -551,6 +551,9 @@ const JobDetail = () => {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Location
                     </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Invite Status
+                    </th>
                     {user?.role === "HR" && (
                       <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
@@ -586,6 +589,9 @@ const JobDetail = () => {
                           {candidate.location || "Not specified"}
                         </div>
                       </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-center">
+                        {getInviteStatusBadge(candidate.invite_status)}
+                      </td>
                       {user?.role === "HR" && (
                         <td className="px-4 py-4 whitespace-nowrap text-center">
                           <div className="flex items-center justify-center space-x-2">
@@ -601,7 +607,18 @@ const JobDetail = () => {
                               }
                               onMouseLeave={hideTooltip}
                             />
-                            {/* Send Check-in Button */}
+                            {/* Send Check-in Button with tooltip wrapper */}
+                            <div
+                              onMouseEnter={(e) => {
+                                if (candidate.checkin_mail_status === "sent" || checkInLoadingId === candidate.id) {
+                                  showTooltipMessage("Check-IN already sent to that candidate", e);
+                                } else if (candidate.invite_status !== "submitted") {
+                                  showTooltipMessage("Candidate must submit their application before check-in can be sent", e);
+                                }
+                              }}
+                              onMouseLeave={hideTooltip}
+                              style={{ display: "inline-block" }}
+                            >
                             <Button
                               text={
                                 checkInLoadingId === candidate.id
@@ -614,14 +631,11 @@ const JobDetail = () => {
                               className="btn-outline-primary btn-sm"
                               disabled={
                                 candidate.checkin_mail_status === "sent" ||
-                                checkInLoadingId === candidate.id
+                                  checkInLoadingId === candidate.id ||
+                                  candidate.invite_status !== "submitted"
                               }
-                              onMouseEnter={(e) =>
-                                (candidate.checkin_mail_status === "sent" || checkInLoadingId === candidate.id) &&
-                                showTooltipMessage("Check-IN already sent to that candidate", e)
-                              }
-                              onMouseLeave={hideTooltip}
                             />
+                            </div>
                           </div>
                         </td>
                       )}

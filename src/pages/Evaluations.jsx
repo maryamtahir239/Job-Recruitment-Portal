@@ -8,7 +8,6 @@ import Badge from "@/components/ui/Badge";
 import Icon from "@/components/ui/Icon";
 import Textinput from "@/components/ui/Textinput";
 import Select from "@/components/ui/Select";
-import { safeToastError } from "@/utility/safeToast";
 import EvaluationForm from "./EvaluationForm";
 
 const Evaluations = () => {
@@ -48,7 +47,7 @@ const Evaluations = () => {
         error.response?.status !== 403 &&
         error.response?.data?.error !== "Invalid credentials"
       ) {
-        safeToastError("Failed to fetch applications");
+        toast.error("Failed to fetch applications");
       }
     } finally {
       setLoading(false);
@@ -100,13 +99,8 @@ const Evaluations = () => {
   };
 
   const handleEvaluate = (application) => {
-    // Add job title to the application object for the evaluation form
-    const applicationWithJobTitle = {
-      ...application,
-      job_title: getJobTitle(application.job_id)
-    };
-    setSelectedCandidate(applicationWithJobTitle);
-    setShowEvaluationForm(true);
+    // Navigate to dedicated evaluation page like PendingEvaluations
+    navigate(`/evaluate/${application.id}`, { state: { candidate: application } });
   };
 
   const handleEvaluationClose = () => {
@@ -170,7 +164,7 @@ const Evaluations = () => {
       <Card className="bg-white shadow border">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Candidates Assessment</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Candidates Evaluations</h1>
             <p className="text-gray-600 mt-2">Evaluate and manage candidate assessments</p>
           </div>
         </div>
@@ -281,7 +275,7 @@ const Evaluations = () => {
                   Evaluation Status
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Applied Date
+                  Application
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -339,8 +333,12 @@ const Evaluations = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       {getEvaluationStatusBadge(application.evaluation_status)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                      {formatDate(application.created_at)}
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                      <Button
+                        text="View"
+                        className="btn-outline-primary btn-sm h-8 w-28"
+                        onClick={() => navigate(`/applications/${application.id}`, { state: { from: 'evaluations' } })}
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex justify-center space-x-2 items-center">
@@ -350,8 +348,8 @@ const Evaluations = () => {
                           </Badge>
                         ) : (
                           <Button
-                            text="EVALUATE"
-                            className="btn-outline-primary btn-sm h-8"
+                            text="Evaluate"
+                            className="btn-outline-primary btn-sm h-8 w-28"
                             onClick={() => handleEvaluate(application)}
                           />
                         )}
@@ -365,17 +363,7 @@ const Evaluations = () => {
         </div>
       </Card>
 
-      {/* Evaluation Form Modal */}
-      {showEvaluationForm && selectedCandidate && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 transition-all duration-300 ease-in-out">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] overflow-hidden transform transition-all duration-300 ease-in-out scale-100">
-            <EvaluationForm
-              candidate={selectedCandidate}
-              onClose={handleEvaluationClose}
-            />
-          </div>
-        </div>
-      )}
+      {/* Evaluation now opens on dedicated page via navigation */}
     </div>
   );
 };

@@ -55,6 +55,21 @@ const IndividualInviteModal = ({ open, onClose, candidate, onSendSuccess, jobId 
     return null;
   }
 
+  // Helper to convert 'hh:mm' and AM/PM to 24-hour format
+  function to24Hour(timeStr) {
+    if (!timeStr) return '00:00';
+    // If already in 24-hour format (e.g., '14:30'), return as is
+    if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
+    // If in 12-hour format (e.g., '4:15 PM')
+    const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (!match) return timeStr;
+    let [_, h, m, ampm] = match;
+    h = parseInt(h, 10);
+    if (ampm.toUpperCase() === 'PM' && h !== 12) h += 12;
+    if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
+    return `${h.toString().padStart(2, '0')}:${m}`;
+  }
+
   const handleSendInvite = async () => {
     const newErrors = {};
     if (!interviewDate) newErrors.interviewDate = "Interview date is required.";
@@ -71,8 +86,11 @@ const IndividualInviteModal = ({ open, onClose, candidate, onSendSuccess, jobId 
         setLoading(false);
         return;
       }
-      const expiryDateTime = `${expiryDate}T${expiryTime}:00`;
-      const interviewDateTime = `${interviewDate}T${interviewTime}:00`;
+      // Convert times to 24-hour format
+      const expiry24 = to24Hour(expiryTime);
+      const interview24 = to24Hour(interviewTime);
+      const expiryDateTime = `${expiryDate}T${expiry24}:00`;
+      const interviewDateTime = `${interviewDate}T${interview24}:00`;
       toast.info("Sending application link...");
       const { data } = await axios.post("/api/invites/bulk", {
         candidateIds: [candidate.id],

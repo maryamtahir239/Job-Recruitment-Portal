@@ -146,7 +146,7 @@ const Candidates = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white shadow border rounded p-6">
+      <Card className="bg-white shadow border">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Candidates</h1>
@@ -154,7 +154,7 @@ const Candidates = () => {
         </div>
         {/* Removed Add Candidate button */}
       </div>
-      </div>
+      </Card>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-white shadow border">

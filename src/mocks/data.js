@@ -79,9 +79,9 @@ export const interviewerMenuItems = [
     link: "interviewer-dashboard",
   },
   {
-    title: "Applications",
-    icon: "ph:file-text",
-    link: "applications",
+    title: "Candidates",
+    icon: "ph:users",
+    link: "candidates",
   },
   {
     title: "Evaluate Candidates",

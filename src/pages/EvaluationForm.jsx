@@ -8,7 +8,7 @@ import { getEvaluationTemplateByJobId } from "@/api/evaluationTemplates";
 import { safeToastError } from "@/utility/safeToast";
 
 const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [template, setTemplate] = useState(null);
   const [templateError, setTemplateError] = useState(null);
   const [questions, setQuestions] = useState([

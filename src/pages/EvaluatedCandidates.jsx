@@ -113,7 +113,7 @@ const EvaluatedCandidates = () => {
   return (
     <div className="space-y-6">
       {/* Header with simple styling */}
-      <div className="bg-white shadow border rounded p-6">
+      <Card className="bg-white shadow border">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Evaluated Candidates</h1>
@@ -122,7 +122,7 @@ const EvaluatedCandidates = () => {
           <div className="hidden md:block">
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -18,6 +18,7 @@ const ApplicationDetail = () => {
   const [error, setError] = useState(null);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showResumeModal, setShowResumeModal] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   useEffect(() => {
     fetchApplicationDetails();
@@ -123,9 +124,17 @@ const ApplicationDetail = () => {
   // Determine the back button text and navigation based on where user came from
   const getBackButtonInfo = () => {
     const referrer = location.state?.from || document.referrer;
+
+    // Interviewer: always go back to Evaluate Candidates and show 'Back'
+    if (user?.role === 'Interviewer') {
+      return {
+        text: "Back",
+        path: "/evaluations",
+      };
+    }
     
     // Check if user came from candidates page
-    if (location.state?.from === 'candidates' || referrer.includes('/candidates')) {
+    if (location.state?.from === 'candidates' || (typeof referrer === 'string' && referrer.includes('/candidates'))) {
       return {
         text: "Back to Candidates",
         path: "/candidates"
@@ -133,7 +142,7 @@ const ApplicationDetail = () => {
     }
     
     // Check if user came from applications page
-    if (location.state?.from === 'applications' || referrer.includes('/applications')) {
+    if (location.state?.from === 'applications' || (typeof referrer === 'string' && referrer.includes('/applications'))) {
       return {
         text: "Back to Applications",
         path: "/applications"

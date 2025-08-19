@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Icon from "@/components/ui/Icon";
 import SwitchDark from "./Tools/SwitchDark";
+import Notification from "./Tools/Notification";
 import HorizentalMenu from "./Tools/HorizentalMenu";
 import useWidth from "@/hooks/useWidth";
 import useSidebar from "@/hooks/useSidebar";
@@ -88,6 +89,7 @@ const Header = ({ className = "custom-class", title }) => {
           
           {/* Nav Tools  */}
           <div className="nav-tools flex items-center lg:space-x-6 space-x-3 rtl:space-x-reverse">
+            <Notification />
             <SwitchDark />
             <Profile sticky={sticky} />
 
