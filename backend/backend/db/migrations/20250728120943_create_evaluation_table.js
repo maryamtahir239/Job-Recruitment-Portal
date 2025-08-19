@@ -16,11 +16,7 @@ export async function up(knex) {
         .references("id")
         .inTable("users") // or "interviewers" if you have a separate table
         .onDelete("CASCADE");
-      table.text("educational_qualifications");
-      table.text("work_experience");
-      table.text("technical_skills");
-      table.text("communication_skills");
-      table.text("confidence_and_clarity");
+      
       table.text("overall_comments");
       table.integer("rating").unsigned();
       table.timestamp("created_at").defaultTo(knex.fn.now());

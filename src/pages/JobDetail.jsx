@@ -401,7 +401,7 @@ const JobDetail = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white shadow border rounded p-6">
+      <Card className="bg-white shadow border">
         <div className="flex justify-between items-center">
           <div>
             <div className="mb-2">
@@ -421,7 +421,7 @@ const JobDetail = () => {
             )}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Job Details */}
       <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
@@ -812,7 +812,7 @@ const JobDetail = () => {
                 name="salary_range"
                 value={editFormData.salary_range}
                 onChange={handleEditInputChange}
-                placeholder="e.g., $50,000 - $70,000"
+                placeholder="e.g., Rs 50,000 - 70,000"
               />
               <Textinput
                 label="Application Deadline"

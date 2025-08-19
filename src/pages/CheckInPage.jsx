@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
 export default function CheckInPage() {
   const { token } = useParams();
-  const [status, setStatus] = useState({ loading: true, code: "", message: "" });
+  const [status, setStatus] = useState({ loading: true, code: "", message: "", details: null });
+  const [lastCoords, setLastCoords] = useState(null);
+  const [permissionState, setPermissionState] = useState("prompt");
+  const permissionRef = useRef(null);
 
   const statusStyles = {
     success: {
@@ -58,36 +61,73 @@ export default function CheckInPage() {
 
   };
 
-  useEffect(() => {
+  const requestLocationAndCheckIn = async () => {
+    setStatus((s) => ({ ...s, loading: true }));
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
+          setLastCoords({ lat: latitude, lng: longitude, ts: Date.now() });
           const res = await axios.get(`/api/checkin/checkin/${token}`, {
             params: { lat: latitude, lng: longitude }
           });
           setStatus({
             loading: false,
             code: res.data.statusCode || "success",
-            message: res.data.message || ""
+            message: res.data.message || "",
+            details: res.data.details || null,
           });
         } catch (err) {
           const data = err.response?.data || {};
           setStatus({
             loading: false,
             code: data.statusCode || "server_error",
-            message: data.error || "Something went wrong"
+            message: data.error || "Something went wrong",
+            details: data.details || null,
           });
         }
       },
-      () => {
-        setStatus({
-          loading: false,
-          code: "location_required",
-          message: "Location permission denied."
-        });
-      }
+      (error) => {
+        let message = "Location permission denied.";
+        if (error?.code === error.POSITION_UNAVAILABLE) message = "Unable to determine your location.";
+        if (error?.code === error.TIMEOUT) message = "Getting location timed out. Please try again near a window or outdoors.";
+        setStatus({ loading: false, code: "location_required", message, details: null });
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
+  };
+
+  useEffect(() => {
+    if (!navigator.permissions || !navigator.permissions.query) {
+      requestLocationAndCheckIn();
+      return;
+    }
+    navigator.permissions
+      .query({ name: "geolocation" })
+      .then((perm) => {
+        permissionRef.current = perm;
+        setPermissionState(perm.state);
+        if (perm.state === "granted" || perm.state === "prompt") {
+          requestLocationAndCheckIn();
+        } else if (perm.state === "denied") {
+          setStatus({
+            loading: false,
+            code: "location_required",
+            message: "Please enable location access for this site and try again."
+          });
+        }
+        if (perm && typeof perm.onchange === "function") {
+          perm.onchange = () => {
+            setPermissionState(perm.state);
+            if (perm.state === "granted") {
+              requestLocationAndCheckIn();
+            }
+          };
+        }
+      })
+      .catch(() => {
+        requestLocationAndCheckIn();
+      });
   }, [token]);
 
   if (status.loading) {
@@ -113,6 +153,38 @@ export default function CheckInPage() {
           {style.title}
         </h1>
         <p className={`${style.textColor} text-lg`}>{status.message}</p>
+        {lastCoords && (
+          <div className="mt-2 text-xs text-gray-600">
+            Your location: {lastCoords.lat.toFixed(6)}, {lastCoords.lng.toFixed(6)}
+          </div>
+        )}
+        {status.details && (
+          <div className="mt-3 text-xs text-gray-600">
+            Distance: {status.details.distanceMeters}m (allowed {status.details.allowedMeters}m)
+            <div>Office: {status.details.office?.lat}, {status.details.office?.lng}</div>
+            <div>Received: {status.details.received?.lat}, {status.details.received?.lng}</div>
+          </div>
+        )}
+        {status.code === "location_required" && (
+          <div className="mt-4 text-left text-sm">
+            <div className="mb-3">
+              Please enable location access for this site:
+            </div>
+            <ul className="list-disc ml-6 space-y-1">
+              <li>Click the lock icon in your browser's address bar.</li>
+              <li>Find Location permission and set it to Allow.</li>
+              <li>Reload this page and try again.</li>
+            </ul>
+            <div className="mt-4">
+              <button
+                onClick={requestLocationAndCheckIn}
+                className="btn btn-primary"
+              >
+                Enable Location and Retry
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

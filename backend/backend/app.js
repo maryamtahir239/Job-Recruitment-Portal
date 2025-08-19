@@ -7,6 +7,14 @@ import "./setup-uploads.js";
 
 dotenv.config();
 
+// Provide sane defaults for office geo/check-in settings if not supplied via .env
+process.env.OFFICE_LAT = process.env.OFFICE_LAT ?? "31.47212";
+process.env.OFFICE_LNG = process.env.OFFICE_LNG ?? "74.26388";
+process.env.OFFICE_RADIUS_METERS = process.env.OFFICE_RADIUS_METERS ?? "500";
+process.env.LOCATION_TOLERANCE_METERS = process.env.LOCATION_TOLERANCE_METERS ?? "100";
+process.env.CHECKIN_WINDOW_MINUTES = process.env.CHECKIN_WINDOW_MINUTES ?? "10";
+process.env.FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:5173";
+
 const app = express();
 const server = http.createServer(app); // Create HTTP server for socket.io
 
@@ -14,8 +22,9 @@ const server = http.createServer(app); // Create HTTP server for socket.io
 import { Server } from "socket.io";
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL,
-    methods: ["GET", "POST"]
+    origin: process.env.FRONTEND_URL || true,
+    methods: ["GET", "POST"],
+    credentials: true,
   }
 });
 app.set("io", io); // make io accessible in routes/controllers if needed

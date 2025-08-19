@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Card from "@/components/ui/Card";
 import Textinput from "@/components/ui/Textinput";
 import Select from "@/components/ui/Select";
@@ -338,12 +339,17 @@ const EvaluatedCandidates = () => {
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="flex items-center justify-center">
-                        <div className="bg-gray-200 rounded-full h-8 w-8 flex items-center justify-center mr-2">
-                          <span className="text-sm font-bold text-gray-700">{ev.totalScore}</span>
-                        </div>
-                        <span className="text-sm text-gray-500">/25</span>
-                      </div>
+                      {(() => {
+                        const maxScore = (ev.scores && ev.scores.length > 0) ? ev.scores.length * 5 : 25;
+                        return (
+                          <div className="flex items-center justify-center">
+                            <div className="bg-gray-200 rounded-full h-8 w-8 flex items-center justify-center mr-2">
+                              <span className="text-sm font-bold text-gray-700">{ev.totalScore}</span>
+                            </div>
+                            <span className="text-sm text-gray-500">/{maxScore}</span>
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                       {new Date(ev.createdAt).toLocaleDateString('en-US', {
@@ -368,9 +374,9 @@ const EvaluatedCandidates = () => {
       </Card>
 
       {/* Enhanced Modal for viewing evaluation details */}
-      {selectedEvaluation && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" style={{ marginTop: '70px' }}>
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+      {selectedEvaluation && createPortal(
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[99999] p-0">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto m-4">
                          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-xl">
                <div className="flex justify-between items-start">
                  <div>
@@ -413,15 +419,22 @@ const EvaluatedCandidates = () => {
                      </svg>
                      Score Summary
                    </h3>
-                   <div className="flex items-center space-x-2">
-                     <div className="bg-blue-100 text-blue-800 rounded-full h-12 w-12 flex items-center justify-center">
-                       <span className="text-lg font-bold">{selectedEvaluation.totalScore}</span>
-                     </div>
-                     <div>
-                       <div className="text-sm text-gray-600">Total Score</div>
-                       <div className="text-sm text-gray-500">out of 25 points</div>
-                     </div>
-                   </div>
+                   {(() => {
+                    const maxScore = (selectedEvaluation.scores && selectedEvaluation.scores.length > 0)
+                      ? selectedEvaluation.scores.length * 5
+                      : 25;
+                    return (
+                      <div className="flex items-center space-x-2">
+                        <div className="bg-blue-100 text-blue-800 rounded-full h-12 w-12 flex items-center justify-center">
+                          <span className="text-lg font-bold">{selectedEvaluation.totalScore}</span>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-600">Total Score</div>
+                          <div className="text-sm text-gray-500">out of {maxScore} points</div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                  </div>
                </div>
 
@@ -432,19 +445,32 @@ const EvaluatedCandidates = () => {
                      <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                      </svg>
-                     Question-wise Ratings:
+                     Evaluation Ratings
                    </h1>
                    <div className="space-y-3">
-                     {selectedEvaluation.scores.map((q, i) => (
-                       <div key={i} className="bg-white p-3 rounded border">
-                         <div className="flex justify-between items-center">
-                           <span className="font-medium text-gray-700">{q.question}</span>
-                           <Badge className={`badge-${q.rating === 'excellent' ? 'success' : q.rating === 'good' ? 'primary' : q.rating === 'average' ? 'warning' : 'danger'}`}>
-                             {q.rating}
-                           </Badge>
+                     {selectedEvaluation.scores.map((q, i) => {
+                       const labelMap = {
+                         excellent: 'Excellent',
+                         good: 'Good',
+                         average: 'Average',
+                         satisfactory: 'Satisfactory',
+                         unsatisfactory: 'Unsatisfactory',
+                       };
+                       const colorClass =
+                         q.rating === 'excellent' ? 'bg-green-100 text-green-800 border-green-200' :
+                         q.rating === 'good' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                         q.rating === 'average' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                         q.rating === 'satisfactory' ? 'bg-orange-100 text-orange-800 border-orange-200' :
+                         'bg-red-100 text-red-800 border-red-200';
+                       return (
+                         <div key={i} className="bg-white p-3 rounded border">
+                           <div className="flex justify-between items-center">
+                             <span className="font-medium text-gray-700">{q.question}</span>
+                             <Badge className={`${colorClass} capitalize`}>{labelMap[q.rating] || q.rating}</Badge>
+                           </div>
                          </div>
-                       </div>
-                     ))}
+                       );
+                     })}
                    </div>
                  </div>
                )}
@@ -460,45 +486,26 @@ const EvaluatedCandidates = () => {
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                    <div>
                      <p className="font-semibold text-gray-700 mb-2 flex items-center">
-                       
-                       Improvement Areas:
+                       Strength and Weakness:
                      </p>
                      <p className="text-sm text-gray-600 bg-white p-3 rounded border">
-                       {selectedEvaluation.comments?.improvement || "No improvement areas noted."}
+                       {selectedEvaluation.comments?.improvement || "No strength/weakness noted."}
                      </p>
                    </div>
                    <div>
                      <p className="font-semibold text-gray-700 mb-2 flex items-center">
-                      
-                       Overall Evaluation:
+                       Comments:
                      </p>
                      <p className="text-sm text-gray-600 bg-white p-3 rounded border">
-                       {selectedEvaluation.comments?.evaluation || "No evaluation comments."}
-                     </p>
-                   </div>
-                   <div>
-                     <p className="font-semibold text-gray-700 mb-2 flex items-center">
-                      
-                       Recommendation:
-                     </p>
-                     <p className="text-sm text-gray-600 bg-white p-3 rounded border">
-                       {selectedEvaluation.comments?.recommendation || "No recommendation provided."}
-                     </p>
-                   </div>
-                   <div>
-                     <p className="font-semibold text-gray-700 mb-2 flex items-center">
-                       
-                       HR Comments:
-                     </p>
-                     <p className="text-sm text-gray-600 bg-white p-3 rounded border">
-                       {selectedEvaluation.comments?.hrComments || "No HR comments."}
+                       {selectedEvaluation.comments?.evaluation || "No comments."}
                      </p>
                    </div>
                  </div>
                </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

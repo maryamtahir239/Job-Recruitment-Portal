@@ -84,9 +84,19 @@ const Evaluations = () => {
 
   const getEvaluationStatusBadge = (evaluationStatus) => {
     if (!evaluationStatus || evaluationStatus === 'pending') {
-      return <Badge className="badge-warning">Pending</Badge>;
+      return (
+        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 flex items-center gap-1 px-3 py-1 rounded-md">
+          <Icon icon="ph:clock" className="w-4 h-4 text-yellow-600" />
+          Pending
+        </Badge>
+      );
     }
-    return <Badge className="badge-success">Completed</Badge>;
+    return (
+      <Badge className="bg-green-100 text-green-800 border-green-200 flex items-center gap-1 px-3 py-1 rounded-md">
+        <Icon icon="ph:check-circle" className="w-4 h-4 text-green-600" />
+        Completed
+      </Badge>
+    );
   };
 
   const formatDate = (dateString) => {
@@ -343,9 +353,11 @@ const Evaluations = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex justify-center space-x-2 items-center">
                         {application.evaluation_status === 'completed' ? (
-                          <Badge className="badge-success bg-green-100 text-green-800 border-green-200">
-                            Evaluation Completed
-                          </Badge>
+                          <Button
+                            text="Evaluated"
+                            className="btn-success btn-sm h-8 w-28 cursor-not-allowed opacity-80"
+                            disabled
+                          />
                         ) : (
                           <Button
                             text="Evaluate"

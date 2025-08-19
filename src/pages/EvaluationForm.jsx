@@ -6,6 +6,7 @@ import Icon from "@/components/ui/Icon";
 import { useMemo } from "react";
 import { getEvaluationTemplateByJobId } from "@/api/evaluationTemplates";
 import { safeToastError } from "@/utility/safeToast";
+import { toast } from "react-toastify";
 
 const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
   const [loading, setLoading] = useState(true);
@@ -21,6 +22,7 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
 
   const [ratings, setRatings] = useState({});
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   // Simplified rating options
   const ratingOptions = [
@@ -33,8 +35,6 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
   const [comments, setComments] = useState({
     improvement: "",
     evaluation: "",
-    recommendation: "",
-    hrComments: "",
   });
 
   // Load evaluation template for the candidate's job
@@ -118,10 +118,11 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
     if (Object.keys(newErrors).length > 0) return;
 
     try {
+      setSubmitting(true);
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please log in to submit evaluation.");
-        return;
+        toast.error("Please log in to submit evaluation.");
+        return; 
       }
       const evaluationPayload = {
         candidate: { id: candidate.id },
@@ -140,10 +141,12 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Submission failed");
       }
-      alert("Evaluation submitted successfully!");
+      toast.success("Evaluation submitted successfully");
       onClose();
     } catch (err) {
-      alert(`Failed to submit evaluation: ${err.message}`);
+      safeToastError(`Failed to submit evaluation: ${err.message}`);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -322,26 +325,40 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
 
           {/* Comments Section */}
           <div className="mt-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">Additional Comments</h3>
+            <h3 className="text-lg font-medium text-gray-800 mb-4">Evaluation Comments</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.keys(comments).map((key) => (
-                <div key={key}>
-                  <label className="block text-gray-700 font-medium mb-2 capitalize text-sm">
-                    {key.replace(/([A-Z])/g, " $1")}
-                  </label>
-                  <textarea
-                    name={key}
-                    value={comments[key]}
-                    onChange={handleCommentChange}
-                    className={`w-full border ${errors[key] ? 'border-red-500' : 'border-gray-300'} rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-none`}
-                    rows={3}
-                    placeholder={`Enter your ${key.replace(/([A-Z])/g, " $1").toLowerCase()}...`}
-                  />
-                  {errors[key] && (
-                    <div className="text-red-600 text-xs mt-1">{errors[key]}</div>
-                  )}
-                </div>
-              ))}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2 text-sm">
+                  Strength and Weakness
+                </label>
+                <textarea
+                  name="improvement"
+                  value={comments.improvement}
+                  onChange={handleCommentChange}
+                  className={`w-full border ${errors.improvement ? 'border-red-500' : 'border-gray-300'} rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-none`}
+                  rows={3}
+                  placeholder="Summarize the candidate's strengths and weaknesses"
+                />
+                {errors.improvement && (
+                  <div className="text-red-600 text-xs mt-1">{errors.improvement}</div>
+                )}
+              </div>
+              <div>
+                <label className="block text-gray-700 font-medium mb-2 text-sm">
+                  Comments
+                </label>
+                <textarea
+                  name="evaluation"
+                  value={comments.evaluation}
+                  onChange={handleCommentChange}
+                  className={`w-full border ${errors.evaluation ? 'border-red-500' : 'border-gray-300'} rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-none`}
+                  rows={3}
+                  placeholder="Any additional comments regarding the interview"
+                />
+                {errors.evaluation && (
+                  <div className="text-red-600 text-xs mt-1">{errors.evaluation}</div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -352,7 +369,7 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
                 text="Submit Evaluation"
                 onClick={handleSubmit}
                 className="btn-primary"
-                disabled={loading}
+                disabled={loading || submitting}
               />
             </div>
           </div>

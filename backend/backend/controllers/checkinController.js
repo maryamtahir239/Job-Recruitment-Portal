@@ -4,13 +4,53 @@ import knex from "../db/knex.js";
 import nodemailer from "nodemailer";
 import { sendCheckinEmailTemplate } from "../utils/email.js";
 
-// Constants
-const OFFICE_LAT = 31.47212;
-const OFFICE_LNG = 74.26388;
-const OFFICE_RADIUS_METERS = 500;
-const CHECKIN_WINDOW_MINUTES = 10;
+// Constants (configurable via ENV)
+function getNumberEnv(name, fallback) {
+  const raw = process.env[name];
+  if (raw === undefined || raw === null || raw === "") return fallback;
+  const num = Number(raw);
+  return Number.isFinite(num) ? num : fallback;
+}
+
+const OFFICE_LAT = getNumberEnv("OFFICE_LAT", 31.47212);
+const OFFICE_LNG = getNumberEnv("OFFICE_LNG", 74.26388);
+const OFFICE_RADIUS_METERS = getNumberEnv("OFFICE_RADIUS_METERS", 500);
+// Additional tolerance to account for GPS drift/indoor positioning
+const LOCATION_TOLERANCE_METERS = getNumberEnv("LOCATION_TOLERANCE_METERS", 100);
+const CHECKIN_WINDOW_MINUTES = getNumberEnv("CHECKIN_WINDOW_MINUTES", 10);
 
 
+
+// Robust date parser that respects timezone if present and treats naive strings as local time
+function parseScheduledDate(raw) {
+  try {
+    if (!raw) return null;
+    if (raw instanceof Date) return raw;
+    if (typeof raw === "number") return new Date(raw);
+    if (typeof raw === "string") {
+      const s = raw.trim();
+      // If contains explicit timezone (Z or +hh:mm/-hh:mm), trust native parser
+      if (/Z$|[+-]\d{2}:?\d{2}$/.test(s)) {
+        const d = new Date(s);
+        if (!isNaN(d.getTime())) return d;
+      }
+      // Normalize space to 'T' for ISO-like parsing
+      const withT = s.replace(" ", "T");
+      const d2 = new Date(withT);
+      if (!isNaN(d2.getTime())) return d2;
+      // Manual fallback: YYYY-MM-DD[ T]HH:mm[:ss]
+      const m = s.match(/(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+      if (m) {
+        const [, y, mo, da, h, mi, se] = m;
+        return new Date(Number(y), Number(mo) - 1, Number(da), Number(h), Number(mi), se ? Number(se) : 0);
+      }
+    }
+    const d3 = new Date(raw);
+    return isNaN(d3.getTime()) ? null : d3;
+  } catch (_) {
+    return null;
+  }
+}
 
 // --- Send Check-in Email ---
 // --- Send Check-in Email ---
@@ -52,13 +92,14 @@ export const sendCheckinEmail = async (req, res) => {
     const token = crypto.randomBytes(20).toString("hex");
 
     // Update DB
+    const parsedInterviewDate = parseScheduledDate(interviewDateTime) || interviewDateTime;
      await knex("application_invites")
       .where({ id: invite.id })
       .update({
         checkin_token: token,
         checkin_sent_at: new Date(),
         checkin_mail_status: "sent", // THIS IS CRUCIAL
-        interview_start_time: interviewDateTime,
+        interview_start_time: parsedInterviewDate,
         updated_at: knex.fn.now(),
       });
 
@@ -119,14 +160,14 @@ export const confirmCheckin = async (req, res) => {
     } catch (_) {}
 
     if (invite.interview_start_time || scheduledFromMeta) {
-      // Normalize to local time if an ISO UTC string is encountered
-      let raw = scheduledFromMeta || invite.interview_start_time;
-      let scheduled;
-      if (typeof raw === "string") {
-        const normalized = /Z$/.test(raw) ? raw.replace(/Z$/, "") : raw;
-        scheduled = new Date(normalized);
-      } else {
-        scheduled = new Date(raw);
+      // Respect timezone info if present and support naive local strings
+      const raw = scheduledFromMeta || invite.interview_start_time;
+      const scheduled = parseScheduledDate(raw);
+      if (!scheduled) {
+        return res.status(400).json({
+          statusCode: "server_error",
+          error: "Invalid interview schedule format"
+        });
       }
       // Compute time difference in the server's local timezone
       const deltaMs = now.getTime() - scheduled.getTime();
@@ -155,16 +196,24 @@ export const confirmCheckin = async (req, res) => {
       });
     }
 
+    const userLat = parseFloat(lat);
+    const userLng = parseFloat(lng);
     const distance = getDistanceFromLatLonInM(
       OFFICE_LAT,
       OFFICE_LNG,
-      parseFloat(lat),
-      parseFloat(lng)
+      userLat,
+      userLng
     );
-    if (distance > OFFICE_RADIUS_METERS) {
+    if (distance > (OFFICE_RADIUS_METERS + LOCATION_TOLERANCE_METERS)) {
       return res.status(400).json({
         statusCode: "wrong_location",
-        error: "You must be at the office to check in."
+        error: "You must be at the office to check in.",
+        details: {
+          office: { lat: OFFICE_LAT, lng: OFFICE_LNG },
+          received: { lat: userLat, lng: userLng },
+          distanceMeters: Math.round(distance),
+          allowedMeters: OFFICE_RADIUS_METERS + LOCATION_TOLERANCE_METERS,
+        }
       });
     }
 

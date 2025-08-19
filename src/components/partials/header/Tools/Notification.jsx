@@ -4,7 +4,8 @@ import { Menu } from "@headlessui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { markAllAsRead, markAsRead, deleteAll } from "@/store/notificationsSlice";
 
-const BellIcon = ({ showDot }) => {
+const BellIcon = ({ count }) => {
+  const hasUnread = Number(count) > 0;
   return (
     <span className="relative">
       <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -23,10 +24,9 @@ const BellIcon = ({ showDot }) => {
           strokeLinecap="round"
         ></path>
       </svg>
-      {showDot ? (
-        <span className="absolute right-1 top-0 flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 ring-1 ring-white"></span>
+      {hasUnread ? (
+        <span className="absolute -right-1 -top-1 min-w-[18px] h-[18px] px-1 bg-red-600 border border-white dark:border-gray-800 rounded-full text-[10px] leading-[18px] text-white text-center">
+          {count > 99 ? "99+" : count}
         </span>
       ) : null}
     </span>
@@ -51,12 +51,12 @@ const Notification = () => {
   const unread = useSelector((s) => s.notifications.unreadCount);
 
   return (
-    <div className="md:block hidden">
-      <Dropdown classMenuItems="md:w-[380px] top-[30px]" label={<BellIcon showDot={unread > 0} />}>
+    <div>
+      <Dropdown classMenuItems="md:w-[380px] top-[30px]" label={<BellIcon count={unread} />}>
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100 dark:border-gray-700">
           <div className="text-sm text-gray-800 dark:text-gray-200 font-semibold leading-6">New notifications</div>
           <div className="flex items-center gap-3">
-            <button onClick={() => dispatch(markAllAsRead())} className="text-xs text-indigo-600 hover:underline">Mark as Read</button>
+            <button onClick={() => dispatch(markAllAsRead())} className="text-xs text-indigo-600 hover:underline">Read All</button>
             <button onClick={() => dispatch(deleteAll())} className="text-xs text-red-600 hover:underline">Delete All</button>
           </div>
         </div>
@@ -84,9 +84,6 @@ const Notification = () => {
               </Menu.Item>
             ))
           )}
-        </div>
-        <div className="text-center mb-3 mt-1">
-          <span className="text-sm text-indigo-500">Show All</span>
         </div>
       </Dropdown>
     </div>

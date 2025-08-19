@@ -248,7 +248,7 @@ const Experience = ({ register, errors, fieldErrors, expFields, addExperience, r
                 register={register} 
                 name={`experience.${index}.salary`} 
                 error={fieldErrors[`experience.${index}.salary`] ? { message: fieldErrors[`experience.${index}.salary`] } : (errors.experience?.[index]?.salary?.message ? { message: errors.experience[index].salary.message } : null) || (finalDigitErrors[`experience.${index}.salary`] ? { message: finalDigitErrors[`experience.${index}.salary`] } : null)}
-                placeholder="e.g., $50,000 per year"
+                placeholder="e.g., Rs 50,000 per year"
                 isDigitOnly={true}
                 onDigitValidation={validateDigitOnly}
               />

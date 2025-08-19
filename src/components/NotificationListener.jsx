@@ -9,9 +9,17 @@ const NotificationListener = () => {
   const user = useSelector((state) => state?.auth?.user);
 
   useEffect(() => {
-    // Only listen for interview related notifications when authenticated
-    const socket = io(import.meta.env.VITE_API_BASE, {
+    // Listen for check-in notifications
+    const baseUrl =
+      import.meta.env.VITE_SOCKET_URL ||
+      import.meta.env.VITE_API_BASE ||
+      (typeof window !== "undefined"
+        ? `${window.location.protocol}//${window.location.hostname}:3001`
+        : "http://localhost:3001");
+
+    const socket = io(baseUrl, {
       transports: ["websocket"],
+      withCredentials: true,
     });
 
     socket.on("candidate-arrived", (data) => {

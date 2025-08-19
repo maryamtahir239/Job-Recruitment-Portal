@@ -285,7 +285,7 @@ const References = ({ register, errors, fieldErrors, refFields, addReference, re
               {...register("additional.expected_salary")}
               type="text"
               className="input rounded border border-gray-300 w-[40%] py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-              placeholder="e.g., $40,000 - $60,000 per year"
+              placeholder="e.g., Rs 40,000 - 60,000 per month"
               onKeyPress={(e) => {
                 // Allow: digits, dots, commas, spaces, hyphens, backspace, delete, arrow keys
                 const allowedKeys = [

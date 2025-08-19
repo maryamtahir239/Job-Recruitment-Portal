@@ -28,7 +28,7 @@ import Textinput from "@/components/ui/Textinput";
 import Select from "@/components/ui/Select";
 import Icon from "@/components/ui/Icon";
 
-const emptyForm = { name: "", email: "", password: "", role: "HR" };
+const emptyForm = { name: "", email: "", password: "", role: "" };
 
 const HrInterviewerPage = () => {
   const navigate = useNavigate();
