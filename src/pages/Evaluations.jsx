@@ -82,22 +82,20 @@ const Evaluations = () => {
     return matchesSearch && matchesJob && matchesEvaluationStatus;
   });
 
-  const getEvaluationStatusBadge = (evaluationStatus) => {
-    if (!evaluationStatus || evaluationStatus === 'pending') {
+  const getCheckinStatusBadge = (checkinStatus) => {
+    if (checkinStatus === "arrived") {
       return (
-        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 flex items-center gap-1 px-3 py-1 rounded-md">
-          <Icon icon="ph:clock" className="w-4 h-4 text-yellow-600" />
-          Pending
+        <Badge className="badge-success bg-green-100 text-green-700 text-sm border-green-200 flex items-center">
+          <Icon icon="ph:check-circle" className="w-4 h-4 mr-1 text-green-600" />
+          Present
         </Badge>
       );
     }
     return (
-      <Badge className="bg-green-100 text-green-800 border-green-200 flex items-center gap-1 px-3 py-1 rounded-md">
-        <Icon icon="ph:check-circle" className="w-4 h-4 text-green-600" />
-        Completed
-      </Badge>
+      <span className="text-sm text-gray-600">Pending</span>
     );
   };
+  
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
@@ -282,7 +280,7 @@ const Evaluations = () => {
                   Department
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Evaluation Status
+                  Check-in Status
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Application
@@ -341,8 +339,9 @@ const Evaluations = () => {
                       })()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      {getEvaluationStatusBadge(application.evaluation_status)}
-                    </td>
+                 {getCheckinStatusBadge(application.checkin_status)}
+                  </td>
+
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <Button
                         text="View"

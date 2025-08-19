@@ -3,10 +3,13 @@ import db from "../db/knex.js";
 export const getAllApplications = async (req, res) => {
   console.log("getAllApplications called");
   try {
-    const rows = await db("candidate_applications")
-      .select("*")
-      .orderBy("created_at", "desc");
-    
+    const rows = await db("candidate_applications as ca")
+      .leftJoin("application_invites as ai", "ca.invite_id", "ai.id")
+      .select(
+        "ca.*",
+        "ai.checkin_status" // Add checkin_status from application_invites
+      )
+      .orderBy("ca.created_at", "desc");
     console.log("Raw applications from database:", rows);
     
     const parsedRows = rows.map((row) => {
@@ -33,6 +36,7 @@ export const getAllApplications = async (req, res) => {
         job_id: row.job_id,
         status: row.status || "Applied",
         evaluation_status: row.evaluation_status || "pending",
+        checkin_status: row.checkin_status || "pending",
         created_at: row.created_at,
         updated_at: row.updated_at
       };
