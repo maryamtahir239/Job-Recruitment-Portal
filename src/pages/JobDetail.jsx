@@ -401,13 +401,13 @@ const JobDetail = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-white shadow border">
+      <Card className="shadow border">
         <div className="flex justify-between items-center">
           <div>
             <div className="mb-2">
-              <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{job.title}</h1>
             </div>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               {job.department} • {job.location}
             </p>
           </div>
@@ -430,21 +430,21 @@ const JobDetail = () => {
           <Card className="h-full min-h-[100px]">
             <div className="flex flex-col h-full justify-between">
               <div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                   Description
                 </h4>
-                <div className="min-h-[100px] bg-gray-50 p-5 rounded-lg">
-                  <p className="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
+                <div className="min-h-[100px] bg-gray-50 dark:bg-gray-700/30 p-5 rounded-lg">
+                  <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed whitespace-pre-wrap">
                     {job.description}
                   </p>
                 </div>
               </div>
               <div className="mt-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                   Requirements
                 </h4>
-                <div className="min-h-[100px] bg-gray-50 p-5 rounded-lg">
-                  <p className="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
+                <div className="min-h-[100px] bg-gray-50 dark:bg-gray-700/30 p-5 rounded-lg">
+                  <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed whitespace-pre-wrap">
                     {job.requirements}
                   </p>
                 </div>
@@ -455,33 +455,33 @@ const JobDetail = () => {
         {/* Sidebar: Job Summary */}
         <div className="lg:col-span-2">
           <Card className="h-full min-h-[100px]">
-            <h3 className="text-lg font-semibold mb-4">Job Summary</h3>
+            <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">Job Summary</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600">Status:</span>
+                <span className="text-gray-600 dark:text-gray-300">Status:</span>
                 {getStatusBadge(job.status)}
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Openings:</span>
-                <span className="font-medium">{job.openings}</span>
+                <span className="text-gray-600 dark:text-gray-300">Openings:</span>
+                <span className="font-medium dark:text-gray-100">{job.openings}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Job Type:</span>
-                <span className="font-medium">{job.job_type}</span>
+                <span className="text-gray-600 dark:text-gray-300">Job Type:</span>
+                <span className="font-medium dark:text-gray-100">{job.job_type}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Salary Range:</span>
-                <span className="font-medium">
+                <span className="text-gray-600 dark:text-gray-300">Salary Range:</span>
+                <span className="font-medium dark:text-gray-100">
                   {job.salary_range || "Not specified"}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Deadline:</span>
-                <span className="font-medium">{formatDate(job.deadline)}</span>
+                <span className="text-gray-600 dark:text-gray-300">Deadline:</span>
+                <span className="font-medium dark:text-gray-100">{formatDate(job.deadline)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Created:</span>
-                <span className="font-medium">
+                <span className="text-gray-600 dark:text-gray-300">Created:</span>
+                <span className="font-medium dark:text-gray-100">
                   {formatDate(job.created_at)}
                 </span>
               </div>
@@ -494,7 +494,7 @@ const JobDetail = () => {
       <div className="mt-8">
         <Card className="w-full">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-semibold">
+            <h3 className="text-xl font-semibold dark:text-gray-100">
               Candidates ({candidates.length})
             </h3>
             {user?.role === "HR" && (
@@ -533,56 +533,56 @@ const JobDetail = () => {
             </div>
           ) : (
             <div className="w-full overflow-x-auto">
-              <table className="w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-700/30">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Name
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Phone
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Designation
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Location
                     </th>
                     {user?.role === "HR" && (
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Actions
                       </th>
                     )}
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {candidates.map((candidate, index) => (
-                    <tr key={candidate.id} className="hover:bg-gray-50">
+                    <tr key={candidate.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {candidate.name}
                         </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-gray-100">
                           {candidate.email}
                         </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-gray-100">
                           {candidate.phone || "Not provided"}
                         </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-gray-100">
                           {candidate.designation || "Not specified"}
                         </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 dark:text-gray-300">
                           {candidate.location || "Not specified"}
                         </div>
                       </td>

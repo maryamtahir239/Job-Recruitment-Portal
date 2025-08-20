@@ -151,22 +151,22 @@ const InterviewerDashboard = () => {
 
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen mt-4 bg-gray-50 px-4">
+    <div className="flex flex-col items-center justify-start min-h-screen mt-4 bg-gray-50 dark:bg-gray-900 px-4">
    
   
 
 
       <div className="text-center p-1 w-full max-w-4xl">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">
           Welcome, {user?.name || "Interviewer"}!
         </h1>
-        <p className="text-gray-600 text-lg mb-1">
+        <p className="text-gray-600 dark:text-gray-300 text-lg mb-1">
           You are logged in as{" "}
           <span className="font-semibold text-blue-600">
             {user?.role || "interviewer"}
           </span>.
         </p>
-        <p className="text-gray-500 text-sm mb-8">
+        <p className="text-gray-500 dark:text-gray-300 text-sm mb-8">
           Review interview details and provide feedback through the dashboard.
         </p>
 
@@ -200,58 +200,58 @@ const InterviewerDashboard = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 w-full max-w-6xl px-2 mb-8">
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:file-text" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.totalApplications}</div>
-              <div className="text-sm text-gray-600">Total Applications</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{loading ? "..." : stats.totalApplications}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Applications</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:clock" className="text-yellow-600 text-2xl" />
+            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:clock" className="text-yellow-600 dark:text-yellow-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.pendingEvaluations}</div>
-              <div className="text-sm text-gray-600">Pending Evaluations</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{loading ? "..." : stats.pendingEvaluations}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Pending Evaluations</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:check-circle" className="text-green-600 text-2xl" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:check-circle" className="text-green-600 dark:text-green-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.completedEvaluations}</div>
-              <div className="text-sm text-gray-600">Completed Evaluations</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{loading ? "..." : stats.completedEvaluations}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Completed Evaluations</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:calendar" className="text-purple-600 text-2xl" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:calendar" className="text-purple-600 dark:text-purple-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{loading ? "..." : stats.upcomingInterviews}</div>
-              <div className="text-sm text-gray-600">Upcoming Interviews</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{loading ? "..." : stats.upcomingInterviews}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Upcoming Interviews</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center -mt-6">
-              <Icon icon="ph:activity" className="text-red-600 text-2xl" />
+            <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center -mt-6">
+              <Icon icon="ph:activity" className="text-red-600 dark:text-red-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-xl font-bold text-gray-900">Last updated</div>
-              <div className="text-sm text-gray-600">{loading ? "Loading..." : formatLastUpdated(stats.lastUpdated)}</div>
+              <div className="text-xl font-bold text-gray-900 dark:text-gray-100">Last updated</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{loading ? "Loading..." : formatLastUpdated(stats.lastUpdated)}</div>
             </div>
           </div>
         </Card>
@@ -260,9 +260,9 @@ const InterviewerDashboard = () => {
       {/* Charts and Analytics Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-6xl px-2 mb-8">
         {/* Evaluation Progress Chart */}
-        <Card>
+        <Card className="shadow border">
           <div className="p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Evaluation Progress</h3>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Evaluation Progress</h3>
             <ReactApexChart
               options={evaluationProgressOptions}
               series={evaluationProgressOptions.series}
@@ -273,9 +273,9 @@ const InterviewerDashboard = () => {
         </Card>
 
         {/* Weekly Trends Chart */}
-        <Card>
+        <Card className="shadow border">
           <div className="p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Weekly Trends</h3>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Weekly Trends</h3>
             <ReactApexChart
               options={weeklyTrendsOptions}
               series={weeklyTrendsOptions.series}
@@ -289,23 +289,23 @@ const InterviewerDashboard = () => {
       {/* Performance Insights and Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-6xl px-2 mb-8">
         {/* Performance Insights */}
-        <Card>
+        <Card className="shadow border">
   <div className="p-6">
-    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
       <Icon icon="ph:chart-line" className="text-blue-600" />
       Performance Insights
     </h3>
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <span className="text-gray-600">Total Evaluations</span>
+        <span className="text-gray-600 dark:text-gray-300">Total Evaluations</span>
         <div className="flex items-center gap-2">
           {/* This is the new line */}
-          <span className="font-semibold text-blue-600">
+          <span className="font-semibold text-blue-600 dark:text-blue-400">
             {performanceData.totalEvaluations}
           </span>
-          <div className="w-24 bg-gray-200 rounded-full h-2.5">
+          <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
             <div
-              className="bg-blue-600 h-2.5 rounded-full"
+              className="bg-blue-600 dark:bg-blue-500 h-2.5 rounded-full"
               style={{ width: `${performanceData.totalEvaluations > 100 ? 100 : performanceData.totalEvaluations}%` }}
             ></div>
           </div>
@@ -313,14 +313,14 @@ const InterviewerDashboard = () => {
       </div>
 
       <div className="flex justify-between items-center">
-        <span className="text-gray-600">Average Score</span>
+        <span className="text-gray-600 dark:text-gray-300">Average Score</span>
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-green-600">
+          <span className="font-semibold text-green-600 dark:text-green-400">
             {performanceData.averageScore.toFixed(1)}%
           </span>
-          <div className="w-24 bg-gray-200 rounded-full h-2.5">
+          <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
             <div
-              className="bg-green-600 h-2.5 rounded-full"
+              className="bg-green-600 dark:bg-green-500 h-2.5 rounded-full"
               style={{ width: `${performanceData.averageScore}%` }}
             ></div>
           </div>
@@ -328,14 +328,14 @@ const InterviewerDashboard = () => {
       </div>
 
       <div className="flex justify-between items-center">
-        <span className="text-gray-600">Completion Rate</span>
+        <span className="text-gray-600 dark:text-gray-300">Completion Rate</span>
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-purple-600">
+          <span className="font-semibold text-purple-600 dark:text-purple-400">
             {performanceData.completionRate}%
           </span>
-          <div className="w-24 bg-gray-200 rounded-full h-2.5">
+          <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
             <div
-              className="bg-purple-600 h-2.5 rounded-full"
+              className="bg-purple-600 dark:bg-purple-500 h-2.5 rounded-full"
               style={{ width: `${performanceData.completionRate}%` }}
             ></div>
           </div>
@@ -345,9 +345,9 @@ const InterviewerDashboard = () => {
   </div>
 </Card>
         {/* Recent Activity */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 shadow border">
           <div className="p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
               <Icon icon="ph:activity" className="text-green-600" />
               Recent Activity
             </h3>
@@ -366,7 +366,7 @@ const InterviewerDashboard = () => {
     else timeText = activityDate.toLocaleDateString();
 
     return (
-      <div key={activity.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+      <div key={activity.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
             activity.type === 'evaluation_completed' ? 'bg-green-100' : 'bg-blue-100'
@@ -379,14 +379,14 @@ const InterviewerDashboard = () => {
             />
           </div>
           <div>
-            <p className="font-medium text-gray-800">{activity.candidate}</p>
-            <p className="text-sm text-gray-600">{activity.position}</p>
+            <p className="font-medium text-gray-800 dark:text-gray-100">{activity.candidate}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{activity.position}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-sm text-gray-500">{timeText}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-300">{timeText}</p>
           {activity.score && (
-            <p className="text-sm font-medium text-green-600">Score: {activity.score}%</p>
+            <p className="text-sm font-medium text-green-600 dark:text-green-400">Score: {activity.score}%</p>
           )}
         </div>
       </div>

@@ -5,7 +5,7 @@ const Card = ({
   title,
   subtitle,
   headerslot,
-  className = "custom-class",
+  className = "bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 rounded",
   bodyClass = "px-5 py-4",
   noborder,
   titleClass = "custom-class",
@@ -13,9 +13,7 @@ const Card = ({
 }) => {
   return (
     <div
-      className={`card
-    ${className}
-        `}
+      className={`card ${className} dark:bg-gray-800 dark:border-gray-700`}
     >
       {(title || subtitle) && (
         <header

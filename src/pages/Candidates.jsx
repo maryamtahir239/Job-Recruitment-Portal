@@ -146,58 +146,58 @@ const Candidates = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-white shadow border">
+      <Card className="shadow border dark:bg-gray-800 dark:border-gray-700">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Candidates</h1>
-          <p className="text-gray-600 mt-2">Manage and view all candidates across job postings</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Candidates</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">Manage and view all candidates across job postings</p>
         </div>
         {/* Removed Add Candidate button */}
       </div>
       </Card>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:users" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:users" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{candidates.length}</div>
-              <div className="text-sm text-gray-600">Total Candidates</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{candidates.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Candidates</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:envelope" className="text-green-600 text-2xl" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:envelope" className="text-green-600 dark:text-green-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{candidates.filter(c => c.invite_sent).length}</div>
-              <div className="text-sm text-gray-600">Invites Sent</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{candidates.filter(c => c.invite_sent).length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Invites Sent</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-yellow-600 text-2xl" />
+            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:file-text" className="text-yellow-600 dark:text-yellow-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{candidates.filter(c => c.invite_status === "submitted").length}</div>
-              <div className="text-sm text-gray-600">Applications Submitted</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{candidates.filter(c => c.invite_status === "submitted").length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Applications Submitted</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:eye" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:eye" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{candidates.filter(c => c.invite_status === "opened").length}</div>
-              <div className="text-sm text-gray-600">Invites Opened</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{candidates.filter(c => c.invite_status === "opened").length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Invites Opened</div>
             </div>
           </div>
         </Card>
@@ -253,62 +253,62 @@ const Candidates = () => {
       </Card>
 
       {/* Candidates Table */}
-      <Card>
+      <Card className="shadow border">
         <div
           className={`w-full min-w-0 ${filteredCandidates.length > 2 ? 'max-h-[400px] overflow-y-auto' : ''}`}
           style={{ overflowX: 'hidden' }}
         >
-          <table className="w-full min-w-0 divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="w-full min-w-0 divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700/30">
               <tr>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Candidate Name
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Job Applied
                 </th>
                 {/* Removed Status column */}
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Invite Status
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
   Check-in Status
 </th>
 
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Application
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredCandidates.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan="5" className="px-6 py-4 text-center text-gray-500 dark:text-gray-300">
                     {candidates.length === 0 ? "No candidates found. Add some candidates to get started!" : "No candidates match your filters."}
                   </td>
                 </tr>
               ) : (
                 filteredCandidates.map((candidate) => (
-                  <tr key={candidate.id} className="hover:bg-gray-50">
+                  <tr key={candidate.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center">
                         {/* Removed avatar/icon and email */}
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {candidate.name}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       {getJobTitle(candidate.job_id)}
                     </td>
                     {/* Removed Status column */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       <div>
                         <div>{candidate.phone || "No phone"}</div>
-                        <div className="text-gray-500">{candidate.email}</div>
+                        <div className="text-gray-500 dark:text-gray-300">{candidate.email}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">

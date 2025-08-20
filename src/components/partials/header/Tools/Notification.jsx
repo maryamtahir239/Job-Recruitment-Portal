@@ -7,8 +7,8 @@ import { markAllAsRead, markAsRead, deleteAll } from "@/store/notificationsSlice
 const BellIcon = ({ count }) => {
   const hasUnread = Number(count) > 0;
   return (
-    <span className="relative">
-      <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <span className="relative inline-flex items-center justify-center align-middle h-6 w-6 mt-1">
+      <svg width="24" height="24" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -52,7 +52,11 @@ const Notification = () => {
 
   return (
     <div>
-      <Dropdown classMenuItems="md:w-[380px] top-[30px]" label={<BellIcon count={unread} />}>
+      <Dropdown
+        classMenuItems="md:w-[380px] top-[30px]"
+        labelClass="flex items-center justify-center text-gray-600 dark:text-gray-100 text-2xl"
+        label={<BellIcon count={unread} />}
+      >
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100 dark:border-gray-700">
           <div className="text-sm text-gray-800 dark:text-gray-200 font-semibold leading-6">New notifications</div>
           <div className="flex items-center gap-3">

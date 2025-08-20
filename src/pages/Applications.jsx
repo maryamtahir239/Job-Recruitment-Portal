@@ -164,65 +164,65 @@ const Applications = () => {
   return (
     <div className="space-y-6">
              {/* Header */}
-       <Card className="bg-white shadow border">
+       <Card className="shadow border dark:bg-gray-800 dark:border-gray-700">
          <div className="flex justify-between items-center">
            <div>
-             <h1 className="text-3xl font-bold text-gray-900">Applications</h1>
-             <p className="text-gray-600 mt-2">Review and manage all job applications</p>
+             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Applications</h1>
+             <p className="text-gray-600 dark:text-gray-300 mt-2">Review and manage all job applications</p>
            </div>
          </div>
        </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:file-text" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{applications.length}</div>
-              <div className="text-sm text-gray-600">Total Applications</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{applications.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Applications</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:plus-circle" className="text-green-600 text-2xl" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:plus-circle" className="text-green-600 dark:text-green-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.status === "Applied").length}</div>
-              <div className="text-sm text-gray-600">New Applications</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{applications.filter(a => a.status === "Applied").length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">New Applications</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:star" className="text-yellow-600 text-2xl" />
+            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:star" className="text-yellow-600 dark:text-yellow-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.status === "Shortlisted").length}</div>
-              <div className="text-sm text-gray-600">Shortlisted</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{applications.filter(a => a.status === "Shortlisted").length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Shortlisted</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:check-circle" className="text-purple-600 text-2xl" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:check-circle" className="text-purple-600 dark:text-purple-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.status === "Hired").length}</div>
-              <div className="text-sm text-gray-600">Hired</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{applications.filter(a => a.status === "Hired").length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Hired</div>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Filters */}
-      <Card className="bg-white shadow border">
+      <Card className="shadow border">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Textinput
             label="Search Applications"
@@ -270,73 +270,78 @@ const Applications = () => {
       </Card>
 
       {/* Applications Table */}
-      <Card className="bg-white shadow border">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-900">Applications</h3>
-          <p className="text-sm text-gray-600 mt-1">Showing {filteredApplications.length} of {applications.length} applications</p>
+      <Card className="shadow border">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Applications</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Showing {filteredApplications.length} of {applications.length} applications</p>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700/30">
               <tr>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Candidate
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Job Applied
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Applied Date
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredApplications.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-300">
                     {applications.length === 0 ? "No applications found." : "No applications match your filters."}
                   </td>
                 </tr>
               ) : (
                 filteredApplications.map((application) => (
-                  <tr key={application.id} className="hover:bg-gray-50">
+                  <tr key={application.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           {application.photo_url ? (
-                            <img 
-                              className="h-10 w-10 rounded-full object-cover" 
-                              src={`/${application.photo_url}`} 
-                              alt="Profile" 
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                              }}
-                            />
-                          ) : null}
-                          <div className={`h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center ${application.photo_url ? 'hidden' : ''}`}>
-                            <span className="text-white text-sm font-medium">
-                              {application.full_name ? application.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'NA'}
-                            </span>
-                          </div>
+                            <>
+                              <img
+                                className="h-10 w-10 rounded-full object-cover"
+                                src={application.photo_url.startsWith('http') ? application.photo_url : '/' + application.photo_url}
+                                alt="Profile"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                  const fallback = e.currentTarget.nextElementSibling;
+                                  if (fallback) fallback.classList.remove('hidden');
+                                }}
+                              />
+                              <div className="hidden h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                <Icon icon="ph:user" className="text-gray-500 text-xl" />
+                              </div>
+                            </>
+                          ) : (
+                            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                              <Icon icon="ph:user" className="text-gray-500 text-xl" />
+                            </div>
+                          )}
                         </div>
                         <div className="ml-3">
-                          <div className="text-sm font-medium text-gray-900 truncate max-w-[150px]">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[150px]">
                             {application.full_name}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       <div className="truncate max-w-[200px] text-center" title={getJobTitle(application.job_id)}>
                         {getJobTitle(application.job_id)}
                       </div>
@@ -344,15 +349,15 @@ const Applications = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       {getStatusBadge(application.status)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
                       {formatDate(application.created_at)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       <div className="text-center">
                         <div className="truncate max-w-[120px] text-center" title={application.phone || "No phone"}>
                           {application.phone || "No phone"}
                         </div>
-                        <div className="text-gray-500 break-all text-center" title={application.email}>
+                        <div className="text-gray-500 dark:text-gray-300 break-all text-center" title={application.email}>
                           {application.email}
                         </div>
                       </div>
@@ -368,7 +373,7 @@ const Applications = () => {
                           <select
                             value={application.status}
                             onChange={(e) => updateApplicationStatus(application.id, e.target.value)}
-                            className="appearance-none bg-white border border-blue-500 text-blue-600 rounded-md px-1 h-8 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:bg-blue-50 transition-colors duration-200 min-w-[80px]"
+                            className="appearance-none bg-white dark:bg-gray-800 border border-blue-500 text-blue-600 dark:text-blue-400 rounded-md px-1 h-8 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700/30 transition-colors duration-200 min-w-[80px]"
                           >
                             <option value="Applied">Applied</option>
                             <option value="Under Review">Under Review</option>
@@ -376,7 +381,7 @@ const Applications = () => {
                             <option value="Rejected">Rejected</option>
                             <option value="Hired">Hired</option>
                           </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-blue-600">
+                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-blue-600 dark:text-blue-400">
                             <Icon icon="ph:caret-down" className="text-xs" />
                           </div>
                         </div>

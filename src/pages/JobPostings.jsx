@@ -191,11 +191,11 @@ const JobPostings = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-white shadow border">
+      <Card className="shadow border dark:bg-gray-800 dark:border-gray-700">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Job Postings</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Job Postings</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">
             {user?.role === 'HR' 
               ? 'Manage and create job postings for your organization'
               : user?.role === 'SuperAdmin'
@@ -215,109 +215,109 @@ const JobPostings = () => {
       </Card>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:briefcase" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:briefcase" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{jobs.length}</div>
-              <div className="text-sm text-gray-600">Jobs</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{jobs.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Jobs</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:check-circle" className="text-green-600 text-2xl" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:check-circle" className="text-green-600 dark:text-green-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{jobs.filter(job => job.status === "Active").length}</div>
-              <div className="text-sm text-gray-600">Active Jobs</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{jobs.filter(job => job.status === "Active").length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Active Jobs</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:x-circle" className="text-red-600 text-2xl" />
+            <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:x-circle" className="text-red-600 dark:text-red-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{jobs.filter(job => job.status === "Closed").length}</div>
-              <div className="text-sm text-gray-600">Closed Jobs</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{jobs.filter(job => job.status === "Closed").length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Closed Jobs</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:users" className="text-purple-600 text-2xl" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:users" className="text-purple-600 dark:text-purple-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{jobs.reduce((sum, job) => sum + (job.openings || 0), 0)}</div>
-              <div className="text-sm text-gray-600">Openings</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{jobs.reduce((sum, job) => sum + (job.openings || 0), 0)}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Openings</div>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Jobs Table */}
-      <Card>
+      <Card className="shadow border">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700/30">
               <tr>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Job Title
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Department
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Openings
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Deadline
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Created
                 </th>
                 {user?.role === 'HR' && (
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 )}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {jobs.length === 0 ? (
                 <tr>
-                  <td colSpan={user?.role === 'HR' ? "7" : "6"} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={user?.role === 'HR' ? "7" : "6"} className="px-6 py-4 text-center text-gray-500 dark:text-gray-300">
                     No jobs found. Create your first job posting!
                   </td>
                 </tr>
               ) : (
                 jobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-gray-50">
+                  <tr key={job.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="text-sm font-medium text-gray-900">{job.title}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{job.title}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       {job.department}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       {job.openings}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       {getStatusBadge(job.status)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       {job.deadline ? formatDate(job.deadline) : "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
                       {formatDate(job.created_at)}
                     </td>
                     {user?.role === 'HR' && (

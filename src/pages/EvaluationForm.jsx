@@ -182,7 +182,7 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
 
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-4xl mx-auto mt-10">
+      <div className="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 rounded shadow-md w-full max-w-4xl mx-auto mt-10">
         <div className="flex items-center justify-center h-64">
           <div className="text-lg">Loading evaluation form...</div>
         </div>
@@ -193,10 +193,10 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
   // New conditional rendering for full-screen error message
   if (templateError) {
     return (
-      <div className="flex items-center justify-center h-screen w-full p-6 text-center bg-gray-100">
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-8 rounded-lg shadow-xl max-w-xl mx-auto">
+      <div className="flex items-center justify-center h-screen w-full p-6 text-center bg-gray-100 dark:bg-gray-900">
+        <div className="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 text-yellow-700 dark:text-yellow-300 p-8 rounded-lg shadow-xl max-w-xl mx-auto">
           <div className="flex items-center justify-center mb-4">
-            <Icon icon="heroicons:exclamation-triangle" className="w-12 h-12 text-yellow-500 mr-4" />
+            <Icon icon="heroicons:exclamation-triangle" className="w-12 h-12 text-yellow-500 dark:text-yellow-300 mr-4" />
             <p className="text-2xl font-bold">{templateError}</p>
           </div>
           <p className="mt-4 text-base text-yellow-800">
@@ -241,45 +241,45 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
         {/* Candidate Information */}
-        <div className="p-6 border-b border-gray-200 bg-gray-50">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <Icon icon="ph:user" className="text-blue-600 text-lg" />
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                <Icon icon="ph:user" className="text-blue-600 dark:text-blue-400 text-lg" />
               </div>
               <div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Candidate Name</div>
-                <div className="font-medium text-gray-900 text-sm">{candidate.full_name}</div>
+                <div className="font-medium text-gray-900 dark:text-gray-100 text-sm">{candidate.full_name}</div>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <Icon icon="ph:briefcase" className="text-green-600 text-lg" />
+              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                <Icon icon="ph:briefcase" className="text-green-600 dark:text-green-400 text-lg" />
               </div>
               <div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Position</div>
-                <div className="font-medium text-gray-900 text-sm">{getJobTitle()}</div>
+                <div className="font-medium text-gray-900 dark:text-gray-100 text-sm">{getJobTitle()}</div>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <Icon icon="ph:buildings" className="text-purple-600 text-lg" />
+              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                <Icon icon="ph:buildings" className="text-purple-600 dark:text-purple-400 text-lg" />
               </div>
               <div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Department</div>
-                <div className="font-medium text-gray-900 text-sm">{department || "N/A"}</div>
+                <div className="font-medium text-gray-900 dark:text-gray-100 text-sm">{department || "N/A"}</div>
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                <Icon icon="ph:calendar" className="text-orange-600 text-lg" />
+              <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                <Icon icon="ph:calendar" className="text-orange-600 dark:text-orange-400 text-lg" />
               </div>
               <div>
                 <div className="text-xs text-gray-500 uppercase tracking-wide">Applied Date</div>
-                <div className="font-medium text-gray-900 text-sm">{formatDate(candidate.created_at)}</div>
+                <div className="font-medium text-gray-900 dark:text-gray-100 text-sm">{formatDate(candidate.created_at)}</div>
               </div>
             </div>
           </div>
@@ -288,16 +288,16 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
         {/* Evaluation Criteria */}
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-800">Evaluation Criteria</h3>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100">Evaluation Criteria</h3>
           </div>
           {errors._questions && (
             <div className="text-red-600 text-sm mb-2">{errors._questions}</div>
           )}
           <div className="space-y-4">
             {questions.map((criteria, index) => (
-              <Card key={index} className="p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+              <Card key={index} className="p-4 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200">
                 <div className="mb-3">
-                  <h4 className="text-base font-medium text-gray-900 mb-3">{criteria}</h4>
+                  <h4 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-3">{criteria}</h4>
                   <div className="flex flex-wrap items-center gap-3">
                     {ratingOptions.map((option) => (
                       <label key={option.value} className="flex items-center space-x-2 cursor-pointer">
@@ -309,7 +309,7 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
                           onChange={(e) => handleRatingChange(criteria, e.target.value)}
                           className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                         />
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
                           {option.label}
                         </span>
                       </label>
@@ -325,10 +325,10 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
 
           {/* Comments Section */}
           <div className="mt-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">Evaluation Comments</h3>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-4">Evaluation Comments</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm">
+                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2 text-sm">
                   Strength and Weakness
                 </label>
                 <textarea
@@ -344,7 +344,7 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
                 )}
               </div>
               <div>
-                <label className="block text-gray-700 font-medium mb-2 text-sm">
+                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2 text-sm">
                   Comments
                 </label>
                 <textarea
@@ -363,7 +363,7 @@ const EvaluationForm = ({ candidate, onClose, jobTitle, department }) => {
           </div>
 
           {/* Submit Button */}
-          <div className="p-6 border-t border-gray-200 bg-gray-50">
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
             <div className="flex justify-end items-center">
               <Button
                 text="Submit Evaluation"

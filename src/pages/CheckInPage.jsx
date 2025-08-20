@@ -147,8 +147,8 @@ export default function CheckInPage() {
 
   if (status.loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="p-6 bg-white rounded-lg shadow-md text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="p-6 bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg shadow-md text-center">
           <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
           <p className="text-gray-700">Checking your status...</p>
         </div>
@@ -159,9 +159,9 @@ export default function CheckInPage() {
   const style = statusStyles[status.code] || statusStyles.server_error;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
       <div
-        className={`p-8 rounded-lg shadow-lg w-full max-w-md text-center ${style.bg}`}
+        className={`p-8 rounded-lg shadow-lg w-full max-w-md text-center ${style.bg} dark:bg-gray-800 dark:text-gray-100`}
       >
         <div className="text-5xl mb-4">{style.icon}</div>
         <h1 className={`text-2xl font-bold mb-2 ${style.textColor}`}>

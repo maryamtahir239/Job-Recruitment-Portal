@@ -139,12 +139,12 @@ const SuperAdminDashboard = () => {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Super Admin Dashboard</h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">Super Admin Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
           Monitor and oversee the entire recruitment system. View statistics, track performance, and manage user access.
         </p>
         {user && (
-          <div className="mt-4 text-sm text-gray-500">
+          <div className="mt-4 text-sm text-gray-500 dark:text-gray-300">
             Signed in as <strong>{user.name}</strong> ({user.email})
           </div>
         )}
@@ -152,47 +152,47 @@ const SuperAdminDashboard = () => {
 
       {/* Key Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:briefcase" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:briefcase" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.totalJobs}</div>
-              <div className="text-sm text-gray-600">Total Jobs</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalJobs}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Jobs</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:users" className="text-green-600 text-2xl" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:users" className="text-green-600 dark:text-green-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.totalCandidates}</div>
-              <div className="text-sm text-gray-600">Total Candidates</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalCandidates}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Candidates</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-purple-600 text-2xl" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:file-text" className="text-purple-600 dark:text-purple-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.totalApplications}</div>
-              <div className="text-sm text-gray-600">Total Applications</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalApplications}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Applications</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:user-circle" className="text-orange-600 text-2xl" />
+            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:user-circle" className="text-orange-600 dark:text-orange-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.totalHR + stats.totalInterviewers}</div>
-              <div className="text-sm text-gray-600">Total Users</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalHR + stats.totalInterviewers}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Users</div>
             </div>
           </div>
         </Card>
@@ -201,44 +201,44 @@ const SuperAdminDashboard = () => {
       {/* Detailed Statistics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Job Statistics */}
-        <Card>
+        <Card className="shadow border">
           <h3 className="text-xl font-semibold mb-4 flex items-center">
             <Icon icon="ph:chart-bar" className="text-blue-600 mr-2" />
             Job Statistics
           </h3>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Active Jobs:</span>
+              <span className="text-gray-600 dark:text-gray-300">Active Jobs:</span>
               <span className="font-semibold">{stats.activeJobs}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Closed Jobs:</span>
+              <span className="text-gray-600 dark:text-gray-300">Closed Jobs:</span>
               <span className="font-semibold">{stats.jobStatusDistribution.Closed || 0}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Draft Jobs:</span>
+              <span className="text-gray-600 dark:text-gray-300">Draft Jobs:</span>
               <span className="font-semibold">{stats.jobStatusDistribution.Draft || 0}</span>
             </div>
           </div>
         </Card>
 
         {/* User Statistics */}
-        <Card>
+        <Card className="shadow border">
           <h3 className="text-xl font-semibold mb-4 flex items-center">
             <Icon icon="ph:users-three" className="text-green-600 mr-2" />
             User Statistics
           </h3>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">HR Users:</span>
+              <span className="text-gray-600 dark:text-gray-300">HR Users:</span>
               <span className="font-semibold">{stats.totalHR}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Interviewers:</span>
+              <span className="text-gray-600 dark:text-gray-300">Interviewers:</span>
               <span className="font-semibold">{stats.totalInterviewers}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Total Users:</span>
+              <span className="text-gray-600 dark:text-gray-300">Total Users:</span>
               <span className="font-semibold">{stats.totalHR + stats.totalInterviewers}</span>
             </div>
           </div>
@@ -246,7 +246,7 @@ const SuperAdminDashboard = () => {
       </div>
 
 
-      <Card>
+      <Card className="shadow border">
         <h3 className="text-xl font-semibold mb-4 flex items-center">
           <Icon icon="ph:gear" className="text-gray-600 mr-2" />
           System Management
@@ -279,7 +279,7 @@ const SuperAdminDashboard = () => {
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Jobs */}
-        <Card>
+        <Card className="shadow border">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold flex items-center">
               <Icon icon="ph:briefcase" className="text-blue-600 mr-2" />
@@ -293,17 +293,17 @@ const SuperAdminDashboard = () => {
           </div>
           <div className="space-y-3">
             {stats.recentJobs.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No jobs found</p>
+              <p className="text-gray-500 dark:text-gray-300 text-center py-4">No jobs found</p>
             ) : (
               stats.recentJobs.map((job) => (
-                <div key={job.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <div key={job.id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
                   <div>
-                    <h4 className="font-medium text-gray-900">{job.title}</h4>
-                    <p className="text-sm text-gray-600">{job.department}</p>
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100">{job.title}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{job.department}</p>
                   </div>
                   <div className="text-right">
                     {getStatusBadge(job.status)}
-                    <p className="text-xs text-gray-500 mt-1">{formatDate(job.created_at)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">{formatDate(job.created_at)}</p>
                   </div>
                 </div>
               ))
@@ -312,7 +312,7 @@ const SuperAdminDashboard = () => {
         </Card>
 
         {/* Recent Applications */}
-        <Card>
+        <Card className="shadow border">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold flex items-center">
               <Icon icon="ph:file-text" className="text-purple-600 mr-2" />
@@ -326,17 +326,17 @@ const SuperAdminDashboard = () => {
           </div>
           <div className="space-y-3">
             {stats.recentApplications.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No applications found</p>
+              <p className="text-gray-500 dark:text-gray-300 text-center py-4">No applications found</p>
             ) : (
               stats.recentApplications.map((application) => (
-                <div key={application.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <div key={application.id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
                   <div>
-                    <h4 className="font-medium text-gray-900">{application.full_name}</h4>
-                    <p className="text-sm text-gray-600">{application.email}</p>
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100">{application.full_name}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{application.email}</p>
                   </div>
                   <div className="text-right">
                     {getStatusBadge(application.status)}
-                    <p className="text-xs text-gray-500 mt-1">{formatDate(application.created_at)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">{formatDate(application.created_at)}</p>
                   </div>
                 </div>
               ))

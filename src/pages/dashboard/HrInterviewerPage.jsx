@@ -260,11 +260,11 @@ const HrInterviewerPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white shadow border rounded p-6">  
+      <div className="bg-white dark:bg-gray-800 dark:border-gray-700 shadow border rounded p-6">  
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">HR & Interviewer Management</h1>
-          <p className="text-gray-600">Manage your HR personnel and interviewers</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">HR & Interviewer Management</h1>
+          <p className="text-gray-600 dark:text-gray-300">Manage your HR personnel and interviewers</p>
         </div>
         <div className="flex items-center space-x-3">
           <FontAwesomeIcon icon={faUsers} className="text-4xl text-blue-500" />
@@ -273,38 +273,38 @@ const HrInterviewerPage = () => {
       </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:users" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:users" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-              <div className="text-sm text-gray-600">Total Users</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.total}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Users</div>
             </div>
           </div>
         </Card>
         
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:user-circle" className="text-green-600 text-2xl" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:user-circle" className="text-green-600 dark:text-green-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.hr}</div>
-              <div className="text-sm text-gray-600">HR Personnel</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.hr}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">HR Personnel</div>
             </div>
           </div>
         </Card>
         
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:user-gear" className="text-purple-600 text-2xl" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:user-gear" className="text-purple-600 dark:text-purple-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.interviewer}</div>
-              <div className="text-sm text-gray-600">Interviewers</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.interviewer}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Interviewers</div>
             </div>
           </div>
         </Card>
@@ -314,7 +314,7 @@ const HrInterviewerPage = () => {
       <Card 
         title={editingId ? "Edit User" : "Add New User"}
         subtitle={editingId ? "Update user information" : "Create a new HR personnel or interviewer"}
-        className="bg-white"
+        className="bg-white dark:bg-gray-800 dark:text-gray-100"
       >
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -447,51 +447,51 @@ const HrInterviewerPage = () => {
             </div>
           </div>
         }
-        className="bg-white"
+        className="bg-white dark:bg-gray-800 dark:text-gray-100"
       >
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-            <span className="ml-3 text-gray-600">Loading users...</span>
+            <span className="ml-3 text-gray-600 dark:text-gray-300">Loading users...</span>
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="text-center py-12">
             <FontAwesomeIcon icon={faUsers} className="text-6xl text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
-            <p className="text-gray-500">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No users found</h3>
+            <p className="text-gray-500 dark:text-gray-300">
               {users.length === 0 ? "No users have been added yet." : "No users match your search criteria."}
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700/30">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredUsers.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50 transition-colors duration-200">
+                  <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-200">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           {renderUserImage(u)}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{u.name}</div>
-                          <div className="text-sm text-gray-500">{u.email}</div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{u.name}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-300">{u.email}</div>
                         </div>
                       </div>
                     </td>

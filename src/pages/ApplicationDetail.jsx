@@ -204,6 +204,8 @@ const ApplicationDetail = () => {
     );
   }
 
+  const defaultAvatar = "/assets/images/default-avatar.png"; // Define a default avatar path
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -244,28 +246,34 @@ const ApplicationDetail = () => {
           <Card>
                          <div className="flex items-center mb-4">
                <div className="flex-shrink-0 h-16 w-16 relative group">
-                 {application.photo_url ? (
-                   <div className="relative">
-                     <img 
-                       className="h-16 w-16 rounded-full object-cover cursor-pointer transition-transform duration-200 group-hover:scale-105" 
-                       src={`/${application.photo_url}`} 
-                       alt="Profile" 
-                       onClick={openImageModal}
-                       onError={(e) => {
-                         e.target.style.display = 'none';
-                         e.target.nextSibling.style.display = 'flex';
-                       }}
-                     />
-                     {/* Hover overlay */}
-                     <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer" onClick={openImageModal}>
-                       <span className="text-white text-xs font-medium">Click to view</span>
+                 <div className="relative h-16 w-16 rounded-full overflow-hidden">
+                   {application.photo_url ? (
+                     <>
+                       <img 
+                         className="h-16 w-16 rounded-full object-cover cursor-pointer transition-transform duration-200 group-hover:scale-105" 
+                         src={application.photo_url.startsWith('http') ? application.photo_url : '/' + application.photo_url} 
+                         alt="Profile" 
+                         onClick={openImageModal}
+                         onError={(e) => {
+                           e.currentTarget.style.display = 'none';
+                           const fallback = e.currentTarget.nextElementSibling;
+                           if (fallback) fallback.classList.remove('hidden');
+                         }}
+                       />
+                       {/* Fallback icon */}
+                       <div className="hidden absolute inset-0 rounded-full bg-gray-200 flex items-center justify-center">
+                         <Icon icon="ph:user" className="text-gray-500 text-2xl" />
+                       </div>
+                       {/* Hover overlay */}
+                       <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer" onClick={openImageModal}>
+                         <span className="text-white text-xs font-medium">Click to view</span>
+                       </div>
+                     </>
+                   ) : (
+                     <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
+                       <Icon icon="ph:user" className="text-gray-500 text-2xl" />
                      </div>
-                   </div>
-                 ) : null}
-                 <div className={`h-16 w-16 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center ${application.photo_url ? 'hidden' : ''}`}>
-                   <span className="text-white text-lg font-medium">
-                     {application.full_name ? application.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'NA'}
-                   </span>
+                   )}
                  </div>
                </div>
                              <div className="ml-4">
@@ -707,12 +715,11 @@ const ApplicationDetail = () => {
               
               {/* Image */}
               <img
-                src={`/${application.photo_url}`}
+                src={`${application.photo_url.startsWith('http') ? application.photo_url : '/' + application.photo_url}`}
                 alt="Profile"
                 className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
                 onError={(e) => {
-                  e.target.style.display = 'none';
-                  closeImageModal();
+                  e.currentTarget.src = '';
                 }}
               />
             </div>

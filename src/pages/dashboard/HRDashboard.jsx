@@ -197,14 +197,14 @@ const HRDashboard = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">
           Welcome, {user?.name || "HR"}!
         </h1>
-        <p className="text-gray-600 text-lg mb-4">
+        <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">
           You are logged in as{" "}
           <span className="font-semibold text-blue-600">{user?.role}</span>.
         </p>
-        <p className="text-gray-500 text-sm mb-8">
+        <p className="text-gray-500 dark:text-gray-300 text-sm mb-8">
           Manage job postings, review applications, and track recruitment progress
         </p>
         
@@ -241,67 +241,67 @@ const HRDashboard = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:briefcase" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:briefcase" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.totalJobs}</div>
-              <div className="text-sm text-gray-600">Jobs</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalJobs}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Jobs</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:check-circle" className="text-green-600 text-2xl" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:check-circle" className="text-green-600 dark:text-green-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.activeJobs}</div>
-              <div className="text-sm text-gray-600">Active Jobs</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.activeJobs}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Active Jobs</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:users" className="text-purple-600 text-2xl" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:users" className="text-purple-600 dark:text-purple-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.totalCandidates}</div>
-              <div className="text-sm text-gray-600">Candidates</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalCandidates}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Candidates</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-yellow-600 text-2xl" />
+            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:file-text" className="text-yellow-600 dark:text-yellow-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.totalApplications}</div>
-              <div className="text-sm text-gray-600">Applications</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalApplications}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Applications</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:clock" className="text-red-600 text-2xl" />
+            <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:clock" className="text-red-600 dark:text-red-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{stats.recentApplications}</div>
-              <div className="text-sm text-gray-600">This Week</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.recentApplications}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">This Week</div>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Recent Jobs */}
-      <Card>
+      <Card className="shadow border">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold">Recent Job Postings</h3>
+          <h3 className="text-xl font-semibold dark:text-gray-100">Recent Job Postings</h3>
           <Button
             text="View All Jobs"
             className="btn-outline-primary"
@@ -312,7 +312,7 @@ const HRDashboard = () => {
         {recentJobs.length === 0 ? (
           <div className="text-center py-8">
             <Icon icon="ph:briefcase" className="text-gray-400 text-4xl mx-auto mb-4" />
-            <p className="text-gray-500 mb-4">No jobs posted yet</p>
+            <p className="text-gray-500 dark:text-gray-300 mb-4">No jobs posted yet</p>
             <Button
               text="Create First Job"
               className="btn-primary"
@@ -321,42 +321,42 @@ const HRDashboard = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700/30">
                 <tr>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Job Title
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Department
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Candidates
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Applications
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {recentJobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-gray-50">
+                  <tr key={job.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="text-sm font-medium text-gray-900">{job.title}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{job.title}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       {job.department}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       {candidates.filter(c => c.job_id === job.id).length}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       {applications.filter(a => a.job_id === job.id).length}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">

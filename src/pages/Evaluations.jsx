@@ -169,54 +169,54 @@ const Evaluations = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-white shadow border">
+      <Card className="shadow border dark:bg-gray-800 dark:border-gray-700">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Candidates Evaluations</h1>
-            <p className="text-gray-600 mt-2">Evaluate and manage candidate assessments</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Candidates Evaluations</h1>
+            <p className="text-gray-600 dark:text-gray-300 mt-2">Evaluate and manage candidate assessments</p>
           </div>
         </div>
       </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:file-text" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:file-text" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{applications.length}</div>
-              <div className="text-sm text-gray-600">Total Applications</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{applications.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Applications</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:clock" className="text-yellow-600 text-2xl" />
+            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:clock" className="text-yellow-600 dark:text-yellow-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.evaluation_status === 'pending' || !a.evaluation_status).length}</div>
-              <div className="text-sm text-gray-600">Pending Evaluations</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{applications.filter(a => a.evaluation_status === 'pending' || !a.evaluation_status).length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Pending Evaluations</div>
             </div>
           </div>
         </Card>
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:check-circle" className="text-green-600 text-2xl" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:check-circle" className="text-green-600 dark:text-green-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{applications.filter(a => a.evaluation_status === 'completed').length}</div>
-              <div className="text-sm text-gray-600">Completed Evaluations</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{applications.filter(a => a.evaluation_status === 'completed').length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Completed Evaluations</div>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Filters */}
-      <Card className="bg-white shadow border">
+      <Card className="shadow border">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Textinput
             label="Search Candidates"
@@ -261,52 +261,52 @@ const Evaluations = () => {
       </Card>
 
       {/* Applications Table */}
-      <Card className="bg-white shadow border">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-900">Candidates</h3>
-          <p className="text-sm text-gray-600 mt-1">Showing {filteredApplications.length} of {applications.length} candidates</p>
+      <Card className="shadow border">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Candidates</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Showing {filteredApplications.length} of {applications.length} candidates</p>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700/30">
               <tr>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Candidate
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Job Applied
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Department
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Check-in Status
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Application
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredApplications.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-300">
                     {applications.length === 0 ? "No applications found." : "No applications match your filters."}
                   </td>
                 </tr>
               ) : (
                 filteredApplications.map((application) => (
-                  <tr key={application.id} className="hover:bg-gray-50">
+                  <tr key={application.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           {application.photo_url ? (
                             <img
                               className="h-10 w-10 rounded-full object-cover"
-                              src={`/${application.photo_url}`}
+                              src={`${application.photo_url.startsWith('http') ? application.photo_url : '/' + application.photo_url}`}
                               alt="Profile"
                               onError={(e) => {
                                 e.target.style.display = 'none';
@@ -321,18 +321,18 @@ const Evaluations = () => {
                           </div>
                         </div>
                         <div className="ml-3">
-                          <div className="text-sm font-medium text-gray-900 truncate max-w-[150px]">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[150px]">
                             {application.full_name}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       <div className="truncate max-w-[200px] text-center" title={getJobTitle(application.job_id)}>
                         {getJobTitle(application.job_id)}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                       {(() => {
                         const job = jobs.find(j => j.id === application.job_id);
                         return job && job.department ? job.department : 'N/A';

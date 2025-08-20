@@ -114,11 +114,11 @@ const EvaluatedCandidates = () => {
   return (
     <div className="space-y-6">
       {/* Header with simple styling */}
-      <Card className="bg-white shadow border">
+      <Card className="shadow border dark:bg-gray-800 dark:border-gray-700">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Evaluated Candidates</h1>
-            <p className="text-gray-600 mt-2">View and manage completed candidate evaluations</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Evaluated Candidates</h1>
+            <p className="text-gray-600 dark:text-gray-300 mt-2">View and manage completed candidate evaluations</p>
           </div>
           <div className="hidden md:block">
           </div>
@@ -127,57 +127,57 @@ const EvaluatedCandidates = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:check-circle" className="text-blue-600 text-2xl" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:check-circle" className="text-blue-600 dark:text-blue-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{totalEvaluations}</div>
-              <div className="text-sm text-gray-600">Total Evaluations</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalEvaluations}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Evaluations</div>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:star" className="text-green-600 text-2xl" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:star" className="text-green-600 dark:text-green-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{averageScore}</div>
-              <div className="text-sm text-gray-600">Average Score</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{averageScore}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Average Score</div>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:briefcase" className="text-purple-600 text-2xl" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:briefcase" className="text-purple-600 dark:text-purple-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{uniqueJobs}</div>
-              <div className="text-sm text-gray-600">Open Positions</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{uniqueJobs}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Open Positions</div>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-white shadow border">
+        <Card className="shadow border">
           <div className="flex flex-row-reverse items-center justify-between">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Icon icon="ph:calendar" className="text-yellow-600 text-2xl" />
+            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+              <Icon icon="ph:calendar" className="text-yellow-600 dark:text-yellow-400 text-2xl" />
             </div>
             <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold text-gray-900">{thisMonth}</div>
-              <div className="text-sm text-gray-600">This Month</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{thisMonth}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">This Month</div>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Enhanced Filters */}
-      <Card className="bg-white shadow border">
+      <Card className="shadow border">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Textinput
             label="Search Candidates"
@@ -210,49 +210,49 @@ const EvaluatedCandidates = () => {
       </Card>
 
       {/* Enhanced Evaluations Table */}
-      <Card className="overflow-hidden bg-white shadow border">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-900">Evaluation Results</h3>
-          <p className="text-sm text-gray-600 mt-1">Showing {filteredEvaluations.length} of {evaluations.length} evaluations</p>
+      <Card className="overflow-hidden shadow border">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Evaluation Results</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Showing {filteredEvaluations.length} of {evaluations.length} evaluations</p>
         </div>
         
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Candidate
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Job Applied
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Score
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {!localStorage.getItem("token") ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">
                     <div className="space-y-4">
-                      <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                        <svg className="w-8 h-8 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                       </div>
                       <div>
-                        <p className="text-gray-900 font-medium">Authentication Required</p>
-                        <p className="text-gray-500 text-sm mt-1">You need to be logged in to view evaluations.</p>
+                        <p className="text-gray-900 dark:text-gray-100 font-medium">Authentication Required</p>
+                        <p className="text-gray-500 dark:text-gray-300 text-sm mt-1">You need to be logged in to view evaluations.</p>
                       </div>
                       <button 
                         onClick={() => window.location.href = '/login'} 
@@ -274,18 +274,18 @@ const EvaluatedCandidates = () => {
                 </tr>
               ) : filteredEvaluations.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">
                     <div className="space-y-4">
-                      <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                        <svg className="w-8 h-8 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                       </div>
                       <div>
-                        <p className="text-gray-900 font-medium">
+                        <p className="text-gray-900 dark:text-gray-100 font-medium">
                           {evaluations.length === 0 ? "No evaluations found" : "No evaluations match your filters"}
                         </p>
-                        <p className="text-gray-500 text-sm mt-1">
+                        <p className="text-gray-500 dark:text-gray-300 text-sm mt-1">
                           {evaluations.length === 0 
                             ? "Start evaluating candidates to see results here." 
                             : "Try adjusting your search criteria."}
@@ -296,14 +296,14 @@ const EvaluatedCandidates = () => {
                 </tr>
               ) : (
                 filteredEvaluations.map((ev) => (
-                  <tr key={ev.id} className="hover:bg-gray-50 transition-colors duration-200">
+                  <tr key={ev.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-200">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-12 w-12">
                           {ev.photoUrl ? (
                             <img 
-                              className="h-12 w-12 rounded-full object-cover border-2 border-gray-200" 
-                              src={`/${ev.photoUrl}`} 
+                              className="h-12 w-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700" 
+                              src={`${ev.photoUrl.startsWith('http') ? ev.photoUrl : '/' + ev.photoUrl}`} 
                               alt="Profile" 
                               onError={(e) => {
                                 e.target.style.display = 'none';
@@ -311,29 +311,29 @@ const EvaluatedCandidates = () => {
                               }}
                             />
                           ) : null}
-                          <div className={`h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-200 ${ev.photoUrl ? 'hidden' : ''}`}>
-                            <span className="text-gray-600 text-sm font-medium">
+                          <div className={`h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-2 border-gray-200 dark:border-gray-700 ${ev.photoUrl ? 'hidden' : ''}`}>
+                            <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">
                               {ev.candidateName ? ev.candidateName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'NA'}
                             </span>
                           </div>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {ev.candidateName}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-gray-500 dark:text-gray-300">
                             Evaluated by {ev.evaluatorName || "Unknown"}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 font-medium" title={ev.jobTitle}>
+                      <div className="text-sm text-gray-900 dark:text-gray-100 font-medium" title={ev.jobTitle}>
                         {ev.jobTitle}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <Badge className="badge-success bg-green-100 text-green-800 border-green-200 flex items-center">
+                      <Badge className="badge-success bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-900 flex items-center">
                         <Icon icon="ph:check-circle" className="w-4 h-4 mr-1 text-green-600" />
                         Completed
                       </Badge>
@@ -343,15 +343,15 @@ const EvaluatedCandidates = () => {
                         const maxScore = (ev.scores && ev.scores.length > 0) ? ev.scores.length * 5 : 25;
                         return (
                           <div className="flex items-center justify-center">
-                            <div className="bg-gray-200 rounded-full h-8 w-8 flex items-center justify-center mr-2">
-                              <span className="text-sm font-bold text-gray-700">{ev.totalScore}</span>
+                            <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-8 w-8 flex items-center justify-center mr-2">
+                              <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{ev.totalScore}</span>
                             </div>
-                            <span className="text-sm text-gray-500">/{maxScore}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-300">/{maxScore}</span>
                           </div>
                         );
                       })()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500 dark:text-gray-300">
                       {new Date(ev.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
