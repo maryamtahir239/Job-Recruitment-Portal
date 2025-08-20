@@ -107,28 +107,43 @@ export default function CheckInPage() {
       .then((perm) => {
         permissionRef.current = perm;
         setPermissionState(perm.state);
-        if (perm.state === "granted" || perm.state === "prompt") {
-          requestLocationAndCheckIn();
-        } else if (perm.state === "denied") {
+        // Always attempt to request location; browser will prompt if possible
+        requestLocationAndCheckIn();
+        if (perm.state === "denied") {
           setStatus({
             loading: false,
             code: "location_required",
-            message: "Please enable location access for this site and try again."
+            message: "Please enable location access for this site and try again.",
+            details: null,
           });
         }
-        if (perm && typeof perm.onchange === "function") {
-          perm.onchange = () => {
-            setPermissionState(perm.state);
-            if (perm.state === "granted") {
-              requestLocationAndCheckIn();
-            }
-          };
-        }
+        // Listen for permission changes and retry automatically when granted
+        perm.onchange = () => {
+          setPermissionState(perm.state);
+          if (perm.state === "granted") {
+            requestLocationAndCheckIn();
+          }
+        };
       })
       .catch(() => {
         requestLocationAndCheckIn();
       });
   }, [token]);
+
+  const openSiteSettings = () => {
+    const origin = window.location.origin;
+    const ua = navigator.userAgent.toLowerCase();
+    if (ua.includes("edg/")) {
+      window.open(`edge://settings/content/siteDetails?site=${encodeURIComponent(origin)}`, "_blank");
+      return;
+    }
+    if (ua.includes("chrome") && !ua.includes("edg/")) {
+      window.open(`chrome://settings/content/siteDetails?site=${encodeURIComponent(origin)}`, "_blank");
+      return;
+    }
+    // Fallback: open generic settings help page
+    window.open("https://support.google.com/chrome/answer/142065?hl=en", "_blank");
+  };
 
   if (status.loading) {
     return (
@@ -181,6 +196,12 @@ export default function CheckInPage() {
                 className="btn btn-primary"
               >
                 Enable Location and Retry
+              </button>
+              <button
+                onClick={openSiteSettings}
+                className="btn btn-outline ml-2"
+              >
+                Open Site Settings
               </button>
             </div>
           </div>
